@@ -1,95 +1,174 @@
-* {
-  margin: 0;
-  padding: 0;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* =========================================
+   1. CSS VARIABLES (THEME SYSTEM)
+   ========================================= */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background: #f5f7fb;
+  margin: 0;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
+/* Dark Mode (Default) */
+:root {
+  --bg-app: #0B0C10;
+  --bg-card: #1F1F2E;
+  --bg-nav: #0B0C10;
+  --border-subtle: #2D2D3D;
+  --text-primary: #E5E7EB;
+  --text-secondary: #9CA3AF;
+  --accent-purple: #7C5CFC;
+  --accent-glow: rgba(124, 92, 252, 0.3);
+  --accent-gradient: linear-gradient(135deg, #A78BFA 0%, #22D3EE 100%);
+  --shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
 }
 
-.navbar {
-  height: 60px;
-  background: white;
-  border-bottom: 1px solid #ddd;
+/* Light Mode */
+[data-theme="light"] {
+  --bg-app: #F8F9FC;
+  --bg-card: #FFFFFF;
+  --bg-nav: #FFFFFF;
+  --border-subtle: #E4E7EC;
+  --text-primary: #111827;
+  --text-secondary: #667085;
+  --accent-purple: #6D4AFF;
+  --accent-glow: rgba(109, 74, 255, 0.2);
+  --accent-gradient: linear-gradient(135deg, #6D4AFF 0%, #22D3EE 100%);
+  --shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
 
-  display: flex;
+body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  margin: 0;
+  padding-top: 64px; /* Space for fixed navbar */
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+/* =========================================
+   2. EXACT CARD STYLES FROM SCREENSHOTS
+   ========================================= */
+.card-glow {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+
+.card-glow:hover {
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 20px var(--accent-glow);
+  transform: translateY(-4px);
+}
+
+/* =========================================
+   3. TYPOGRAPHY & GRADIENTS
+   ========================================= */
+.text-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* =========================================
+   4. BUTTONS
+   ========================================= */
+.btn-primary {
+  background: var(--accent-gradient);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  padding: 12px 24px;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-
-  padding: 0 24px;
-}
-
-.navbar-logo {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.navbar-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.profile-circle {
-  width: 35px;
-  height: 35px;
-
-  border-radius: 50%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #e5e7eb;
-  font-weight: bold;
-}
-
-.dashboard-body {
-  display: flex;
-  min-height: calc(100vh - 60px);
-}
-
-.sidebar {
-  width: 220px;
-  background: white;
-  border-right: 1px solid #ddd;
-  padding: 20px;
-}
-
-.sidebar-logo {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 30px;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
 }
+.btn-primary:hover {
+  box-shadow: 0 0 15px var(--accent-glow);
+  transform: translateY(-2px);
+}
 
-.sidebar-nav a {
-  padding: 12px;
+.btn-outline {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
+  font-weight: 500;
+  padding: 12px 24px;
+}
+.btn-outline:hover {
+  border-color: var(--accent-purple);
+  color: var(--text-primary);
+  background: var(--bg-card);
 }
 
-.sidebar-nav a:hover {
-  background: #f0f0f0;
+/* =========================================
+   5. FIX CARD OVERFLOW & ALIGNMENT
+   ========================================= */
+.step-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
 }
 
-.sidebar-nav a.active {
-  background: #e5e7eb;
-  font-weight: bold;
+.step-card {
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
 }
 
-.main-content {
-  flex: 1;
-  padding: 30px;
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+/* Global overflow prevention for all containers */
+img, svg, pre, code {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+
+/* Fix global body padding */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Ensure the navbar sits cleanly on top */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  height: 64px;
+}
+
+/* Responsive burger fix you noted at the bottom of Navbar.jsx */
+@media (max-width: 768px) {
+  .desktop-links, .auth-buttons { 
+    display: none !important; 
+  } 
+  .mobile-burger { 
+    display: block !important; 
+  }
 }
