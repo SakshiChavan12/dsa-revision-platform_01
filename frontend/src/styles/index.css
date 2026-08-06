@@ -172,3 +172,117 @@ body {
     display: block !important; 
   }
 }
+
+
+/* src/styles/index.css - Verify these exist */
+
+/* 1. GLOBAL RESET for everything */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-app, #0B0C10);
+  color: var(--text-primary, #E5E7EB);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.5;
+}
+
+/* 2. RELY ON CSS VARIABLES FROM YOUR EXISTING THEME */
+:root {
+  --bg-app: #0B0C10;
+  --bg-card: #1F1F2E;
+  --border-subtle: #2D2D3D;
+  --text-primary: #E5E7EB;
+  --text-secondary: #9CA3AF;
+  --accent-purple: #7C5CFC;
+  --accent-glow: rgba(124, 92, 252, 0.3);
+}
+
+/* 3. MATCH THE CARD STYLE */
+.card-glow {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+}
+
+/* 4. PRIMARY BUTTON */
+.btn-primary {
+  background: linear-gradient(to right, #7C5CFC, #6B5CE7);
+  color: white;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+}
+.btn-primary:hover {
+  opacity: 0.9;
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* 5. PREVENT DEFAULT LINK STYLING (Fixes purple underlined links) */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 6. HOVER EFFECTS FOR THE QUESTION ROWS */
+.question-row-hover:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.add-question-btn:hover,
+.import-leetcode-btn:hover {
+  border-color: var(--accent-purple);
+  color: var(--text-primary);
+  background: rgba(124, 92, 252, 0.1);
+}
+
+
+
+/* Responsive Practice Page Layout */
+@media (max-width: 1200px) {
+  .practice-workspace {
+    grid-template-columns: 1fr 1.2fr !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .practice-workspace {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .practice-workspace {
+    grid-template-columns: 1fr !important;
+  }
+  #root > div > main > div > div > div:last-child { /* Hints/Solution Grid */
+    grid-template-columns: 1fr !important;
+  }
+  #root > div > main > div > div > div:first-child { /* Practice Grid */
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Fix the scrolling of code editors so they don't break the page width */
+.code-editor {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.practice-workspace > div {
+  min-width: 0; /* Prevents grid overflow on smaller screens */
+}
+
+
+/* Hover effect for the question rows */
+.question-row-hover:hover {
+  background-color: rgba(124, 92, 252, 0.1); /* Subtle purple hover */
+  border-left: 2px solid var(--accent-purple); /* Adds that nice left border on hover */
+}
+
+/* Ensure links inside card-glow don't have default colors */
+.card-glow a {
+  color: inherit;
+}
