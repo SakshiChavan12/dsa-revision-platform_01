@@ -286,3 +286,53 @@ a {
 .card-glow a {
   color: inherit;
 }
+
+:root {
+  /* ... your existing variables ... */
+  --bg-app: #080b12;
+  --bg-card: #0d121c;
+  --bg-sidebar: #0a0f18;
+  --border-subtle: #202838;
+  --text-primary: #f5f7fb;
+  --text-secondary: #8d98aa;
+  --accent-purple: #7c4dff;
+  --accent-purple-dark: #24154f;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #38bdf8;
+}
+
+
+
+/* =========================================
+   DASHBOARD LAYOUT RESPONSIVENESS
+   ========================================= */
+
+/* Tablet: Sidebar shrinks, still 2 columns */
+@media (max-width: 1024px) {
+  .dashboard-layout-root {
+    grid-template-columns: 200px 1fr !important;
+  }
+  .dashboard-main-content {
+    padding: 24px 20px 30px !important;
+  }
+}
+
+/* Mobile: Sidebar disappears, 1 column stack */
+@media (max-width: 768px) {
+  .dashboard-layout-root {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto 1fr;
+  }
+  
+  /* Hide sidebar completely on mobile (you can add a hamburger toggle logic in Sidebar.jsx later) */
+  .dashboard-layout-root > aside {
+    display: none; 
+  }
+  
+  .dashboard-main-content {
+    padding: 16px !important;
+    height: 100vh;
+  }
+}

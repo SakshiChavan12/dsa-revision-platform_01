@@ -5,24 +5,43 @@ import Sidebar from './Sidebar';
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // CSS Variable reference for consistent theming
+  const styles = {
+    container: {
+      display: 'grid',
+      // Desktop: 230px sidebar, rest for main. Mobile: collapses to 1 column.
+      gridTemplateColumns: '230px 1fr', 
+      minHeight: '100vh',
+      width: '100vw',
+      background: 'var(--bg-app, #080b12)',
+      overflow: 'hidden', // Prevents double scrollbars
+    },
+    main: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100vh',
+      overflowY: 'auto', // Scroll only the main content
+      padding: '28px 32px 40px', // Professional spacing
+      background: 'var(--bg-app, #080b12)',
+    }
+  };
+
   return (
-    <div className="flex h-screen bg-[#0B0C10] overflow-hidden">
+    // Responsive Media Query hack using inline style + class for mobile
+    <div style={styles.container} className="dashboard-layout-root">
+      
+      {/* 1. Sidebar sits firmly on the left */}
       <Sidebar 
         isOpen={sidebarOpen} 
         onClose={() => setSidebarOpen(false)} 
       />
       
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* 
-           NOTE: Since Navbar is now global in App.jsx, we add padding-top 
-           to push the main content below it (64px).
-        */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8" style={{ paddingTop: '80px' }}> 
-          <div className="max-w-6xl mx-auto w-full">
-            <Outlet />
-          </div>
-        </main>
-      </div>
+      {/* 2. Main Dashboard Content sits on the right */}
+      <main style={styles.main} className="dashboard-main-content">
+        <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
+          <Outlet />
+        </div>
+      </main>
     </div>
   );
 };

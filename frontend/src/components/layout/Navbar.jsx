@@ -1,20 +1,24 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { FaCode, FaSun, FaMoon, FaBars } from 'react-icons/fa6';
 import { useState } from 'react';
 
-// ADDED: onMenuClick prop
+// ADDED: Accept onMenuClick prop (for the dashboard sidebar to use)
 const Navbar = ({ onMenuClick }) => {
   const { theme, toggleTheme } = useTheme();
+  const location = useLocation(); // <-- Check the current route
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
     { name: 'My Lists', path: '/lists' },
     { name: 'Practice', path: '/practice' },
-    { name: 'Stats', path: '/stats' },
+    { name: 'Stats', path: '/progress' },
   ];
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  // 1. Logic to hide links specifically on the landing page
+  const isLandingPage = location.pathname === '/';
 
   return (
     <nav className="navbar" style={{
@@ -36,28 +40,30 @@ const Navbar = ({ onMenuClick }) => {
         <span style={{ fontWeight: 700, fontSize: '18px' }}>DSA Trainer</span>
       </Link>
 
-      {/* Desktop Nav Links */}
-      <div style={{ display: 'flex', gap: '28px', alignItems: 'center' }} className="desktop-links">
-        {navLinks.map((link) => (
-          <NavLink
-            key={link.name}
-            to={link.path}
-            style={({ isActive }) => ({
-              color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
-              textDecoration: 'none',
-              fontWeight: 500,
-              position: 'relative',
-              paddingBottom: '4px',
-              borderBottom: isActive ? `2px solid var(--accent-purple)` : 'none',
-              transition: 'color 0.2s'
-            })}
-          >
-            {link.name}
-          </NavLink>
-        ))}
-      </div>
+      {/* 2. CONDITIONALLY RENDERED CENTER LINKS */}
+      {!isLandingPage && (
+        <div style={{ display: 'flex', gap: '28px', alignItems: 'center' }} className="desktop-links">
+          {navLinks.map((link) => (
+            <NavLink
+              key={link.name}
+              to={link.path}
+              style={({ isActive }) => ({
+                color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                textDecoration: 'none',
+                fontWeight: 500,
+                position: 'relative',
+                paddingBottom: '4px',
+                borderBottom: isActive ? `2px solid var(--accent-purple)` : 'none',
+                transition: 'color 0.2s'
+              })}
+            >
+              {link.name}
+            </NavLink>
+          ))}
+        </div>
+      )}
 
-      {/* Right Actions */}
+      {/* Right Actions (Always visible) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <button
           onClick={toggleTheme}
@@ -72,7 +78,7 @@ const Navbar = ({ onMenuClick }) => {
           <Link to="/signup" className="btn-primary" style={{ padding: '6px 16px', fontSize: '14px' }}>Sign Up</Link>
         </div>
 
-        {/* Mobile Hamburger - UPDATED: Now uses onMenuClick or local state */}
+        {/* Mobile Hamburger */}
         <button 
           onClick={onMenuClick || toggleMenu} 
           aria-label="Open navigation menu" 
