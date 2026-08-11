@@ -336,3 +336,18 @@ a {
     height: 100vh;
   }
 }
+
+
+
+/* Add to your src/styles/index.css for responsiveness */
+@media (max-width: 1100px) {
+  .progress-grid-responsive {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .progress-grid-responsive {
+    grid-template-columns: 1fr !important;
+  }
+}
