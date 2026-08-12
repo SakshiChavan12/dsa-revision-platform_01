@@ -8,7 +8,7 @@ import {
   FaBookmark,
   FaStickyNote,
   FaCog,
-  FaFire,
+  FaFire
 } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -156,22 +156,13 @@ const Sidebar = ({ isOpen, onClose }) => {
         <NavLink
           to="/bookmarks"
           style={({ isActive }) => ({
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            padding: "10px 12px",
-            borderRadius: "8px",
-            background: isActive
-              ? "rgba(124, 77, 255, 0.15)"
-              : "transparent",
-            color: isActive
-              ? "var(--text-primary)"
-              : "var(--text-secondary)",
-            textDecoration: "none",
+            display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '8px',
+            background: isActive ? 'rgba(124, 77, 255, 0.15)' : 'transparent',
+            color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+            textDecoration: 'none', transition: 'all 0.2s'
           })}
         >
-          <FaBookmark />
-          Bookmarks
+          <FaBookmark /> Bookmarks
         </NavLink>
 
         <NavLink

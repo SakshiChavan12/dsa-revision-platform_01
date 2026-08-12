@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import "./styles/index.css";
 import Questions from './pages/Questions';
+import Bookmarks from './pages/Bookmarks';
 
 // Layouts
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -51,6 +52,8 @@ const AppLayout = () => {
             <Route path="/practice/:questionId" element={<PracticeQuestion />} />
             <Route path="/progress" element={<Progress />} />
           </Route>
+
+          <Route path="/bookmarks" element={<Bookmarks />} />
         </Routes>
       </div>
     </div>

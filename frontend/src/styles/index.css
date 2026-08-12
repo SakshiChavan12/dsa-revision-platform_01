@@ -351,3 +351,19 @@ a {
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* Bookmarks Card Refinements */
+.card-glow:hover {
+  border-color: rgba(124, 77, 255, 0.55) !important;
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateY(-1px);
+}
+/* Arrow turns purple on hover */
+.card-glow:hover .bookmarks-arrow {
+  color: var(--accent-purple) !important;
+}
+/* Bookmark button background on hover */
+.card-glow:hover .bookmarks-bookmark-btn {
+  background: rgba(124, 77, 255, 0.12) !important;
+}
