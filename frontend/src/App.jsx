@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import "./styles/index.css";
 import Questions from './pages/Questions';
 import Bookmarks from './pages/Bookmarks';
+import Signup from './pages/Signup';
 
 // Layouts
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -24,6 +25,8 @@ const AppLayout = () => {
     '/lists',
     '/practice',
     '/progress',
+     '/login',      
+    '/signup' 
   ];
 
   // Check if current path matches an exact hide path, OR starts with /practice/ 
@@ -41,6 +44,7 @@ const AppLayout = () => {
           {/* Public Routes (Shows Navbar) */}
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} /> 
           <Route path="/register" element={<Register />} />
 
           {/* Dashboard Routes (Wrapped in Sidebar Layout - Hides Navbar) */}

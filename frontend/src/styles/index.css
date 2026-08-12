@@ -367,3 +367,9 @@ a {
 .card-glow:hover .bookmarks-bookmark-btn {
   background: rgba(124, 77, 255, 0.12) !important;
 }
+
+/* Login/Signup Page Specific Input Focus */
+.auth-input:focus {
+  border-color: var(--accent-purple, #7C4DFF) !important;
+  box-shadow: 0 0 12px rgba(124, 77, 255, 0.15) !important;
+}

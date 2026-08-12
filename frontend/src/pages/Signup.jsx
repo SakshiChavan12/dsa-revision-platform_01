@@ -1,16 +1,27 @@
-// src/pages/Login.jsx
+// src/pages/Signup.jsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Signup = () => {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Mock placeholder for future authentication
-    console.log('Login attempt:', { email, password });
-    alert('Login flow triggered (Frontend only).');
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    console.log('Signup attempt:', formData);
+    alert('Signup flow triggered (Frontend only).');
   };
 
   return (
@@ -24,53 +35,71 @@ const Login = () => {
         </div>
 
         {/* Heading */}
-        <h2 style={styles.heading}>Welcome Back</h2>
-        <p style={styles.subtitle}>Continue your DSA practice journey.</p>
+        <h2 style={styles.heading}>Create Your Account</h2>
+        <p style={styles.subtitle}>Start your DSA journey today.</p>
 
         {/* Form */}
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.inputGroup}>
-            <label style={styles.label}>Email</label>
+            <label style={styles.label}>Full Name</label>
             <input 
-              type="email" 
-              placeholder="Enter your email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text" 
+              name="fullName"
+              placeholder="Enter your full name" 
+              value={formData.fullName}
+              onChange={handleChange}
               style={styles.input} 
               required
             />
           </div>
 
           <div style={styles.inputGroup}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <label style={styles.label}>Password</label>
-              <span style={styles.forgotLink}>Forgot password?</span>
-            </div>
+            <label style={styles.label}>Email</label>
+            <input 
+              type="email" 
+              name="email"
+              placeholder="Enter your email" 
+              value={formData.email}
+              onChange={handleChange}
+              style={styles.input} 
+              required
+            />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Password</label>
             <input 
               type="password" 
-              placeholder="Enter your password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              placeholder="Create a password" 
+              value={formData.password}
+              onChange={handleChange}
+              style={styles.input} 
+              required
+            />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Confirm Password</label>
+            <input 
+              type="password" 
+              name="confirmPassword"
+              placeholder="Confirm your password" 
+              value={formData.confirmPassword}
+              onChange={handleChange}
               style={styles.input} 
               required
             />
           </div>
 
           <button type="submit" className="btn-primary" style={styles.submitBtn}>
-            Login
+            Create Account
           </button>
         </form>
 
-        {/* Divider */}
-        <div style={styles.divider}>
-          <span style={styles.dividerLine}></span>
-          <span style={styles.dividerText}>OR</span>
-          <span style={styles.dividerLine}></span>
-        </div>
-
-        {/* Sign Up Link */}
+        {/* Login Link */}
         <p style={styles.switchText}>
-          Don't have an account? <Link to="/signup" style={styles.link}>Sign Up</Link>
+          Already have an account? <Link to="/login" style={styles.link}>Login</Link>
         </p>
 
         {/* Back to Home */}
@@ -167,11 +196,6 @@ const styles = {
     boxSizing: 'border-box',
     transition: 'all 0.2s ease'
   },
-  forgotLink: {
-    fontSize: '12px',
-    color: 'var(--accent-purple, #7C4DFF)',
-    cursor: 'pointer'
-  },
   submitBtn: {
     width: '100%',
     height: '44px',
@@ -180,22 +204,6 @@ const styles = {
     fontWeight: '600',
     border: 'none',
     cursor: 'pointer'
-  },
-  divider: {
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%',
-    margin: '24px 0 20px 0',
-    gap: '12px'
-  },
-  dividerLine: {
-    flex: 1,
-    height: '1px',
-    background: 'var(--border-subtle, #252B38)'
-  },
-  dividerText: {
-    fontSize: '12px',
-    color: 'var(--text-secondary, #8FA0B8)'
   },
   switchText: {
     fontSize: '14px',
@@ -218,7 +226,4 @@ const styles = {
   }
 };
 
-// Note: To make the input focus work, add this to your global CSS:
-// input:focus { border-color: var(--accent-purple) !important; box-shadow: 0 0 10px rgba(124, 77, 255, 0.1); }
-
-export default Login;
+export default Signup;
