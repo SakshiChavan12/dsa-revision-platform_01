@@ -1,5 +1,4 @@
-import { NavLink } from "react-router-dom";
-
+import { NavLink, useNavigate } from "react-router-dom"; // <-- Added useNavigate
 import {
   FaHome,
   FaList,
@@ -10,8 +9,17 @@ import {
   FaCog,
   FaFire
 } from "react-icons/fa";
+import { logout } from "../../services/auth"; // <-- Import the logout helper we created earlier
 
 const Sidebar = ({ isOpen, onClose }) => {
+  const navigate = useNavigate(); // Hook to redirect user
+
+  // Handle Logout
+  const handleLogout = () => {
+    logout(); // 1. Clear localStorage
+    navigate('/login'); // 2. Redirect to login page
+  };
+
   return (
     <aside className="sidebar">
 
@@ -209,7 +217,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       </nav>
 
-      {/* Streak */}
+      {/* Streak & Logout */}
       <div style={{ marginTop: "auto", padding: "16px 12px" }}>
         <div
           style={{
@@ -257,6 +265,29 @@ const Sidebar = ({ isOpen, onClose }) => {
             Keep it up!
           </span>
         </div>
+
+        {/* --- NEW LOGOUT BUTTON --- */}
+        <button 
+          onClick={handleLogout}
+          style={{
+            marginTop: '12px',
+            width: '100%',
+            padding: '8px',
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            borderRadius: '8px',
+            color: '#ef4444',
+            fontWeight: '500',
+            fontSize: '0.85rem',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+          onMouseEnter={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.2)'}
+          onMouseLeave={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.1)'}
+        >
+          Logout
+        </button>
+
       </div>
 
     </aside>

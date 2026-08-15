@@ -6,6 +6,11 @@ import {
 } from 'react-icons/fa';
 
 const Dashboard = () => {
+
+  const storedUser = localStorage.getItem('user');
+  const user = storedUser ? JSON.parse(storedUser) : null;
+
+
   const [greeting, setGreeting] = useState('');
 
   // Dynamic time-based greeting
@@ -43,13 +48,15 @@ const Dashboard = () => {
   };
 
   return (
-    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
+ <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
+
+    
 
       {/* 4. MAIN HEADER */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h1 style={{ fontSize: '1.8rem', fontWeight: '600', color: 'var(--text-primary)', margin: '0 0 4px 0' }}>
-            {greeting}, Sakshi. 👋
+            {greeting}, {user?.name || 'Guest'}. 👋
           </h1>
           <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Let's continue your DSA journey.</p>
         </div>

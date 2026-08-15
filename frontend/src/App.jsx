@@ -12,9 +12,21 @@ import "./styles/index.css";
 import Questions from './pages/Questions';
 import Bookmarks from './pages/Bookmarks';
 import Signup from './pages/Signup';
+// import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom'; 
 
 // Layouts
 import DashboardLayout from './components/layout/DashboardLayout';
+
+const isAuthenticated = () => {
+  return !!localStorage.getItem('token');
+};
+
+const ProtectedRoute = ({ children }) => {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
 
 const AppLayout = () => {
   const location = useLocation();
