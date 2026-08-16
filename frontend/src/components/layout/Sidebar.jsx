@@ -43,7 +43,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         >
           DSA Trainer
         </span>
-      </div>
+       </div>
 
       {/* Navigation */}
       <nav

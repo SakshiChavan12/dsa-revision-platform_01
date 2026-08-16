@@ -1,15 +1,65 @@
+// import { useState, useEffect } from 'react';
+// import { Link } from 'react-router-dom';
+// import {
+//   FaSearch, FaBell, FaUserCircle, FaFire, FaCheckCircle,
+//   FaTimesCircle, FaClock, FaArrowRight, FaChartLine
+// } from 'react-icons/fa';
+
+// const Dashboard = () => {
+
+//   const storedUser = localStorage.getItem('user');
+//   const user = storedUser ? JSON.parse(storedUser) : null;
+
+//   const [greeting, setGreeting] = useState('');
+
+//   // Dynamic time-based greeting
+//   useEffect(() => {
+//     const hour = new Date().getHours();
+//     if (hour < 12) setGreeting('Good Morning');
+//     else if (hour < 17) setGreeting('Good Afternoon');
+//     else if (hour < 21) setGreeting('Good Evening');
+//     else setGreeting('Good Night');
+//   }, []);
+
+//   // Styles utilizing your existing CSS variables (NO hardcoded fallbacks!)
+//   const styles = {
+//     card: {
+//       background: 'var(--bg-card)',
+//       border: '1px solid var(--border-subtle)',
+//       borderRadius: '12px',
+//       padding: '20px',
+//       display: 'flex',
+//       flexDirection: 'column',
+//       justifyContent: 'space-between'
+//     },
+//     statNumber: {
+//       fontSize: '2rem', fontWeight: '700', color: 'var(--text-primary)'
+//     },
+//     label: {
+//       fontSize: '0.85rem', color: 'var(--text-secondary)'
+//     },
+//     purpleText: {
+//       color: 'var(--accent-purple)'
+//     },
+//     progressBar: {
+//       height: '6px', background: 'var(--border-subtle)', borderRadius: '999px', overflow: 'hidden', marginTop: '8px'
+//     }
+//   };
+
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FaSearch, FaBell, FaUserCircle, FaFire, FaCheckCircle,
   FaTimesCircle, FaClock, FaArrowRight, FaChartLine
 } from 'react-icons/fa';
+import { useTheme } from '../context/ThemeContext'; // <-- 1. IMPORT THIS!
 
 const Dashboard = () => {
+  const { theme } = useTheme(); // <-- 2. READ THE THEME STATE
 
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : null;
-
 
   const [greeting, setGreeting] = useState('');
 
@@ -22,11 +72,11 @@ const Dashboard = () => {
     else setGreeting('Good Night');
   }, []);
 
-  // Styles utilizing your existing CSS variables + fallbacks
+  // Styles utilizing your existing CSS variables
   const styles = {
     card: {
-      background: 'var(--bg-card, #0d121c)',
-      border: '1px solid var(--border-subtle, #202838)',
+      background: 'var(--bg-card)',
+      border: '1px solid var(--border-subtle)',
       borderRadius: '12px',
       padding: '20px',
       display: 'flex',
@@ -34,23 +84,24 @@ const Dashboard = () => {
       justifyContent: 'space-between'
     },
     statNumber: {
-      fontSize: '2rem', fontWeight: '700', color: 'var(--text-primary, #f5f7fb)'
+      fontSize: '2rem', fontWeight: '700', color: 'var(--text-primary)'
     },
     label: {
-      fontSize: '0.85rem', color: 'var(--text-secondary, #8d98aa)'
+      fontSize: '0.85rem', color: 'var(--text-secondary)'
     },
     purpleText: {
-      color: 'var(--accent-purple, #7c4dff)'
+      color: 'var(--accent-purple)'
     },
     progressBar: {
-      height: '6px', background: 'var(--border-subtle, #202838)', borderRadius: '999px', overflow: 'hidden', marginTop: '8px'
+      height: '6px', background: 'var(--border-subtle)', borderRadius: '999px', overflow: 'hidden', marginTop: '8px'
     }
   };
 
-  return (
- <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
 
-    
+
+
+  return (
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
 
       {/* 4. MAIN HEADER */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
@@ -73,7 +124,7 @@ const Dashboard = () => {
       {/* 5. TOP STATISTICS SECTION */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)', // Forces 4 horizontal columns
+        gridTemplateColumns: 'repeat(4, 1fr)',
         gap: '16px',
         marginBottom: '24px'
       }}>
@@ -103,7 +154,7 @@ const Dashboard = () => {
           <div>
             <div style={styles.label}>Total Questions</div>
             <div style={styles.statNumber}>254</div>
-            <div style={{ fontSize: '0.8rem', color: '#22c55e' }}>+18 this week</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--success)' }}>+18 this week</div>
           </div>
           <div style={{ alignSelf: 'flex-end', color: 'var(--accent-purple)', opacity: 0.3, fontSize: '2.5rem' }}><FaChartLine /></div>
         </div>
@@ -125,21 +176,21 @@ const Dashboard = () => {
           <div>
             <div style={styles.label}>Accuracy</div>
             <div style={styles.statNumber}>81.4%</div>
-            <div style={{ fontSize: '0.8rem', color: '#22c55e' }}>+5.2% this week</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--success)' }}>+5.2% this week</div>
           </div>
-          <div style={{ alignSelf: 'flex-end', color: '#22c55e', opacity: 0.5, fontSize: '1.5rem', marginTop: '8px' }}>
+          <div style={{ alignSelf: 'flex-end', color: 'var(--success)', opacity: 0.5, fontSize: '1.5rem', marginTop: '8px' }}>
             <svg width="40" height="40" viewBox="0 0 36 36">
               <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--border-subtle)" strokeWidth="4" />
-              <path strokeDasharray="81.4, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#22c55e" strokeWidth="4" />
+              <path strokeDasharray="81.4, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--success)" strokeWidth="4" />
             </svg>
           </div>
         </div>
       </div>
 
-      {/* 6. BOTTOM 3-COLUMN SECTION (Continue Practice, Weak Topics, Recent Activity) */}
+      {/* 6. BOTTOM 3-COLUMN SECTION */}
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: '1.5fr 1fr 1fr', // 3 Column side-by-side layout
+        gridTemplateColumns: '1.5fr 1fr 1fr',
         gap: '20px',
         marginTop: '12px' 
       }}>
@@ -157,7 +208,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <div style={{ fontWeight: '600', color: 'var(--text-primary)' }}>Two Sum</div>
-                <div style={{ fontSize: '0.8rem', color: '#22c55e' }}>Easy</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--success)' }}>Easy</div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Array, Hash Table</div>
               </div>
             </div>
@@ -177,9 +228,9 @@ const Dashboard = () => {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {[
-              { name: 'Dynamic Programming', pct: 36, color: '#ef4444' },
-              { name: 'Graphs', pct: 45, color: '#f59e0b' },
-              { name: 'Tree', pct: 52, color: '#38bdf8' },
+              { name: 'Dynamic Programming', pct: 36, color: 'var(--danger)' },
+              { name: 'Graphs', pct: 45, color: 'var(--warning)' },
+              { name: 'Tree', pct: 52, color: 'var(--info)' },
             ].map((topic) => (
               <div key={topic.name}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
@@ -201,9 +252,9 @@ const Dashboard = () => {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {[
-              { name: 'Merge Intervals', diff: 'Easy', status: 'Solved', time: 'Today', icon: <FaCheckCircle style={{ color: '#22c55e' }} /> },
-              { name: 'LRU Cache', diff: 'Hard', status: 'Wrong', time: 'Yesterday', icon: <FaTimesCircle style={{ color: '#ef4444' }} /> },
-              { name: 'Word Ladder', diff: 'Hard', status: 'Solved', time: '2 days ago', icon: <FaCheckCircle style={{ color: '#22c55e' }} /> },
+              { name: 'Merge Intervals', diff: 'Easy', status: 'Solved', time: 'Today', icon: <FaCheckCircle style={{ color: 'var(--success)' }} /> },
+              { name: 'LRU Cache', diff: 'Hard', status: 'Wrong', time: 'Yesterday', icon: <FaTimesCircle style={{ color: 'var(--danger)' }} /> },
+              { name: 'Word Ladder', diff: 'Hard', status: 'Solved', time: '2 days ago', icon: <FaCheckCircle style={{ color: 'var(--success)' }} /> },
             ].map((act, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: i < 2 ? '1px solid var(--border-subtle)' : 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -214,7 +265,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <span style={{ fontSize: '0.8rem', color: act.status === 'Solved' ? '#22c55e' : '#ef4444' }}>{act.status}</span>
+                  <span style={{ fontSize: '0.8rem', color: act.status === 'Solved' ? 'var(--success)' : 'var(--danger)' }}>{act.status}</span>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{act.time}</span>
                 </div>
               </div>

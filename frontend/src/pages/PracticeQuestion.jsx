@@ -1,13 +1,17 @@
 // src/pages/PracticeQuestion.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getQuestionById, QUESTIONS } from '../data/questions';
+import api from '../services/api'; // <--- NEW: Import your Axios instance!
 
-// --- THE COMPONENT ---
 const PracticeQuestion = () => {
   const { questionId } = useParams();
   const navigate = useNavigate();
   
+  // --- STATE ---
+  const [question, setQuestion] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
   const [language, setLanguage] = useState('JavaScript (Node.js)');
   const [code, setCode] = useState('');
   const [isRunning, setIsRunning] = useState(false);
@@ -18,15 +22,34 @@ const PracticeQuestion = () => {
   const [showSolution, setShowSolution] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
 
-  // Fetch question data based on URL param
-  const question = getQuestionById(questionId);
-  const allIds = QUESTIONS.map(q => q.id);
-  const currentIndex = allIds.indexOf(parseInt(questionId));
+  // --- FETCH DATA FROM BACKEND ---
+  useEffect(() => {
+    const fetchQuestion = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get(`/questions/${questionId}`);
+        const q = response.data.question;
+        setQuestion(q);
+        
+        // Try to use a starter code from DB, otherwise default
+        setCode(q.solution || '// Write your solution here'); 
+
+      } catch (err) {
+        console.error(err);
+        setError('Question not found');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (questionId) {
+      fetchQuestion();
+    }
+  }, [questionId]);
 
   // Reset state when question changes
   useEffect(() => {
     if (question) {
-      setCode(question.starterCode);
       setTestResults(null);
       setHintLevel(0);
       setShowSolution(false);
@@ -57,11 +80,11 @@ const PracticeQuestion = () => {
   };
 
   const handleReset = () => {
-    if (question) setCode(question.starterCode);
+    if (question) setCode(question.solution || '// Write your solution here');
   };
 
   const handleGetHint = () => {
-    if (hintLevel < question.hints.length) {
+    if (question && hintLevel < question.hints?.length) {
       setHintLevel(prev => prev + 1);
     }
   };
@@ -72,12 +95,20 @@ const PracticeQuestion = () => {
     return '#ef4444';
   };
 
-  // Handle 404
-  if (!question) {
+  // --- HANDLE LOADING & 404 ---
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh', color: 'var(--text-secondary)' }}>
+        Loading question...
+      </div>
+    );
+  }
+
+  if (error || !question) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '80vh', gap: '16px', color: 'var(--text-primary)' }}>
         <h1 style={{ fontSize: '2rem', margin: 0 }}>Question Not Found</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>The requested question does not exist.</p>
+        <p style={{ color: 'var(--text-secondary)' }}>{error || 'The requested question does not exist.'}</p>
         <Link to="/lists" className="btn-primary" style={{ padding: '10px 24px', textDecoration: 'none' }}>Back to My Lists</Link>
       </div>
     );
@@ -93,7 +124,7 @@ const PracticeQuestion = () => {
             <i className="fa-solid fa-arrow-left"></i> Back to My Lists
           </Link>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Practice Mode <span style={{ color: 'var(--text-primary)' }}>Question {currentIndex + 1} / {QUESTIONS.length}</span>
+            Practice Mode
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -117,9 +148,13 @@ const PracticeQuestion = () => {
             <div>
               <h2 style={{ color: 'var(--text-primary)', margin: '0 0 8px 0', fontSize: '1.5rem' }}>{question.title}</h2>
               <div style={{ display: 'flex', gap: '8px' }}>
-                {question.topics.map(topic => (
-                  <span key={topic} style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '2px 10px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{topic}</span>
-                ))}
+                {/* Safely handle if topic isn't an array */}
+                {Array.isArray(question.topic) 
+                  ? question.topic.map(topic => (
+                      <span key={topic} style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '2px 10px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{topic}</span>
+                    ))
+                  : <span style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '2px 10px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{question.topic}</span>
+                }
               </div>
             </div>
           </div>
@@ -155,7 +190,7 @@ const PracticeQuestion = () => {
             )}
             {activeTab === 'examples' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {question.examples.map((ex, i) => (
+                {question.examples?.map((ex, i) => (
                   <div key={i} style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '12px 16px' }}>
                     <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '4px' }}>Example {i+1}:</strong>
                     <div style={{ fontSize: '0.9rem', marginBottom: '4px' }}><span style={{ color: 'var(--text-secondary)' }}>Input:</span> {ex.input}</div>
@@ -167,13 +202,13 @@ const PracticeQuestion = () => {
             )}
             {activeTab === 'constraints' && (
               <div style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '16px', fontFamily: 'monospace', fontSize: '0.9rem' }}>
-                {question.constraints.map((c, i) => <div key={i} style={{ padding: '2px 0' }}>• {c}</div>)}
+                {question.constraints?.split('\n').map((c, i) => <div key={i} style={{ padding: '2px 0' }}>• {c}</div>)}
               </div>
             )}
           </div>
         </div>
 
-        {/* RIGHT PANEL: Code Editor */}
+        {/* RIGHT PANEL: Code Editor - UNCHANGED */}
         <div className="card-glow" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '500px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', marginBottom: '12px' }}>
             <select 
@@ -188,7 +223,6 @@ const PracticeQuestion = () => {
             <button onClick={handleReset} className="btn-outline" style={{ padding: '4px 12px', fontSize: '0.8rem' }}>Reset</button>
           </div>
 
-          {/* Mock Code Editor */}
           <div style={{ flex: 1, background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '16px', fontFamily: 'monospace', fontSize: '0.9rem', lineHeight: 1.6, overflow: 'auto', minHeight: '300px' }}>
             <textarea 
               value={code} 
@@ -197,7 +231,6 @@ const PracticeQuestion = () => {
             />
           </div>
 
-          {/* Actions */}
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
             <button onClick={handleRunCode} disabled={isRunning} className="btn-outline" style={{ flex: 1, padding: '10px 0', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
               {isRunning ? <i className="fa-solid fa-spinner fa-spin"></i> : <><i className="fa-solid fa-play"></i> Run Code</>}
@@ -207,7 +240,6 @@ const PracticeQuestion = () => {
             </button>
           </div>
 
-          {/* Test Results */}
           {testResults && (
             <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
               <h4 style={{ color: 'var(--text-primary)', margin: '0 0 8px 0', fontSize: '0.9rem' }}>Test Results</h4>
@@ -235,17 +267,16 @@ const PracticeQuestion = () => {
         </div>
       </div>
 
-      {/* 3. HINTS & SOLUTION & NAVIGATION SECTION */}
+      {/* 3. HINTS & SOLUTION */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '8px' }}>
         
-        {/* HINTS */}
         <div className="card-glow" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', marginBottom: '16px' }}>
             <h4 style={{ color: 'var(--text-primary)', margin: 0 }}><i className="fa-regular fa-lightbulb" style={{ marginRight: '8px', color: '#eab308' }}></i> Need a Hint?</h4>
-            <button onClick={handleGetHint} disabled={hintLevel >= question.hints.length} className="btn-primary" style={{ padding: '4px 16px', fontSize: '0.8rem' }}>Get Hint</button>
+            <button onClick={handleGetHint} disabled={hintLevel >= (question.hints?.length || 0)} className="btn-primary" style={{ padding: '4px 16px', fontSize: '0.8rem' }}>Get Hint</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {question.hints.map((h, i) => (
+            {question.hints?.map((h, i) => (
               <div key={i} style={{ display: 'flex', gap: '12px', padding: '10px', background: 'var(--bg-app)', borderRadius: '8px', border: '1px solid var(--border-subtle)', opacity: i < hintLevel ? 1 : 0.5 }}>
                 <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: i < hintLevel ? 'var(--accent-purple)' : 'var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '0.7rem', fontWeight: 'bold', flexShrink: 0 }}>
                   {i + 1}
@@ -258,7 +289,6 @@ const PracticeQuestion = () => {
           </div>
         </div>
 
-        {/* SOLUTION & NAVIGATION */}
         <div className="card-glow" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', marginBottom: '16px' }}>
@@ -270,7 +300,7 @@ const PracticeQuestion = () => {
             {showSolution && (
               <div>
                 <div style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '16px', fontFamily: 'monospace', fontSize: '0.8rem', color: '#a5b3ce', overflowX: 'auto' }}>
-                  <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{question.solutionCode}</pre>
+                  <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{question.solution}</pre>
                 </div>
                 <div style={{ marginTop: '12px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                   <p style={{ margin: '2px 0' }}><span style={{ fontWeight: 'bold' }}>Time Complexity:</span> {question.timeComplexity}</p>
@@ -279,28 +309,7 @@ const PracticeQuestion = () => {
               </div>
             )}
           </div>
-
-          {/* Prev / Next Navigation */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px', marginTop: '16px' }}>
-            <button 
-              onClick={() => navigate(`/practice/${allIds[currentIndex - 1]}`)}
-              disabled={currentIndex <= 0}
-              className="btn-outline"
-              style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px', opacity: currentIndex <= 0 ? 0.5 : 1 }}
-            >
-              <i className="fa-solid fa-arrow-left"></i> Previous
-            </button>
-            <button 
-              onClick={() => navigate(`/practice/${allIds[currentIndex + 1]}`)}
-              disabled={currentIndex >= allIds.length - 1}
-              className="btn-primary"
-              style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px', opacity: currentIndex >= allIds.length - 1 ? 0.5 : 1 }}
-            >
-              Next <i className="fa-solid fa-arrow-right"></i>
-            </button>
-          </div>
         </div>
-
       </div>
     </div>
   );

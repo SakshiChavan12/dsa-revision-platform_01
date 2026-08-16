@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* =========================================
-   1. CSS VARIABLES (THEME SYSTEM)
+   1. GLOBAL RESET & BASE
    ========================================= */
 *,
 *::before,
@@ -9,45 +9,19 @@
   box-sizing: border-box;
 }
 
+html, body, #root {
+  min-height: 100vh;
+}
+
 body {
   margin: 0;
+  padding: 0;
   overflow-x: hidden;
   font-family: 'Inter', sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Dark Mode (Default) */
-:root {
-  --bg-app: #0B0C10;
-  --bg-card: #1F1F2E;
-  --bg-nav: #0B0C10;
-  --border-subtle: #2D2D3D;
-  --text-primary: #E5E7EB;
-  --text-secondary: #9CA3AF;
-  --accent-purple: #7C5CFC;
-  --accent-glow: rgba(124, 92, 252, 0.3);
-  --accent-gradient: linear-gradient(135deg, #A78BFA 0%, #22D3EE 100%);
-  --shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-}
-
-/* Light Mode */
-[data-theme="light"] {
-  --bg-app: #F8F9FC;
-  --bg-card: #FFFFFF;
-  --bg-nav: #FFFFFF;
-  --border-subtle: #E4E7EC;
-  --text-primary: #111827;
-  --text-secondary: #667085;
-  --accent-purple: #6D4AFF;
-  --accent-glow: rgba(109, 74, 255, 0.2);
-  --accent-gradient: linear-gradient(135deg, #6D4AFF 0%, #22D3EE 100%);
-  --shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-}
-
-body {
+  /* ONLY the variables. NO hardcoded fallbacks. */
   background-color: var(--bg-app);
   color: var(--text-primary);
-  margin: 0;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   padding-top: 64px; /* Space for fixed navbar */
 }
 
@@ -57,8 +31,51 @@ button {
   transition: all 0.2s ease;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 /* =========================================
-   2. EXACT CARD STYLES FROM SCREENSHOTS
+   2. THEME VARIABLES
+   ========================================= */
+/* Dark Mode (Default) */
+:root {
+  --bg-app: #0B0C10;
+  --bg-card: #1F1F2E;
+  --bg-nav: #0B0C10;
+  --bg-sidebar: #0B0C10;
+  --border-subtle: #2D2D3D;
+  --text-primary: #E5E7EB;
+  --text-secondary: #9CA3AF;
+  --accent-purple: #7C5CFC;
+  --accent-glow: rgba(124, 92, 252, 0.3);
+  --accent-gradient: linear-gradient(135deg, #A78BFA 0%, #22D3EE 100%);
+  --shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #38bdf8;
+}
+
+/* Light Mode */
+[data-theme="light"] {
+  --bg-app: #F8F9FC;
+  --bg-card: #FFFFFF;
+  --bg-nav: #FFFFFF;
+  --bg-sidebar: #FFFFFF;
+  --border-subtle: #E4E7EC;
+  --text-primary: #111827;
+  --text-secondary: #667085;
+  --accent-purple: #6D4AFF;
+  --accent-glow: rgba(109, 74, 255, 0.2);
+  --accent-gradient: linear-gradient(135deg, #6D4AFF 0%, #22D3EE 100%);
+  --shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  /* Notice the success/danger/warning colors do NOT need to change in light mode */
+}
+
+/* =========================================
+   3. CARD & UI COMPONENT STYLES
    ========================================= */
 .card-glow {
   background: var(--bg-card);
@@ -74,7 +91,7 @@ button {
 }
 
 /* =========================================
-   3. TYPOGRAPHY & GRADIENTS
+   4. TYPOGRAPHY & GRADIENTS
    ========================================= */
 .text-gradient {
   background: var(--accent-gradient);
@@ -83,7 +100,7 @@ button {
 }
 
 /* =========================================
-   4. BUTTONS
+   5. BUTTONS
    ========================================= */
 .btn-primary {
   background: var(--accent-gradient);
@@ -95,7 +112,9 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  transition: all 0.2s ease;
 }
+
 .btn-primary:hover {
   box-shadow: 0 0 15px var(--accent-glow);
   transform: translateY(-2px);
@@ -108,7 +127,9 @@ button {
   border-radius: 8px;
   font-weight: 500;
   padding: 12px 24px;
+  transition: all 0.2s ease;
 }
+
 .btn-outline:hover {
   border-color: var(--accent-purple);
   color: var(--text-primary);
@@ -116,7 +137,27 @@ button {
 }
 
 /* =========================================
-   5. FIX CARD OVERFLOW & ALIGNMENT
+   6. NAVBAR SPECIFIC
+   ========================================= */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  height: 64px;
+  background: var(--bg-nav);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Responsive burger */
+@media (max-width: 768px) {
+  .desktop-links, .auth-buttons { display: none !important; } 
+  .mobile-burger { display: block !important; }
+}
+
+/* =========================================
+   7. GRID & RESPONSIVE LAYOUTS
    ========================================= */
 .step-grid {
   display: grid;
@@ -137,99 +178,32 @@ button {
   gap: 24px;
 }
 
-/* Global overflow prevention for all containers */
+/* Prevent overflow globally */
 img, svg, pre, code {
   max-width: 100%;
   overflow-wrap: break-word;
   word-break: break-word;
 }
 
-
-/* Fix global body padding */
-body {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  overflow-x: hidden;
+.practice-workspace > div, 
+.progress-grid-responsive > div {
+  min-width: 0; /* Prevents grid overflow */
 }
 
-/* Ensure the navbar sits cleanly on top */
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-  height: 64px;
+.code-editor {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
-/* Responsive burger fix you noted at the bottom of Navbar.jsx */
-@media (max-width: 768px) {
-  .desktop-links, .auth-buttons { 
-    display: none !important; 
-  } 
-  .mobile-burger { 
-    display: block !important; 
-  }
-}
-
-
-/* src/styles/index.css - Verify these exist */
-
-/* 1. GLOBAL RESET for everything */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  background-color: var(--bg-app, #0B0C10);
-  color: var(--text-primary, #E5E7EB);
-  font-family: 'Inter', sans-serif;
-  line-height: 1.5;
-}
-
-/* 2. RELY ON CSS VARIABLES FROM YOUR EXISTING THEME */
-:root {
-  --bg-app: #0B0C10;
-  --bg-card: #1F1F2E;
-  --border-subtle: #2D2D3D;
-  --text-primary: #E5E7EB;
-  --text-secondary: #9CA3AF;
-  --accent-purple: #7C5CFC;
-  --accent-glow: rgba(124, 92, 252, 0.3);
-}
-
-/* 3. MATCH THE CARD STYLE */
-.card-glow {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-}
-
-/* 4. PRIMARY BUTTON */
-.btn-primary {
-  background: linear-gradient(to right, #7C5CFC, #6B5CE7);
-  color: white;
-  border-radius: 8px;
-  border: none;
-  font-weight: 500;
-}
-.btn-primary:hover {
-  opacity: 0.9;
-  box-shadow: 0 0 15px var(--accent-glow);
-}
-
-/* 5. PREVENT DEFAULT LINK STYLING (Fixes purple underlined links) */
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-/* 6. HOVER EFFECTS FOR THE QUESTION ROWS */
+/* =========================================
+   8. SPECIFIC PAGE COMPONENT HOVERS
+   ========================================= */
 .question-row-hover:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(124, 92, 252, 0.1);
+  border-left: 2px solid var(--accent-purple);
 }
+
 .add-question-btn:hover,
 .import-leetcode-btn:hover {
   border-color: var(--accent-purple);
@@ -237,79 +211,40 @@ a {
   background: rgba(124, 92, 252, 0.1);
 }
 
-
-
-/* Responsive Practice Page Layout */
-@media (max-width: 1200px) {
-  .practice-workspace {
-    grid-template-columns: 1fr 1.2fr !important;
-  }
+/* Bookmarks Hover Refinements */
+.card-glow:hover .bookmarks-arrow {
+  color: var(--accent-purple) !important;
+}
+.card-glow:hover .bookmarks-bookmark-btn {
+  background: rgba(124, 77, 255, 0.12) !important;
 }
 
-@media (max-width: 1024px) {
-  .practice-workspace {
-    grid-template-columns: 1fr 1fr !important;
-  }
+.auth-input:focus {
+  border-color: var(--accent-purple) !important;
+  box-shadow: 0 0 12px var(--accent-glow) !important;
 }
-
-@media (max-width: 768px) {
-  .practice-workspace {
-    grid-template-columns: 1fr !important;
-  }
-  #root > div > main > div > div > div:last-child { /* Hints/Solution Grid */
-    grid-template-columns: 1fr !important;
-  }
-  #root > div > main > div > div > div:first-child { /* Practice Grid */
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* Fix the scrolling of code editors so they don't break the page width */
-.code-editor {
-  overflow-x: auto;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.practice-workspace > div {
-  min-width: 0; /* Prevents grid overflow on smaller screens */
-}
-
-
-/* Hover effect for the question rows */
-.question-row-hover:hover {
-  background-color: rgba(124, 92, 252, 0.1); /* Subtle purple hover */
-  border-left: 2px solid var(--accent-purple); /* Adds that nice left border on hover */
-}
-
-/* Ensure links inside card-glow don't have default colors */
-.card-glow a {
-  color: inherit;
-}
-
-:root {
-  /* ... your existing variables ... */
-  --bg-app: #080b12;
-  --bg-card: #0d121c;
-  --bg-sidebar: #0a0f18;
-  --border-subtle: #202838;
-  --text-primary: #f5f7fb;
-  --text-secondary: #8d98aa;
-  --accent-purple: #7c4dff;
-  --accent-purple-dark: #24154f;
-  --success: #22c55e;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --info: #38bdf8;
-}
-
-
 
 /* =========================================
-   DASHBOARD LAYOUT RESPONSIVENESS
+   9. DASHBOARD LAYOUT RESPONSIVENESS
    ========================================= */
+.dashboard-layout-root {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  min-height: 100vh;
+  width: 100vw;
+  background: var(--bg-app);
+  overflow: hidden;
+}
 
-/* Tablet: Sidebar shrinks, still 2 columns */
+.dashboard-main-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 28px 32px 40px;
+  background: var(--bg-app);
+}
+
 @media (max-width: 1024px) {
   .dashboard-layout-root {
     grid-template-columns: 200px 1fr !important;
@@ -319,57 +254,33 @@ a {
   }
 }
 
-/* Mobile: Sidebar disappears, 1 column stack */
 @media (max-width: 768px) {
   .dashboard-layout-root {
     grid-template-columns: 1fr !important;
     grid-template-rows: auto 1fr;
   }
-  
-  /* Hide sidebar completely on mobile (you can add a hamburger toggle logic in Sidebar.jsx later) */
-  .dashboard-layout-root > aside {
-    display: none; 
-  }
-  
+  .dashboard-layout-root > aside { display: none; }
   .dashboard-main-content {
     padding: 16px !important;
     height: 100vh;
   }
 }
 
+/* Responsive Practice Page Layout */
+@media (max-width: 1200px) {
+  .practice-workspace { grid-template-columns: 1fr 1.2fr !important; }
+}
+@media (max-width: 1024px) {
+  .practice-workspace { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 768px) {
+  .practice-workspace { grid-template-columns: 1fr !important; }
+}
 
-
-/* Add to your src/styles/index.css for responsiveness */
+/* Progress Page Responsiveness */
 @media (max-width: 1100px) {
-  .progress-grid-responsive {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
+  .progress-grid-responsive { grid-template-columns: repeat(2, 1fr) !important; }
 }
-
 @media (max-width: 700px) {
-  .progress-grid-responsive {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-
-/* Bookmarks Card Refinements */
-.card-glow:hover {
-  border-color: rgba(124, 77, 255, 0.55) !important;
-  background: rgba(255, 255, 255, 0.03);
-  transform: translateY(-1px);
-}
-/* Arrow turns purple on hover */
-.card-glow:hover .bookmarks-arrow {
-  color: var(--accent-purple) !important;
-}
-/* Bookmark button background on hover */
-.card-glow:hover .bookmarks-bookmark-btn {
-  background: rgba(124, 77, 255, 0.12) !important;
-}
-
-/* Login/Signup Page Specific Input Focus */
-.auth-input:focus {
-  border-color: var(--accent-purple, #7C4DFF) !important;
-  box-shadow: 0 0 12px rgba(124, 77, 255, 0.15) !important;
+  .progress-grid-responsive { grid-template-columns: 1fr !important; }
 }
