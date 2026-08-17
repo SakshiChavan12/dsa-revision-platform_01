@@ -6,6 +6,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js'; // <-- NEW
 import questionRoutes from './routes/questionRoutes.js';
+import listRoutes from './routes/listRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -14,6 +15,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use('/api/lists', listRoutes); 
 app.use('/api/auth', authRoutes);
 app.use('/api/questions', questionRoutes); // <-- NEW LINE
 
