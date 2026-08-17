@@ -3,22 +3,24 @@ import { useTheme } from '../../context/ThemeContext';
 import { FaCode, FaSun, FaMoon, FaBars } from 'react-icons/fa6';
 import { useState } from 'react';
 
-// ADDED: Accept onMenuClick prop (for the dashboard sidebar to use)
 const Navbar = ({ onMenuClick }) => {
   const { theme, toggleTheme } = useTheme();
-  const location = useLocation(); // <-- Check the current route
+  const location = useLocation(); // <-- 1. Get current route
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // 2. Define the array of navigation links
   const navLinks = [
     { name: 'My Lists', path: '/lists' },
     { name: 'Practice', path: '/practice' },
     { name: 'Stats', path: '/progress' },
   ];
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  // 3. Check if we are on a login/signup page to hide the links
+  const isAuthPage = 
+    location.pathname === '/login' || 
+    location.pathname === '/signup';
 
-  // 1. Logic to hide links specifically on the landing page
-  const isLandingPage = location.pathname === '/';
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
     <nav className="navbar" style={{
@@ -34,14 +36,14 @@ const Navbar = ({ onMenuClick }) => {
       transition: 'background 0.3s ease'
     }}>
       
-      {/* Logo */}
+      {/* Left: Logo (Always visible) */}
       <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', textDecoration: 'none' }}>
         <FaCode style={{ color: 'var(--accent-purple)', fontSize: '20px' }} />
         <span style={{ fontWeight: 700, fontSize: '18px' }}>DSA Trainer</span>
       </Link>
 
-      {/* 2. CONDITIONALLY RENDERED CENTER LINKS */}
-      {!isLandingPage && (
+      {/* Center: Navigation Links (Conditionally rendered) */}
+      {!isAuthPage && (
         <div style={{ display: 'flex', gap: '28px', alignItems: 'center' }} className="desktop-links">
           {navLinks.map((link) => (
             <NavLink
@@ -63,7 +65,7 @@ const Navbar = ({ onMenuClick }) => {
         </div>
       )}
 
-      {/* Right Actions (Always visible) */}
+      {/* Right: Actions (Always visible) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <button
           onClick={toggleTheme}
@@ -78,7 +80,7 @@ const Navbar = ({ onMenuClick }) => {
           <Link to="/signup" className="btn-primary" style={{ padding: '6px 16px', fontSize: '14px' }}>Sign Up</Link>
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Mobile Hamburger - remains unchanged */}
         <button 
           onClick={onMenuClick || toggleMenu} 
           aria-label="Open navigation menu" 
@@ -89,10 +91,10 @@ const Navbar = ({ onMenuClick }) => {
         </button>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay - remains unchanged */}
       {isMenuOpen && (
         <div style={{ position: 'absolute', top: '64px', left: 0, right: 0, background: 'var(--bg-nav)', borderBottom: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', padding: '20px', gap: '16px' }} className="mobile-menu">
-          {navLinks.map((link) => (
+          {!isAuthPage && navLinks.map((link) => (
             <NavLink key={link.name} to={link.path} style={({ isActive }) => ({ color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)', textDecoration: 'none' })} onClick={() => setIsMenuOpen(false)}>
               {link.name}
             </NavLink>

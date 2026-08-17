@@ -2,9 +2,10 @@ import Question from '../models/Question.js';
 
 // @desc    Get all questions
 // @route   GET /api/questions
-export const getAllQuestions = async (req, res) => {
+export const getQuestions = async (req, res) => {
   try {
-    const questions = await Question.find({}).sort({ createdAt: -1 });
+    const questions = await Question.find({}).sort({ createdAt: -1 }); // Newest first
+
     res.status(200).json({
       success: true,
       count: questions.length,
@@ -38,13 +39,11 @@ export const getQuestionById = async (req, res) => {
 };
 
 // @desc    Create a new question
-// @route   POST /api/questions (Protected)
+// @route   POST /api/questions
 export const createQuestion = async (req, res) => {
   try {
-    // req.user is automatically attached by the authMiddleware we wrote in Stage 3
-    // We don't need to use req.user here, but it proves the user is logged in.
-
     const question = await Question.create(req.body);
+    
     res.status(201).json({
       success: true,
       message: 'Question created successfully',
@@ -62,7 +61,7 @@ export const createQuestion = async (req, res) => {
 };
 
 // @desc    Update a question
-// @route   PUT /api/questions/:id (Protected)
+// @route   PUT /api/questions/:id
 export const updateQuestion = async (req, res) => {
   try {
     let question = await Question.findById(req.params.id);
@@ -74,7 +73,7 @@ export const updateQuestion = async (req, res) => {
     // Find and update. { new: true } returns the updated document.
     question = await Question.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-      runValidators: true
+      runValidators: true // Ensures the updated data still follows the schema rules
     });
 
     res.status(200).json({
@@ -92,7 +91,7 @@ export const updateQuestion = async (req, res) => {
 };
 
 // @desc    Delete a question
-// @route   DELETE /api/questions/:id (Protected)
+// @route   DELETE /api/questions/:id
 export const deleteQuestion = async (req, res) => {
   try {
     const question = await Question.findById(req.params.id);

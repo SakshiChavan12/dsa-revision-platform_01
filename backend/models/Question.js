@@ -1,26 +1,40 @@
 import mongoose from 'mongoose';
 
-const exampleSchema = new mongoose.Schema({
-  input: { type: String, required: true },
-  output: { type: String, required: true },
-  explanation: { type: String }
-});
-
 const questionSchema = new mongoose.Schema({
-  title: { type: String, required: [true, 'Please add a title'] },
-  description: { type: String, required: [true, 'Please add a description'] },
-  topic: { type: String, required: [true, 'Please add a topic'] },
-  difficulty: { 
-    type: String, 
-    required: true, 
-    enum: ['Easy', 'Medium', 'Hard'] 
+  title: {
+    type: String,
+    required: [true, 'Please add a title'],
+    trim: true
   },
-  platform: { type: String, default: 'LeetCode' },
-  url: { type: String },
-  examples: [exampleSchema], // Array of sub-documents
-  constraints: { type: String },
-  solution: { type: String },
-  createdAt: { type: Date, default: Date.now }
+  description: {
+    type: String,
+    required: [true, 'Please add a description']
+  },
+  topic: {
+    type: String,
+    required: [true, 'Please add a topic'],
+    trim: true
+  },
+  difficulty: {
+    type: String,
+    required: [true, 'Please add a difficulty'],
+    enum: ['Easy', 'Medium', 'Hard']
+  },
+  platform: {
+    type: String,
+    required: [true, 'Please add a platform'],
+    enum: ['LeetCode', 'GeeksforGeeks', 'CodeStudio', 'Other']
+  },
+  url: {
+    type: String,
+    default: ''
+  },
+  tags: {
+    type: [String],
+    default: []
+  }
+}, {
+  timestamps: true // Automatically adds createdAt and updatedAt fields
 });
 
 const Question = mongoose.model('Question', questionSchema);
