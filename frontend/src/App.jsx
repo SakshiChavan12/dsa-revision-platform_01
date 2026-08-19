@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import Questions from './pages/Questions';
 import Bookmarks from './pages/Bookmarks';
 import "./styles/index.css";
+import ListDetails from './pages/ListDetails';
 
 // Layouts
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -69,6 +70,7 @@ function App() {
           <Route path="/questions" element={<Questions />} />
           <Route path="/lists" element={<MyLists />} />
           <Route path="/practice" element={<Practice />} />
+          <Route path="/lists/:id" element={<ListDetails />} />
           <Route path="/practice/:questionId" element={<PracticeQuestion />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/bookmarks" element={<Bookmarks />} />

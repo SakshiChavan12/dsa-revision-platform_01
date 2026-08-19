@@ -63,13 +63,48 @@ const Questions = () => {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(pid => pid !== id) : [...prev, id]);
   };
 
-  const handleAddToList = () => {
+
+    // --- QUESTIONS: ADD TO LIST ---
+  const [showListModal, setShowListModal] = useState(false);
+  const [availableLists, setAvailableLists] = useState([]);
+  const [selectedListId, setSelectedListId] = useState('');
+
+  // Fetch lists when modal opens
+  const openAddToListModal = async () => {
     if (selectedIds.length === 0) {
       alert("Please select at least one question.");
       return;
     }
-    alert(`Added ${selectedIds.length} question(s) to list! (Mock Action)`);
-    setSelectedIds([]);
+    try {
+      const response = await api.get('/lists');
+      setAvailableLists(response.data.lists);
+      setShowListModal(true);
+    } catch (err) {
+      alert('Failed to load lists.');
+    }
+  };
+
+  const confirmAddToList = async () => {
+    if (!selectedListId) {
+      alert('Please select a list.');
+      return;
+    }
+    try {
+      // Loop through selected questions and add them one by one
+      for (const qId of selectedIds) {
+        await api.post(`/lists/${selectedListId}/questions`, { questionId: qId });
+      }
+      alert(`Successfully added ${selectedIds.length} question(s) to the list!`);
+      setShowListModal(false);
+      setSelectedIds([]);
+      setSelectedListId('');
+    } catch (err) {
+      if (err.response?.status === 400 && err.response?.data?.message === 'Question already exists in this list') {
+        alert('Some questions were already in the list. The rest were added successfully.');
+      } else {
+        alert('Failed to add questions to list.');
+      }
+    }
   };
 
   const handleClearFilters = () => {
@@ -99,9 +134,14 @@ const Questions = () => {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{filteredQuestions.length} questions found</span>
-          <button onClick={handleAddToList} className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <FaPlus size={12} /> Add to List
-          </button>
+          // Change the existing "Add to List" button to use openAddToListModal
+<button 
+  onClick={openAddToListModal} 
+  className="btn-primary" 
+  style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+>
+  <FaPlus size={12} /> Add to List
+</button>
         </div>
       </div>
 
@@ -211,6 +251,36 @@ const Questions = () => {
           )}
         </>
       )}
+
+      {/* Add to List Modal */}
+{showListModal && (
+  <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000 }}>
+    <div className="card-glow" style={{ width: '100%', maxWidth: '400px', padding: '32px', background: 'var(--bg-card)' }}>
+      <h3 style={{ color: 'var(--text-primary)', margin: '0 0 16px 0' }}>Add to List</h3>
+      {availableLists.length === 0 ? (
+        <p style={{ color: 'var(--text-secondary)' }}>You haven't created any lists yet.</p>
+      ) : (
+        <>
+          <select 
+            value={selectedListId} 
+            onChange={(e) => setSelectedListId(e.target.value)}
+            style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px', color: 'var(--text-primary)', marginBottom: '16px' }}
+          >
+            <option value="">Select a list...</option>
+            {availableLists.map(list => (
+              <option key={list._id} value={list._id}>{list.name}</option>
+            ))}
+          </select>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <button onClick={() => setShowListModal(false)} className="btn-outline" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>Cancel</button>
+            <button onClick={confirmAddToList} className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>Add</button>
+          </div>
+        </>
+      )}
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

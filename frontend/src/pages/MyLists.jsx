@@ -1,23 +1,34 @@
+// src/pages/MyLists.jsx
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-// MOCK DATA - ADDED IDs HERE FOR ROUTING
-const MOCK_LISTS = [
-  {
-    id: 1,
-    name: "Blind 75 - My List",
-    count: 25,
-    questions: [
-      { id: 101, title: "Two Sum", difficulty: "Easy" },
-      { id: 102, title: "Add Two Numbers", difficulty: "Medium" },
-      { id: 103, title: "Longest Substring Without Repeating Characters", difficulty: "Medium" },
-      { id: 104, title: "Median of Two Sorted Arrays", difficulty: "Hard" },
-      { id: 105, title: "LRU Cache", difficulty: "Hard" },
-      { id: 106, title: "Valid Parentheses", difficulty: "Easy" },
-    ]
-  }
-];
+import api from '../services/api';
 
 const MyLists = () => {
+  const [lists, setLists] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Fetch lists from backend
+  useEffect(() => {
+    const fetchLists = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get('/lists');
+        setLists(response.data.lists);
+      } catch (err) {
+        console.error(err);
+        setError('Unable to load your lists.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLists();
+  }, []);
+
+  // Loading / Error / Empty states
+  if (loading) return <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Loading your lists...</div>;
+  if (error) return <div style={{ textAlign: 'center', padding: '40px', color: '#ef4444' }}>{error}</div>;
+
   return (
     <div className="my-lists-wrapper" style={{ width: '100%', padding: '24px', maxWidth: '1200px', margin: '0 auto', marginTop: '20px' }}>
       
@@ -37,116 +48,63 @@ const MyLists = () => {
       {/* LISTS GRID */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '24px', marginBottom: '32px' }}>
         
-        {MOCK_LISTS.length === 0 ? (
+        {lists.length === 0 ? (
           <div className="card-glow" style={{ padding: '48px', textAlign: 'center', gridColumn: '1 / -1' }}>
             <div style={{ fontSize: '48px', color: 'var(--text-secondary)', marginBottom: '16px' }}><i className="fa-regular fa-folder-open"></i></div>
-            <h3 style={{ color: 'var(--text-primary)', margin: '0 0 8px 0' }}>No practice lists yet</h3>
-            <p style={{ color: 'var(--text-secondary)' }}>Create your first list and start focused DSA practice.</p>
+            <h3 style={{ color: 'var(--text-primary)', margin: '0 0 8px 0' }}>No lists created yet</h3>
+            <p style={{ color: 'var(--text-secondary)' }}>Create your first list and start organizing your practice.</p>
             <Link to="/create-list" className="btn-primary" style={{ marginTop: '24px', display: 'inline-block', padding: '10px 24px', textDecoration: 'none' }}>Create Your First List</Link>
           </div>
         ) : (
-          MOCK_LISTS.map((list) => (
-            <div key={list.id} className="card-glow" style={{ padding: '24px', display: 'flex', flexDirection: 'column' }}>
-              
-              {/* Card Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '16px', marginBottom: '16px' }}>
-                <div>
-                  <h3 style={{ color: 'var(--text-primary)', margin: '0', fontWeight: '600' }}>{list.name}</h3>
-                  <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: '0.875rem' }}>{list.count} questions</p>
+          lists.map((list) => (
+            <Link 
+              key={list._id} 
+              to={`/lists/${list._id}`} 
+              style={{ textDecoration: 'none' }}
+            >
+              <div className="card-glow" style={{ padding: '24px', display: 'flex', flexDirection: 'column', cursor: 'pointer', transition: 'all 0.2s' }}>
+                
+                {/* Card Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '16px', marginBottom: '16px' }}>
+                  <div>
+                    <h3 style={{ color: 'var(--text-primary)', margin: '0', fontWeight: '600' }}>{list.name}</h3>
+                    <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: '0.875rem' }}>{list.questions.length} questions</p>
+                  </div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '1.25rem' }}>
+                    <i className="fa-solid fa-chevron-right"></i>
+                  </div>
                 </div>
-                <button style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontSize: '1.25rem', cursor: 'pointer' }}>
-                  <i className="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-              </div>
 
-              {/* Questions List - NOW WRAPPED IN LINK */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexGrow: 1, marginBottom: '16px' }}>
-                {list.questions.map((q, idx) => (
-                  <Link 
-                    key={idx} 
-                    to={`/practice/${q.id}`}
-                    style={{ textDecoration: 'none' }} // Removes default link underline
-                  >
-                    <div style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center', 
-                      padding: '8px 12px', 
-                      borderRadius: '8px',
-                      transition: 'all 0.2s',
-                      cursor: 'pointer'
-                    }} 
-                    className="question-row-hover">
-                      
-                      {/* Title */}
+                {/* First 3 Questions Preview */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flexGrow: 1 }}>
+                  {list.questions.slice(0, 3).map((q, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      <span style={{ overflowWrap: 'break-word', wordBreak: 'break-word', flex: 1, paddingRight: '8px' }}>{q.title}</span>
                       <span style={{ 
-                        color: 'var(--text-primary)', 
-                        fontSize: '0.9375rem',
-                        overflowWrap: 'break-word', 
-                        wordBreak: 'break-word',
-                        flex: 1,
-                        paddingRight: '16px'
-                      }}>
-                        {q.title}
-                      </span>
-
-                      {/* Badge */}
-                      <span style={{
-                        padding: '2px 12px',
-                        borderRadius: '9999px',
-                        fontSize: '0.75rem',
-                        fontWeight: '600',
-                        flexShrink: 0,
-                        backgroundColor: q.difficulty === 'Easy' ? 'rgba(34, 197, 94, 0.2)' : 
-                                         q.difficulty === 'Medium' ? 'rgba(234, 179, 8, 0.2)' : 
-                                         'rgba(239, 68, 68, 0.2)',
-                        color: q.difficulty === 'Easy' ? '#22c55e' : 
-                               q.difficulty === 'Medium' ? '#eab308' : 
-                               '#ef4444'
+                        fontSize: '0.7rem', 
+                        color: q.difficulty === 'Easy' ? '#22c55e' : q.difficulty === 'Medium' ? '#eab308' : '#ef4444',
+                        flexShrink: 0
                       }}>
                         {q.difficulty}
                       </span>
                     </div>
-                  </Link>
-                ))}
-              </div>
+                  ))}
+                  {list.questions.length > 3 && (
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', paddingTop: '4px' }}>
+                      + {list.questions.length - 3} more...
+                    </div>
+                  )}
+                </div>
 
-              {/* Add Question Button */}
-              <button style={{
-                background: 'transparent',
-                border: '1px dashed var(--border-subtle)',
-                borderRadius: '8px',
-                padding: '12px',
-                color: 'var(--text-secondary)',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'
-              }} className="add-question-btn">
-                <i className="fa-regular fa-plus"></i> Add Question
-              </button>
-            </div>
+              </div>
+            </Link>
           ))
         )}
       </div>
 
-      {/* Import from LeetCode */}
+      {/* Import from LeetCode (Visual Only for now) */}
       <div style={{ marginTop: '12px' }}>
-        <button style={{
-          background: 'transparent',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: '8px',
-          padding: '10px 24px',
-          color: 'var(--text-secondary)',
-          cursor: 'pointer',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '10px',
-          transition: 'all 0.2s'
-        }} className="import-leetcode-btn">
+        <button className="import-leetcode-btn" style={{ background: 'transparent', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '10px 24px', color: 'var(--text-secondary)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '10px', transition: 'all 0.2s' }}>
           <i className="fa-solid fa-arrow-right-to-bracket"></i> Import from LeetCode
         </button>
       </div>
