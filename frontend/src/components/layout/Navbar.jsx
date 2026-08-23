@@ -10,9 +10,7 @@ const Navbar = ({ onMenuClick }) => {
 
   // 2. Define the array of navigation links
   const navLinks = [
-    { name: 'My Lists', path: '/lists' },
-    { name: 'Practice', path: '/practice' },
-    { name: 'Stats', path: '/progress' },
+   
   ];
 
   // 3. Check if we are on a login/signup page to hide the links

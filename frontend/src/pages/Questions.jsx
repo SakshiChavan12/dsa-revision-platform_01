@@ -134,7 +134,7 @@ const Questions = () => {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{filteredQuestions.length} questions found</span>
-          // Change the existing "Add to List" button to use openAddToListModal
+         
 <button 
   onClick={openAddToListModal} 
   className="btn-primary" 
@@ -243,12 +243,47 @@ const Questions = () => {
             </table>
           </div>
 
-          {/* 4. PAGINATION */}
-          {totalPages > 0 && (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '16px' }}>
-              {/* ... Pagination buttons ... */}
-            </div>
-          )}
+                {/* 4. PAGINATION */}
+      {totalPages > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '16px' }}>
+          <button 
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+            disabled={currentPage === 1}
+            className="btn-outline" 
+            style={{ padding: '6px 12px', fontSize: '0.8rem', opacity: currentPage === 1 ? 0.5 : 1 }}
+          >
+            &lt;
+          </button>
+          
+          {[...Array(totalPages)].map((_, i) => (
+            <button 
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              style={{ 
+                padding: '6px 12px', 
+                fontSize: '0.85rem', 
+                borderRadius: '6px', 
+                border: 'none',
+                background: currentPage === i + 1 ? 'var(--accent-purple)' : 'transparent',
+                color: currentPage === i + 1 ? '#fff' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              {i + 1}
+            </button>
+          ))}
+          
+          <button 
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+            disabled={currentPage === totalPages}
+            className="btn-outline" 
+            style={{ padding: '6px 12px', fontSize: '0.8rem', opacity: currentPage === totalPages ? 0.5 : 1 }}
+          >
+            &gt;
+          </button>
+        </div>
+      )}
         </>
       )}
 

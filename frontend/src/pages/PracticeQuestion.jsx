@@ -1,41 +1,42 @@
 // src/pages/PracticeQuestion.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import api from '../services/api'; // <--- NEW: Import your Axios instance!
+import api from '../services/api'; // <-- Using your existing Axios instance
+import { FaChevronLeft, FaChevronRight, FaLightbulb } from 'react-icons/fa6';
 
 const PracticeQuestion = () => {
   const { questionId } = useParams();
   const navigate = useNavigate();
   
-  // --- STATE ---
+  // State for question & API
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Editor State
   const [language, setLanguage] = useState('JavaScript (Node.js)');
   const [code, setCode] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [testResults, setTestResults] = useState(null);
-  const [activeTab, setActiveTab] = useState('description');
-  const [hintLevel, setHintLevel] = useState(0);
-  const [showSolution, setShowSolution] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
 
-  // --- FETCH DATA FROM BACKEND ---
+  // Tabs & Hints
+  const [activeTab, setActiveTab] = useState('description');
+  const [hintsUsed, setHintsUsed] = useState(0); // Starts at 0
+  
+  // Fetch question from backend
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
         setLoading(true);
         const response = await api.get(`/questions/${questionId}`);
-        const q = response.data.question;
-        setQuestion(q);
+        setQuestion(response.data.question);
         
-        // Try to use a starter code from DB, otherwise default
-        setCode(q.solution || '// Write your solution here'); 
-
+        // Set default code (no solution given, just starter)
+        setCode(`function solve() {\n    // Write your code here\n    \n}`);
+        
+        setError('');
       } catch (err) {
-        console.error(err);
         setError('Question not found');
       } finally {
         setLoading(false);
@@ -47,46 +48,32 @@ const PracticeQuestion = () => {
     }
   }, [questionId]);
 
-  // Reset state when question changes
+  // Reset hints when question changes
   useEffect(() => {
-    if (question) {
-      setTestResults(null);
-      setHintLevel(0);
-      setShowSolution(false);
-      setActiveTab('description');
-    }
-  }, [question]);
+    setHintsUsed(0);
+    setActiveTab('description');
+  }, [questionId]);
 
   // --- HANDLERS ---
   const handleRunCode = () => {
     setIsRunning(true);
-    // Mocking API delay
     setTimeout(() => {
       setTestResults([
-        { id: 1, status: 'Passed', input: '[2,7,11,15], 9', expected: '[0,1]', output: '[0,1]' },
-        { id: 2, status: 'Failed', input: '[3,2,4], 6', expected: '[1,2]', output: '[0,2]' },
-        { id: 3, status: 'Not Run', input: '[3,3], 6', expected: '[0,1]', output: '-' }
+        { id: 1, status: 'Passed', input: 'Test Case 1', expected: 'Expected', output: 'Correct' },
+        { id: 2, status: 'Failed', input: 'Test Case 2', expected: 'Expected', output: 'Incorrect' },
       ]);
       setIsRunning(false);
-    }, 1200);
+    }, 1000);
   };
 
   const handleSubmit = () => {
     setIsSubmitting(true);
-    setTimeout(() => {
-      alert('All test cases passed! ✅\nYou have successfully solved this problem.');
-      setIsSubmitting(false);
-    }, 1000);
+    setTimeout(() => alert('Submitted! (Mock)'), 1000);
+    setIsSubmitting(false);
   };
 
-  const handleReset = () => {
-    if (question) setCode(question.solution || '// Write your solution here');
-  };
-
-  const handleGetHint = () => {
-    if (question && hintLevel < question.hints?.length) {
-      setHintLevel(prev => prev + 1);
-    }
+  const handleShowHint = () => {
+    setHintsUsed(prev => Math.min(prev + 1, 3)); // Max 3
   };
 
   const getDifficultyColor = (diff) => {
@@ -95,220 +82,142 @@ const PracticeQuestion = () => {
     return '#ef4444';
   };
 
-  // --- HANDLE LOADING & 404 ---
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh', color: 'var(--text-secondary)' }}>
-        Loading question...
-      </div>
-    );
-  }
+  // --- SAFE FALLBACKS ---
+  const examples = question?.examples || [];
+  const constraints = question?.constraints || [];
+  const hints = question?.hints || [];
 
+  if (loading) return <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading...</div>;
   if (error || !question) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '80vh', gap: '16px', color: 'var(--text-primary)' }}>
-        <h1 style={{ fontSize: '2rem', margin: 0 }}>Question Not Found</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>{error || 'The requested question does not exist.'}</p>
-        <Link to="/lists" className="btn-primary" style={{ padding: '10px 24px', textDecoration: 'none' }}>Back to My Lists</Link>
+      <div style={{ textAlign: 'center', padding: '60px' }}>
+        <h2>Question Not Found</h2>
+        <Link to="/questions" className="btn-primary" style={{ marginTop: '20px', textDecoration: 'none' }}>Back to Questions</Link>
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', maxWidth: '1400px', margin: '0 auto', gap: '16px', paddingBottom: '32px' }}>
-      
-      {/* 1. SECONDARY PRACTICE BAR */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <Link to="/lists" style={{ color: 'var(--accent-purple)', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <i className="fa-solid fa-arrow-left"></i> Back to My Lists
-          </Link>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Practice Mode
-          </span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <span style={{ color: getDifficultyColor(question.difficulty), fontWeight: 600, fontSize: '0.85rem' }}>{question.difficulty}</span>
-          <button 
-            onClick={() => setIsBookmarked(!isBookmarked)} 
-            aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
-            style={{ background: 'transparent', border: 'none', color: isBookmarked ? '#eab308' : 'var(--text-secondary)', fontSize: '1.2rem', cursor: 'pointer' }}
-          >
-            <i className={isBookmarked ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"}></i>
-          </button>
-        </div>
+    <div style={{ width: '100%', paddingBottom: '40px' }}>
+      {/* TOP BAR */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', marginBottom: '16px' }}>
+        <Link to="/lists" style={{ color: 'var(--accent-purple)', textDecoration: 'none', fontSize: '0.9rem' }}>
+          <FaChevronLeft style={{ marginRight: '6px' }} /> Back to My Lists
+        </Link>
+        <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Practice Mode</span>
+        <span style={{ color: getDifficultyColor(question.difficulty), fontWeight: '600', fontSize: '0.85rem' }}>{question.difficulty}</span>
       </div>
 
-      {/* 2. MAIN WORKSPACE (2 Columns) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 0.9fr) minmax(0, 1.1fr)', gap: '24px', flex: 1 }}>
+      {/* MAIN GRID */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 0.9fr) minmax(0, 1.1fr)', gap: '24px' }}>
         
-        {/* LEFT PANEL: Question */}
-        <div className="card-glow" style={{ padding: '24px', display: 'flex', flexDirection: 'column', minHeight: '500px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '16px', marginBottom: '16px' }}>
-            <div>
-              <h2 style={{ color: 'var(--text-primary)', margin: '0 0 8px 0', fontSize: '1.5rem' }}>{question.title}</h2>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {/* Safely handle if topic isn't an array */}
-                {Array.isArray(question.topic) 
-                  ? question.topic.map(topic => (
-                      <span key={topic} style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '2px 10px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{topic}</span>
-                    ))
-                  : <span style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '2px 10px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{question.topic}</span>
-                }
-              </div>
-            </div>
+        {/* LEFT: QUESTION PANEL */}
+        <div className="card-glow" style={{ padding: '24px' }}>
+          <h1 style={{ fontSize: '1.5rem', color: 'var(--text-primary)', margin: '0 0 10px 0' }}>{question.title}</h1>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+            {question.tags?.map(tag => <span key={tag} style={{ padding: '2px 10px', borderRadius: '12px', background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{tag}</span>)}
           </div>
 
           {/* Tabs */}
           <div style={{ display: 'flex', gap: '16px', borderBottom: '1px solid var(--border-subtle)', marginBottom: '16px' }}>
             {['description', 'examples', 'constraints'].map(tab => (
-              <button 
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                style={{ 
-                  background: 'transparent', 
-                  border: 'none', 
-                  padding: '0 0 8px 0', 
-                  color: activeTab === tab ? 'var(--accent-purple)' : 'var(--text-secondary)', 
-                  borderBottom: activeTab === tab ? '2px solid var(--accent-purple)' : 'none',
-                  cursor: 'pointer',
-                  fontWeight: 500,
-                  textTransform: 'capitalize'
-                }}
-              >
-                {tab}
-              </button>
+              <button key={tab} onClick={() => setActiveTab(tab)} style={{ background: 'transparent', border: 'none', paddingBottom: '8px', cursor: 'pointer', borderBottom: activeTab === tab ? '2px solid var(--accent-purple)' : 'none', color: activeTab === tab ? 'var(--accent-purple)' : 'var(--text-secondary)', textTransform: 'capitalize' }}>{tab}</button>
             ))}
           </div>
 
-          {/* Content Area */}
-          <div style={{ color: 'var(--text-secondary)', lineHeight: 1.6, overflowY: 'auto', flex: 1, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
-            {activeTab === 'description' && (
-              <div>
-                {question.description.split('\n').map((line, i) => <p key={i} style={{ margin: '0 0 12px 0' }}>{line}</p>)}
-              </div>
-            )}
+          {/* Content */}
+          <div style={{ lineHeight: 1.6, color: 'var(--text-secondary)', overflowWrap: 'break-word' }}>
+            {activeTab === 'description' && <p>{question.description}</p>}
+            
             {activeTab === 'examples' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {question.examples?.map((ex, i) => (
-                  <div key={i} style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '12px 16px' }}>
-                    <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '4px' }}>Example {i+1}:</strong>
-                    <div style={{ fontSize: '0.9rem', marginBottom: '4px' }}><span style={{ color: 'var(--text-secondary)' }}>Input:</span> {ex.input}</div>
-                    <div style={{ fontSize: '0.9rem', marginBottom: '4px' }}><span style={{ color: 'var(--text-secondary)' }}>Output:</span> {ex.output}</div>
-                    {ex.explanation && <div style={{ fontSize: '0.9rem' }}><span style={{ color: 'var(--text-secondary)' }}>Explanation:</span> {ex.explanation}</div>}
-                  </div>
-                ))}
+                {examples.length === 0 ? <p>No examples available.</p> : 
+                  examples.map((ex, idx) => (
+                    <div key={idx} style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '16px' }}>
+                      <strong style={{ color: 'var(--text-primary)' }}>Example {idx + 1}</strong>
+                      <div style={{ marginTop: '8px' }}><strong>Input:</strong> {ex.input}</div>
+                      <div><strong>Output:</strong> {ex.output}</div>
+                      {ex.explanation && <div style={{ marginTop: '4px' }}><strong>Explanation:</strong> {ex.explanation}</div>}
+                    </div>
+                  ))
+                }
               </div>
             )}
+
             {activeTab === 'constraints' && (
-              <div style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '16px', fontFamily: 'monospace', fontSize: '0.9rem' }}>
-                {question.constraints?.split('\n').map((c, i) => <div key={i} style={{ padding: '2px 0' }}>• {c}</div>)}
+              <div>
+                {constraints.length === 0 ? <p>No constraints listed.</p> : 
+                  constraints.map((c, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                      <span>•</span> <span>{c}</span>
+                    </div>
+                  ))
+                }
               </div>
             )}
           </div>
+
+          {/* HINTS SECTION (MAX 3) */}
+          <div style={{ marginTop: '24px', borderTop: '1px solid var(--border-subtle)', paddingTop: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <h4 style={{ margin: 0, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FaLightbulb style={{ color: '#eab308' }} /> Need a Hint?
+              </h4>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Hints used: {hintsUsed} / 3</span>
+            </div>
+            
+            {/* Show hints */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {hints.slice(0, hintsUsed).map((hint, idx) => (
+                <div key={idx} style={{ padding: '12px', background: 'var(--bg-app)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+                  <strong style={{ color: 'var(--accent-purple)' }}>Hint {idx + 1}:</strong> {hint}
+                </div>
+              ))}
+              {hints.length === 0 && hintsUsed === 0 && <p style={{ fontSize: '0.85rem' }}>Hints are not available for this question.</p>}
+            </div>
+
+            {/* Show Hint Button (max 3) */}
+            {hintsUsed < Math.min(hints.length, 3) && (
+              <button onClick={handleShowHint} className="btn-primary" style={{ marginTop: '12px', padding: '8px 16px', fontSize: '0.85rem' }}>
+                Show Hint {hintsUsed + 1}
+              </button>
+            )}
+            {hintsUsed >= 3 && <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '8px' }}>No more hints available.</p>}
+          </div>
         </div>
 
-        {/* RIGHT PANEL: Code Editor - UNCHANGED */}
-        <div className="card-glow" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '500px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', marginBottom: '12px' }}>
-            <select 
-              value={language} 
-              onChange={(e) => setLanguage(e.target.value)}
-              style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', borderRadius: '6px', padding: '4px 8px', fontSize: '0.85rem' }}
-            >
+        {/* RIGHT: CODE EDITOR (UNCHANGED) */}
+        <div className="card-glow" style={{ padding: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <select value={language} onChange={(e) => setLanguage(e.target.value)} style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '6px', padding: '6px 12px', color: 'var(--text-primary)' }}>
               <option>JavaScript (Node.js)</option>
               <option>Python</option>
               <option>Java</option>
             </select>
-            <button onClick={handleReset} className="btn-outline" style={{ padding: '4px 12px', fontSize: '0.8rem' }}>Reset</button>
+            <button className="btn-outline" onClick={() => setCode(`function solve() {\n    // Write your code here\n    \n}`)} style={{ padding: '6px 12px', fontSize: '0.8rem' }}>Reset</button>
           </div>
-
-          <div style={{ flex: 1, background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '16px', fontFamily: 'monospace', fontSize: '0.9rem', lineHeight: 1.6, overflow: 'auto', minHeight: '300px' }}>
-            <textarea 
-              value={code} 
-              onChange={(e) => setCode(e.target.value)}
-              style={{ width: '100%', height: '100%', minHeight: '280px', background: 'transparent', border: 'none', color: 'var(--text-primary)', resize: 'none', outline: 'none', fontFamily: 'inherit', fontSize: 'inherit', lineHeight: 'inherit' }}
-            />
+          
+          <div style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '16px', minHeight: '300px', fontFamily: 'monospace' }}>
+            <textarea value={code} onChange={(e) => setCode(e.target.value)} style={{ width: '100%', minHeight: '280px', background: 'transparent', border: 'none', color: 'var(--text-primary)', fontFamily: 'inherit', fontSize: '0.9rem', lineHeight: 1.6, resize: 'vertical', outline: 'none' }} />
           </div>
 
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-            <button onClick={handleRunCode} disabled={isRunning} className="btn-outline" style={{ flex: 1, padding: '10px 0', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-              {isRunning ? <i className="fa-solid fa-spinner fa-spin"></i> : <><i className="fa-solid fa-play"></i> Run Code</>}
-            </button>
-            <button onClick={handleSubmit} disabled={isSubmitting} className="btn-primary" style={{ flex: 1, padding: '10px 0', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-              {isSubmitting ? <i className="fa-solid fa-spinner fa-spin"></i> : <><i className="fa-solid fa-check"></i> Submit</>}
-            </button>
+            <button onClick={handleRunCode} disabled={isRunning} className="btn-outline" style={{ flex: 1, padding: '10px' }}>{isRunning ? 'Running...' : 'Run Code'}</button>
+            <button onClick={handleSubmit} disabled={isSubmitting} className="btn-primary" style={{ flex: 1, padding: '10px' }}>{isSubmitting ? 'Submitting...' : 'Submit'}</button>
           </div>
 
+          {/* Test Results */}
           {testResults && (
             <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
-              <h4 style={{ color: 'var(--text-primary)', margin: '0 0 8px 0', fontSize: '0.9rem' }}>Test Results</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                {testResults.map((t) => (
-                  <div key={t.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', background: 'var(--bg-app)', padding: '8px 12px', borderRadius: '6px', fontSize: '0.8rem', gap: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ color: t.status === 'Passed' ? '#22c55e' : t.status === 'Failed' ? '#ef4444' : 'var(--text-secondary)' }}>
-                        <i className={t.status === 'Passed' ? "fa-solid fa-circle-check" : t.status === 'Failed' ? "fa-solid fa-circle-xmark" : "fa-regular fa-circle"}></i>
-                      </span>
-                      <span style={{ color: 'var(--text-secondary)' }}>Test Case {t.id}</span>
-                    </div>
-                    <div style={{ color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      <span style={{ color: 'var(--text-primary)' }}>In:</span> {t.input}
-                    </div>
-                    <div style={{ color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      <span style={{ color: 'var(--text-primary)' }}>Out:</span> {t.output} 
-                      {t.status === 'Failed' && <span style={{ color: '#ef4444', marginLeft: '8px' }}>(Expected: {t.expected})</span>}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <h4>Test Results</h4>
+              {testResults.map(t => (
+                <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <span>{t.input}</span>
+                  <span style={{ color: t.status === 'Passed' ? '#22c55e' : '#ef4444' }}>{t.status}</span>
+                </div>
+              ))}
             </div>
           )}
-        </div>
-      </div>
-
-      {/* 3. HINTS & SOLUTION */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '8px' }}>
-        
-        <div className="card-glow" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', marginBottom: '16px' }}>
-            <h4 style={{ color: 'var(--text-primary)', margin: 0 }}><i className="fa-regular fa-lightbulb" style={{ marginRight: '8px', color: '#eab308' }}></i> Need a Hint?</h4>
-            <button onClick={handleGetHint} disabled={hintLevel >= (question.hints?.length || 0)} className="btn-primary" style={{ padding: '4px 16px', fontSize: '0.8rem' }}>Get Hint</button>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {question.hints?.map((h, i) => (
-              <div key={i} style={{ display: 'flex', gap: '12px', padding: '10px', background: 'var(--bg-app)', borderRadius: '8px', border: '1px solid var(--border-subtle)', opacity: i < hintLevel ? 1 : 0.5 }}>
-                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: i < hintLevel ? 'var(--accent-purple)' : 'var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '0.7rem', fontWeight: 'bold', flexShrink: 0 }}>
-                  {i + 1}
-                </div>
-                <p style={{ margin: 0, fontSize: '0.85rem', color: i < hintLevel ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
-                  {i < hintLevel ? h : `Hint ${i+1} is locked. Click "Get Hint" to unlock.`}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="card-glow" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', marginBottom: '16px' }}>
-              <h4 style={{ color: 'var(--text-primary)', margin: 0 }}>Solution</h4>
-              <button onClick={() => setShowSolution(!showSolution)} className="btn-primary" style={{ padding: '4px 16px', fontSize: '0.8rem' }}>
-                {showSolution ? 'Hide' : 'View Solution'}
-              </button>
-            </div>
-            {showSolution && (
-              <div>
-                <div style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '16px', fontFamily: 'monospace', fontSize: '0.8rem', color: '#a5b3ce', overflowX: 'auto' }}>
-                  <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{question.solution}</pre>
-                </div>
-                <div style={{ marginTop: '12px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  <p style={{ margin: '2px 0' }}><span style={{ fontWeight: 'bold' }}>Time Complexity:</span> {question.timeComplexity}</p>
-                  <p style={{ margin: '2px 0' }}><span style={{ fontWeight: 'bold' }}>Space Complexity:</span> {question.spaceComplexity}</p>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>

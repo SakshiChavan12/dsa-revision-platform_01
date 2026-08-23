@@ -1,0 +1,452 @@
+[
+  {
+    "title": "Two Sum",
+    "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+    "topic": "Arrays",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/two-sum/",
+    "tags": ["Array", "Hash Map"]
+  },
+  {
+    "title": "Best Time to Buy and Sell Stock",
+    "description": "You are given an array prices where prices[i] is the price of a given stock on the ith day. You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.",
+    "topic": "Arrays",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+    "tags": ["Array", "Dynamic Programming"]
+  },
+  {
+    "title": "Move Zeroes",
+    "description": "Given an integer array nums, move all 0's to the end of it while maintaining the relative order of the non-zero elements.",
+    "topic": "Arrays",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/move-zeroes/",
+    "tags": ["Array", "Two Pointers"]
+  },
+  {
+    "title": "Contains Duplicate",
+    "description": "Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.",
+    "topic": "Arrays",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/contains-duplicate/",
+    "tags": ["Array", "Hash Map"]
+  },
+  {
+    "title": "Maximum Subarray",
+    "description": "Given an integer array nums, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.",
+    "topic": "Arrays",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/maximum-subarray/",
+    "tags": ["Array", "Dynamic Programming"]
+  },
+  {
+    "title": "Product of Array Except Self",
+    "description": "Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i].",
+    "topic": "Arrays",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/product-of-array-except-self/",
+    "tags": ["Array", "Prefix Sum"]
+  },
+  {
+    "title": "Find Minimum in Rotated Sorted Array",
+    "description": "Suppose an array of length n sorted in ascending order is rotated between 1 and n times. Find the minimum element.",
+    "topic": "Arrays",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
+    "tags": ["Array", "Binary Search"]
+  },
+  {
+    "title": "3Sum",
+    "description": "Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that they add up to zero.",
+    "topic": "Arrays",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/3sum/",
+    "tags": ["Array", "Two Pointers", "Sorting"]
+  },
+  {
+    "title": "Container With Most Water",
+    "description": "You are given an integer array height of length n. Find two lines that together with the x-axis form a container that holds the most water.",
+    "topic": "Arrays",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/container-with-most-water/",
+    "tags": ["Array", "Two Pointers", "Greedy"]
+  },
+  {
+    "title": "Trapping Rain Water",
+    "description": "Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+    "topic": "Arrays",
+    "difficulty": "Hard",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/trapping-rain-water/",
+    "tags": ["Array", "Two Pointers", "Stack"]
+  },
+  {
+    "title": "Longest Substring Without Repeating Characters",
+    "description": "Given a string s, find the length of the longest substring without repeating characters.",
+    "topic": "Strings",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+    "tags": ["String", "Sliding Window", "Hash Map"]
+  },
+  {
+    "title": "Longest Palindromic Substring",
+    "description": "Given a string s, return the longest palindromic substring in s.",
+    "topic": "Strings",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/longest-palindromic-substring/",
+    "tags": ["String", "Dynamic Programming"]
+  },
+  {
+    "title": "Valid Anagram",
+    "description": "Given two strings s and t, return true if t is an anagram of s, and false otherwise.",
+    "topic": "Strings",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/valid-anagram/",
+    "tags": ["String", "Hash Map", "Sorting"]
+  },
+  {
+    "title": "Group Anagrams",
+    "description": "Given an array of strings strs, group the anagrams together. You can return the answer in any order.",
+    "topic": "Strings",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/group-anagrams/",
+    "tags": ["String", "Hash Map", "Sorting"]
+  },
+  {
+    "title": "Valid Parentheses",
+    "description": "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.",
+    "topic": "Strings",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/valid-parentheses/",
+    "tags": ["String", "Stack"]
+  },
+  {
+    "title": "Top K Frequent Elements",
+    "description": "Given an integer array nums and an integer k, return the k most frequent elements.",
+    "topic": "Hashing",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/top-k-frequent-elements/",
+    "tags": ["Hash Map", "Array", "Bucket Sort"]
+  },
+  {
+    "title": "Design Hash Map",
+    "description": "Design a HashMap without using any built-in hash table libraries.",
+    "topic": "Hashing",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/design-hashmap/",
+    "tags": ["Hash Map", "Design"]
+  },
+  {
+    "title": "Insert Delete GetRandom O(1)",
+    "description": "Implement the RandomizedSet class: insert, remove, and getRandom in O(1) time.",
+    "topic": "Hashing",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/insert-delete-getrandom-o1/",
+    "tags": ["Hash Map", "Array", "Randomized"]
+  },
+  {
+    "title": "Find All Duplicates in an Array",
+    "description": "Given an integer array nums of length n where all the integers are in the range [1, n], find all the integers that appear twice.",
+    "topic": "Hashing",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/find-all-duplicates-in-an-array/",
+    "tags": ["Hash Map", "Array"]
+  },
+  {
+    "title": "Longest Consecutive Sequence",
+    "description": "Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.",
+    "topic": "Hashing",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/longest-consecutive-sequence/",
+    "tags": ["Hash Map", "Array"]
+  },
+  {
+    "title": "Reverse Linked List",
+    "description": "Given the head of a singly linked list, reverse the list, and return the reversed list.",
+    "topic": "Linked List",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/reverse-linked-list/",
+    "tags": ["Linked List", "Recursion"]
+  },
+  {
+    "title": "Merge Two Sorted Lists",
+    "description": "You are given the heads of two sorted linked lists list1 and list2. Merge the two lists into one sorted list.",
+    "topic": "Linked List",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/merge-two-sorted-lists/",
+    "tags": ["Linked List", "Recursion"]
+  },
+  {
+    "title": "Linked List Cycle",
+    "description": "Given head, the head of a linked list, determine if the linked list has a cycle in it.",
+    "topic": "Linked List",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/linked-list-cycle/",
+    "tags": ["Linked List", "Two Pointers", "Hash Map"]
+  },
+  {
+    "title": "Reorder List",
+    "description": "You are given the head of a singly linked-list. The list can be represented as L0 -> L1 -> ... -> Ln-1 -> Ln. Reorder the list to be L0 -> Ln -> L1 -> Ln-1 -> L2 -> Ln-2 -> ...",
+    "topic": "Linked List",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/reorder-list/",
+    "tags": ["Linked List", "Two Pointers", "Stack"]
+  },
+  {
+    "title": "Remove Nth Node From End of List",
+    "description": "Given the head of a linked list, remove the nth node from the end of the list and return its head.",
+    "topic": "Linked List",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
+    "tags": ["Linked List", "Two Pointers"]
+  },
+  {
+    "title": "Min Stack",
+    "description": "Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.",
+    "topic": "Stack",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/min-stack/",
+    "tags": ["Stack", "Design"]
+  },
+  {
+    "title": "Evaluate Reverse Polish Notation",
+    "description": "You are given an array of strings tokens that represents an arithmetic expression in Reverse Polish Notation. Evaluate the expression and return an integer.",
+    "topic": "Stack",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/evaluate-reverse-polish-notation/",
+    "tags": ["Stack", "Math"]
+  },
+  {
+    "title": "Daily Temperatures",
+    "description": "Given an array of integers temperatures representing the daily temperatures, return an array answer such that answer[i] is the number of days you have to wait after the ith day to get a warmer temperature.",
+    "topic": "Stack",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/daily-temperatures/",
+    "tags": ["Stack", "Array", "Monotonic Stack"]
+  },
+  {
+    "title": "Largest Rectangle in Histogram",
+    "description": "Given an array of integers heights representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.",
+    "topic": "Stack",
+    "difficulty": "Hard",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+    "tags": ["Stack", "Array", "Monotonic Stack"]
+  },
+  {
+    "title": "Implement Queue using Stacks",
+    "description": "Implement a first in first out (FIFO) queue using only two stacks.",
+    "topic": "Queue",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/implement-queue-using-stacks/",
+    "tags": ["Queue", "Stack", "Design"]
+  },
+  {
+    "title": "Design Circular Queue",
+    "description": "Design your implementation of the circular queue. The circular queue is a linear data structure in which the operations are performed based on FIFO.",
+    "topic": "Queue",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/design-circular-queue/",
+    "tags": ["Queue", "Design", "Array"]
+  },
+  {
+    "title": "Sliding Window Maximum",
+    "description": "You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. Return the max sliding window.",
+    "topic": "Queue",
+    "difficulty": "Hard",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/sliding-window-maximum/",
+    "tags": ["Queue", "Sliding Window", "Monotonic Queue"]
+  },
+  {
+    "title": "Binary Search",
+    "description": "Given an array of integers nums which is sorted in ascending order, and an integer target, write a function to search target in nums.",
+    "topic": "Binary Search",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/binary-search/",
+    "tags": ["Binary Search", "Array"]
+  },
+  {
+    "title": "Search a 2D Matrix",
+    "description": "You are given an m x n integer matrix with properties: Integers in each row are sorted from left to right, and the first integer of each row is greater than the last integer of the previous row.",
+    "topic": "Binary Search",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/search-a-2d-matrix/",
+    "tags": ["Binary Search", "Matrix"]
+  },
+  {
+    "title": "Koko Eating Bananas",
+    "description": "Koko loves to eat bananas. There are n piles of bananas, the ith pile has piles[i] bananas. Return the minimum integer k such that she can eat all the bananas within h hours.",
+    "topic": "Binary Search",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/koko-eating-bananas/",
+    "tags": ["Binary Search"]
+  },
+  {
+    "title": "Search in Rotated Sorted Array",
+    "description": "There is an integer array nums sorted in ascending order (with distinct values). Prior to being passed to your function, nums is possibly rotated at an unknown pivot index. Given the array nums after the rotation and an integer target, return the index of target if it is in nums.",
+    "topic": "Binary Search",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
+    "tags": ["Binary Search", "Array"]
+  },
+  {
+    "title": "Median of Two Sorted Arrays",
+    "description": "Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)).",
+    "topic": "Binary Search",
+    "difficulty": "Hard",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+    "tags": ["Binary Search", "Divide and Conquer"]
+  },
+  {
+    "title": "Sort an Array",
+    "description": "Given an array of integers nums, sort the array in ascending order and return it.",
+    "topic": "Sorting",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/sort-an-array/",
+    "tags": ["Sorting", "Divide and Conquer"]
+  },
+  {
+    "title": "Merge Intervals",
+    "description": "Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals.",
+    "topic": "Sorting",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/merge-intervals/",
+    "tags": ["Sorting", "Array"]
+  },
+  {
+    "title": "Insert Interval",
+    "description": "You are given an array of non-overlapping intervals intervals where intervals[i] = [starti, endi]. Insert newInterval into intervals such that intervals is still sorted and non-overlapping.",
+    "topic": "Sorting",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/insert-interval/",
+    "tags": ["Sorting", "Array"]
+  },
+  {
+    "title": "Climbing Stairs",
+    "description": "You are climbing a staircase. It takes n steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
+    "topic": "Recursion",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/climbing-stairs/",
+    "tags": ["Recursion", "Dynamic Programming", "Memoization"]
+  },
+  {
+    "title": "Power of Two",
+    "description": "Given an integer n, return true if it is a power of two. An integer n is a power of two if there exists an integer x such that n == 2^x.",
+    "topic": "Recursion",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/power-of-two/",
+    "tags": ["Recursion", "Bit Manipulation"]
+  },
+  {
+    "title": "Permutations",
+    "description": "Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.",
+    "topic": "Recursion",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/permutations/",
+    "tags": ["Recursion", "Backtracking"]
+  },
+  {
+    "title": "Maximum Depth of Binary Tree",
+    "description": "Given the root of a binary tree, return its maximum depth. A binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.",
+    "topic": "Trees",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
+    "tags": ["Tree", "DFS", "Recursion"]
+  },
+  {
+    "title": "Invert Binary Tree",
+    "description": "Given the root of a binary tree, invert the tree, and return its root.",
+    "topic": "Trees",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/invert-binary-tree/",
+    "tags": ["Tree", "DFS", "Recursion"]
+  },
+  {
+    "title": "Diameter of Binary Tree",
+    "description": "Given the root of a binary tree, return the length of the diameter of the tree. The diameter of a binary tree is the length of the longest path between any two nodes in a tree.",
+    "topic": "Trees",
+    "difficulty": "Easy",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/diameter-of-binary-tree/",
+    "tags": ["Tree", "DFS", "Recursion"]
+  },
+  {
+    "title": "Validate Binary Search Tree",
+    "description": "Given the root of a binary tree, determine if it is a valid binary search tree (BST).",
+    "topic": "Trees",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/validate-binary-search-tree/",
+    "tags": ["Tree", "DFS", "BST"]
+  },
+  {
+    "title": "Lowest Common Ancestor of a Binary Search Tree",
+    "description": "Given a binary search tree (BST), find the lowest common ancestor (LCA) node of two given nodes in the BST.",
+    "topic": "Trees",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
+    "tags": ["Tree", "BST", "DFS"]
+  },
+  {
+    "title": "Binary Tree Level Order Traversal",
+    "description": "Given the root of a binary tree, return the level order traversal of its nodes' values. (i.e., from left to right, level by level).",
+    "topic": "Trees",
+    "difficulty": "Medium",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/binary-tree-level-order-traversal/",
+    "tags": ["Tree", "BFS", "Queue"]
+  },
+  {
+    "title": "Serialize and Deserialize Binary Tree",
+    "description": "Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer. Design an algorithm to serialize and deserialize a binary tree.",
+    "topic": "Trees",
+    "difficulty": "Hard",
+    "platform": "LeetCode",
+    "url": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+    "tags": ["Tree", "BFS", "DFS", "Design"]
+  }
+]

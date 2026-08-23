@@ -11,6 +11,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Questions from './pages/Questions';
 import Bookmarks from './pages/Bookmarks';
+import Signup from './pages/Signup';
 import "./styles/index.css";
 import ListDetails from './pages/ListDetails';
 
@@ -55,7 +56,7 @@ function App() {
             <div>
               <Navbar />
               <div style={{ paddingTop: '64px', minHeight: '100vh' }}>
-                <Register />
+                <Signup />
               </div>
             </div>
           } 
