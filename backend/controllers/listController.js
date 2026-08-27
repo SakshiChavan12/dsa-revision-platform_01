@@ -2,7 +2,6 @@ import List from '../models/List.js';
 import Question from '../models/Question.js';
 import mongoose from 'mongoose';
 
-// Helper to validate MongoDB ObjectId
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 // @desc    Create a new list
@@ -15,10 +14,15 @@ export const createList = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Please provide a list name' });
     }
 
-    const list = await List.create({ name, description });
+    const list = await List.create({
+      name,
+      description,
+      user: req.user.id
+    });
 
     res.status(201).json({
       success: true,
+      message: 'List created successfully',
       list
     });
   } catch (error) {
@@ -27,11 +31,11 @@ export const createList = async (req, res) => {
   }
 };
 
-// @desc    Get all lists
+// @desc    Get all lists for the logged-in user
 // @route   GET /api/lists
 export const getAllLists = async (req, res) => {
   try {
-    const lists = await List.find({}).sort({ createdAt: -1 });
+    const lists = await List.find({ user: req.user.id }).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -44,7 +48,7 @@ export const getAllLists = async (req, res) => {
   }
 };
 
-// @desc    Get single list by ID (with populated questions)
+// @desc    Get single list by ID
 // @route   GET /api/lists/:id
 export const getListById = async (req, res) => {
   try {
@@ -54,17 +58,13 @@ export const getListById = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid list ID format' });
     }
 
-    // .populate('questions') replaces the ObjectIds with the actual Question documents
-    const list = await List.findById(id).populate('questions');
+    const list = await List.findOne({ _id: id, user: req.user.id }).populate('questions');
 
     if (!list) {
       return res.status(404).json({ success: false, message: 'List not found' });
     }
 
-    res.status(200).json({
-      success: true,
-      list
-    });
+    res.status(200).json({ success: true, list });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Server error' });
@@ -81,23 +81,18 @@ export const updateList = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid list ID format' });
     }
 
-    let list = await List.findById(id);
+    let list = await List.findOne({ _id: id, user: req.user.id });
 
     if (!list) {
       return res.status(404).json({ success: false, message: 'List not found' });
     }
 
-    // Update only the fields sent in the body
     list = await List.findByIdAndUpdate(id, req.body, {
-      new: true, // Return the updated document
+      new: true,
       runValidators: true
     });
 
-    res.status(200).json({
-      success: true,
-      message: 'List updated successfully',
-      list
-    });
+    res.status(200).json({ success: true, message: 'List updated successfully', list });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Server error' });
@@ -114,7 +109,7 @@ export const deleteList = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid list ID format' });
     }
 
-    const list = await List.findById(id);
+    const list = await List.findOne({ _id: id, user: req.user.id });
 
     if (!list) {
       return res.status(404).json({ success: false, message: 'List not found' });
@@ -122,50 +117,42 @@ export const deleteList = async (req, res) => {
 
     await list.deleteOne();
 
-    res.status(200).json({
-      success: true,
-      message: 'List deleted successfully'
-    });
+    res.status(200).json({ success: true, message: 'List deleted successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
-// @desc    Add a question to a list
-// @route   POST /api/lists/:id/questions
+// @desc    Add a SINGLE question to a list
+// @route   POST /api/lists/:listId/questions/:questionId
 export const addQuestionToList = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { questionId } = req.body;
+    const { listId, questionId } = req.params;
 
-    if (!isValidId(id) || !isValidId(questionId)) {
+    if (!isValidId(listId) || !isValidId(questionId)) {
       return res.status(400).json({ success: false, message: 'Invalid ID format' });
     }
 
-    // 1. Check if the list exists
-    const list = await List.findById(id);
+    const list = await List.findOne({ _id: listId, user: req.user.id });
     if (!list) {
       return res.status(404).json({ success: false, message: 'List not found' });
     }
 
-    // 2. Check if the question exists in the Question collection
     const question = await Question.findById(questionId);
     if (!question) {
       return res.status(404).json({ success: false, message: 'Question not found' });
     }
 
-    // 3. Check if the question is already in the list (to prevent duplicates)
+    // Check if question is already in the list
     if (list.questions.includes(questionId)) {
       return res.status(400).json({ success: false, message: 'Question already exists in this list' });
     }
 
-    // 4. Add the question ID to the array
     list.questions.push(questionId);
     await list.save();
 
-    // 5. Return the updated list, populated with question details
-    const updatedList = await List.findById(id).populate('questions');
+    const updatedList = await List.findById(listId).populate('questions');
 
     res.status(200).json({
       success: true,
@@ -178,32 +165,105 @@ export const addQuestionToList = async (req, res) => {
   }
 };
 
-// @desc    Remove a question from a list
-// @route   DELETE /api/lists/:id/questions/:questionId
-export const removeQuestionFromList = async (req, res) => {
+// @desc    Add MULTIPLE questions to a list (Bulk Add)
+// @route   PATCH /api/lists/:listId/questions
+export const addMultipleQuestionsToList = async (req, res) => {
   try {
-    const { id, questionId } = req.params;
+    const { listId } = req.params;
+    const { questionIds } = req.body;
 
-    if (!isValidId(id) || !isValidId(questionId)) {
-      return res.status(400).json({ success: false, message: 'Invalid ID format' });
+    if (!isValidId(listId)) {
+      return res.status(400).json({ success: false, message: 'Invalid list ID format' });
     }
 
-    const list = await List.findById(id);
+    if (!Array.isArray(questionIds) || questionIds.length === 0) {
+      return res.status(400).json({ success: false, message: 'Please provide an array of questionIds' });
+    }
+
+    // Remove duplicate IDs from the incoming request
+    const uniqueQuestionIds = [...new Set(questionIds)];
+
+    for (const id of uniqueQuestionIds) {
+      if (!isValidId(id)) {
+        return res.status(400).json({ success: false, message: `Invalid question ID format: ${id}` });
+      }
+    }
+
+    const list = await List.findOne({ _id: listId, user: req.user.id });
     if (!list) {
       return res.status(404).json({ success: false, message: 'List not found' });
     }
 
-    // Pull removes the questionId from the array
-    list.questions.pull(questionId);
-    await list.save();
+    // Determine existing IDs in the list
+    const existingQuestionIds = list.questions.map(id => id.toString());
+    const newQuestionIds = uniqueQuestionIds.filter(id => !existingQuestionIds.includes(id));
+    const skippedQuestionIds = uniqueQuestionIds.filter(id => existingQuestionIds.includes(id));
 
-    const updatedList = await List.findById(id).populate('questions');
+    if (newQuestionIds.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'All selected questions are already in this list',
+        addedCount: 0,
+        skippedCount: skippedQuestionIds.length,
+        addedQuestionIds: [],
+        skippedQuestionIds
+      });
+    }
+
+    // Verify new questions exist in Question collection
+    const foundQuestions = await Question.find({ _id: { $in: newQuestionIds } });
+    const foundQuestionIds = foundQuestions.map(q => q._id.toString());
+    const trulyNewQuestionIds = newQuestionIds.filter(id => foundQuestionIds.includes(id));
+    const missingQuestionIds = newQuestionIds.filter(id => !foundQuestionIds.includes(id));
+
+    if (trulyNewQuestionIds.length > 0) {
+      await List.findByIdAndUpdate(
+        listId,
+        { $addToSet: { questions: { $each: trulyNewQuestionIds } } },
+        { new: true }
+      );
+    }
+
+    const updatedList = await List.findById(listId).populate('questions');
+
+    const totalSkipped = skippedQuestionIds.length + missingQuestionIds.length;
 
     res.status(200).json({
       success: true,
-      message: 'Question removed from list successfully',
+      message: 'Questions added successfully',
+      addedCount: trulyNewQuestionIds.length,
+      skippedCount: totalSkipped,
+      addedQuestionIds: trulyNewQuestionIds,
+      skippedQuestionIds: [...skippedQuestionIds, ...missingQuestionIds],
       list: updatedList
     });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// @desc    Remove a question from a list
+// @route   DELETE /api/lists/:listId/questions/:questionId
+export const removeQuestionFromList = async (req, res) => {
+  try {
+    const { listId, questionId } = req.params;
+
+    if (!isValidId(listId) || !isValidId(questionId)) {
+      return res.status(400).json({ success: false, message: 'Invalid ID format' });
+    }
+
+    const list = await List.findOne({ _id: listId, user: req.user.id });
+    if (!list) {
+      return res.status(404).json({ success: false, message: 'List not found' });
+    }
+
+    list.questions.pull(questionId);
+    await list.save();
+
+    const updatedList = await List.findById(listId).populate('questions');
+
+    res.status(200).json({ success: true, message: 'Question removed from list successfully', list: updatedList });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Server error' });

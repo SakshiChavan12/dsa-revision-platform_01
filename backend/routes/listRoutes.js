@@ -6,10 +6,15 @@ import {
   updateList,
   deleteList,
   addQuestionToList,
-  removeQuestionFromList
+  removeQuestionFromList,
+  addMultipleQuestionsToList
 } from '../controllers/listController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
+
+// Protect ALL list routes (must be logged in)
+router.use(protect);
 
 // Standard CRUD routes
 router.route('/')
@@ -21,11 +26,13 @@ router.route('/:id')
   .put(updateList)
   .delete(deleteList);
 
-// Add/Remove questions from a specific list
-router.route('/:id/questions')
-  .post(addQuestionToList);
-
-router.route('/:id/questions/:questionId')
+// Add a SINGLE question to a specific list
+router.route('/:listId/questions/:questionId')
+  .post(addQuestionToList)
   .delete(removeQuestionFromList);
+
+// Add MULTIPLE questions to a specific list (Bulk Add - NEW)
+router.route('/:listId/questions')
+  .patch(addMultipleQuestionsToList);
 
 export default router;

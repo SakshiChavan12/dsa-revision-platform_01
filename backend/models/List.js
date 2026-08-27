@@ -11,6 +11,11 @@ const listSchema = new mongoose.Schema({
     trim: true,
     default: ''
   },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
   questions: [
     {
       type: mongoose.Schema.Types.ObjectId,

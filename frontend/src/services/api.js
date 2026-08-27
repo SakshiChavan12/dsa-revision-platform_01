@@ -6,6 +6,14 @@ const api = axios.create({
   baseURL: 'http://localhost:5000/api',
 });
 
+// ... existing api.js code ...
+
+// NEW BULK ADD FUNCTION
+export const addQuestionsToList = async (listId, questionIds) => {
+  const response = await api.patch(`/lists/${listId}/questions`, { questionIds });
+  return response.data;
+};
+
 // Helper to automatically attach the JWT token to every request if it exists
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
