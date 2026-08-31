@@ -1,7 +1,7 @@
 // src/pages/Practice.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaDice, FaChevronDown } from 'react-icons/fa6';
+import { FaChevronDown } from 'react-icons/fa6';
 import api from '../services/api';
 import { getRandomQuestionFromList } from '../services/api';
 
@@ -17,7 +17,6 @@ const Practice = () => {
   const [isStarting, setIsStarting] = useState(false);
   const [startError, setStartError] = useState('');
 
-  // Fetch user lists
   useEffect(() => {
     const fetchLists = async () => {
       try {
@@ -33,7 +32,6 @@ const Practice = () => {
     fetchLists();
   }, []);
 
-  // Handle list selection
   const handleListChange = (e) => {
     const listId = e.target.value;
     setSelectedListId(listId);
@@ -43,15 +41,12 @@ const Practice = () => {
     setSelectedList(foundList || null);
   };
 
-  // Start Practice
   const handleStartPractice = async () => {
-    // 1. Immediate check for selected list
     if (!selectedListId) {
       setStartError('Please select a list first.');
       return;
     }
 
-    // 2. Immediate check for empty list (Avoids hitting backend)
     if (selectedList && selectedList.questions.length === 0) {
       setStartError('This list has no questions. Add questions to this list first.');
       return;
@@ -65,7 +60,6 @@ const Practice = () => {
       const questionId = response.question._id;
       navigate(`/practice/${questionId}`);
     } catch (err) {
-      // 3. If backend sends error (e.g., list had 0 questions)
       if (err.response?.status === 400 || err.response?.status === 404) {
         setStartError(err.response.data.message || 'Unable to start practice. Please check your list.');
       } else {
@@ -76,7 +70,6 @@ const Practice = () => {
     }
   };
 
-  // UI States
   if (loadingLists) return <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Loading your lists...</div>;
   if (error) return <div style={{ textAlign: 'center', padding: '40px', color: '#ef4444' }}>{error}</div>;
 
@@ -109,7 +102,16 @@ const Practice = () => {
 
         <div style={{ width: '100%', height: '1px', background: 'var(--border-subtle)', marginBottom: '24px' }}></div>
 
-        <FaDice size={48} style={{ color: 'var(--text-primary)', marginBottom: '16px' }} />
+        {/* ✅ THIS IS YOUR EXACT LOCAL DICE! */}
+        <img 
+          src="/dice.png" 
+          alt="3D Dice"
+          style={{ 
+            width: '100px', 
+            height: '100px', 
+            marginBottom: '16px'
+          }}
+        />
 
         <h3 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--text-primary)', margin: '0 0 6px 0', textAlign: 'center' }}>
           Ready to Practice?
@@ -193,6 +195,13 @@ const Practice = () => {
           You can't skip or pick a question.<br />
           Solve and improve! 💪
         </p>
+
+        {/* ✅ Attribution */}
+        <div style={{ marginTop: '16px', fontSize: '10px', color: 'var(--text-secondary)' }}>
+          <a href="https://www.flaticon.com/free-icons/dice" title="dice icons" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+            Dice icons created by Muhamad Ulum - Flaticon
+          </a>
+        </div>
 
       </div>
     </div>
