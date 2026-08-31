@@ -1,172 +1,202 @@
+// src/pages/Practice.jsx
+import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { FaDice, FaChevronDown } from 'react-icons/fa6';
+import api from '../services/api';
+import { getRandomQuestionFromList } from '../services/api';
 
-// src/pages/MyLists.jsx
-import { Link } from 'react-router-dom';
+const Practice = () => {
+  const navigate = useNavigate();
+  
+  const [myLists, setMyLists] = useState([]);
+  const [loadingLists, setLoadingLists] = useState(true);
+  const [error, setError] = useState('');
+  
+  const [selectedListId, setSelectedListId] = useState('');
+  const [selectedList, setSelectedList] = useState(null);
+  const [isStarting, setIsStarting] = useState(false);
+  const [startError, setStartError] = useState('');
 
-// POPULATED MOCK DATA (Shows exactly how it looks with content)
-const MOCK_LISTS = [
-  {
-    id: 1,
-    name: "Blind 75 - My List",
-    count: 25,
-    questions: [
-      { id: 101, title: "Two Sum", difficulty: "Easy" },
-      { id: 102, title: "Add Two Numbers", difficulty: "Medium" },
-      { id: 103, title: "Longest Substring Without Repeating Characters", difficulty: "Medium" },
-      { id: 104, title: "Median of Two Sorted Arrays", difficulty: "Hard" },
-      { id: 105, title: "LRU Cache", difficulty: "Hard" },
-      { id: 106, title: "Valid Parentheses", difficulty: "Easy" },
-    ]
-  },
-  {
-    id: 2,
-    name: "Graphs & Trees",
-    count: 12,
-    questions: [
-      { id: 201, title: "Clone Graph", difficulty: "Medium" },
-      { id: 202, title: "Binary Tree Level Order Traversal", difficulty: "Medium" },
-      { id: 203, title: "Number of Islands", difficulty: "Medium" },
-      { id: 204, title: "Course Schedule", difficulty: "Hard" },
-    ]
-  },
-  {
-    id: 3,
-    name: "Dynamic Programming",
-    count: 8,
-    questions: [
-      { id: 301, title: "Climbing Stairs", difficulty: "Easy" },
-      { id: 302, title: "House Robber", difficulty: "Medium" },
-      { id: 303, title: "Coin Change", difficulty: "Medium" },
-    ]
-  }
-];
+  // Fetch user lists
+  useEffect(() => {
+    const fetchLists = async () => {
+      try {
+        setLoadingLists(true);
+        const response = await api.get('/lists');
+        setMyLists(response.data.lists);
+      } catch (err) {
+        setError('Unable to load your lists. Please try again.');
+      } finally {
+        setLoadingLists(false);
+      }
+    };
+    fetchLists();
+  }, []);
 
-const MyLists = () => {
+  // Handle list selection
+  const handleListChange = (e) => {
+    const listId = e.target.value;
+    setSelectedListId(listId);
+    setStartError('');
+    
+    const foundList = myLists.find(list => list._id === listId);
+    setSelectedList(foundList || null);
+  };
+
+  // Start Practice
+  const handleStartPractice = async () => {
+    // 1. Immediate check for selected list
+    if (!selectedListId) {
+      setStartError('Please select a list first.');
+      return;
+    }
+
+    // 2. Immediate check for empty list (Avoids hitting backend)
+    if (selectedList && selectedList.questions.length === 0) {
+      setStartError('This list has no questions. Add questions to this list first.');
+      return;
+    }
+
+    setIsStarting(true);
+    setStartError('');
+
+    try {
+      const response = await getRandomQuestionFromList(selectedListId);
+      const questionId = response.question._id;
+      navigate(`/practice/${questionId}`);
+    } catch (err) {
+      // 3. If backend sends error (e.g., list had 0 questions)
+      if (err.response?.status === 400 || err.response?.status === 404) {
+        setStartError(err.response.data.message || 'Unable to start practice. Please check your list.');
+      } else {
+        setStartError('Unable to start practice. Please try again.');
+      }
+    } finally {
+      setIsStarting(false);
+    }
+  };
+
+  // UI States
+  if (loadingLists) return <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Loading your lists...</div>;
+  if (error) return <div style={{ textAlign: 'center', padding: '40px', color: '#ef4444' }}>{error}</div>;
+
   return (
-    <div className="my-lists-wrapper" style={{ width: '100%', padding: '24px', maxWidth: '1200px', margin: '0 auto', marginTop: '20px' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', minHeight: '70vh', width: '100%', paddingTop: '20px' }}>
       
-      {/* PAGE HEADER */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-          <div>
-            <h1 style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--text-primary)', margin: '0' }}>My Lists</h1>
-            <p style={{ color: 'var(--text-secondary)', margin: '8px 0 0 0' }}>Organize your DSA questions into focused practice lists.</p>
-          </div>
-          <Link to="/create-list" className="btn-primary" style={{ padding: '10px 24px', whiteSpace: 'nowrap', textDecoration: 'none' }}>
-            <i className="fa-regular fa-plus" style={{ marginRight: '8px' }}></i> Create New List
-          </Link>
-        </div>
-      </div>
-
-      {/* LISTS GRID (Auto-responsive grid) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '24px', marginBottom: '32px' }}>
+      <div className="card-glow" style={{
+        width: '420px',
+        maxWidth: 'calc(100% - 32px)',
+        padding: '28px 24px',
+        borderRadius: '12px',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-subtle)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}>
         
-        {MOCK_LISTS.map((list) => (
-          <div key={list.id} className="card-glow" style={{ padding: '24px', display: 'flex', flexDirection: 'column' }}>
-            
-            {/* Card Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '16px', marginBottom: '16px' }}>
-              <div>
-                <h3 style={{ color: 'var(--text-primary)', margin: '0', fontWeight: '600' }}>{list.name}</h3>
-                <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: '0.875rem' }}>{list.count} questions</p>
-              </div>
-              <button style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontSize: '1.25rem', cursor: 'pointer' }}>
-                <i className="fa-solid fa-ellipsis-vertical"></i>
-              </button>
-            </div>
+        <div style={{ width: '100%', marginBottom: '12px' }}>
+          <h2 style={{ 
+            fontSize: '18px', 
+            fontWeight: '600', 
+            color: 'var(--text-primary)', 
+            margin: '0', 
+            textAlign: 'left' 
+          }}>
+            Practice
+          </h2>
+        </div>
 
-            {/* Questions List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexGrow: 1, marginBottom: '16px' }}>
-              {list.questions.map((q, idx) => (
-                <Link 
-                  key={idx} 
-                  to={`/practice/${q.id}`}
-                  style={{ textDecoration: 'none' }} 
-                >
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    padding: '8px 12px', 
-                    borderRadius: '8px',
-                    transition: 'all 0.2s',
-                    cursor: 'pointer'
-                  }} 
-                  className="question-row-hover">
-                    
-                    {/* Title */}
-                    <span style={{ 
-                      color: 'var(--text-primary)', 
-                      fontSize: '0.9375rem',
-                      overflowWrap: 'break-word', 
-                      wordBreak: 'break-word',
-                      flex: 1,
-                      paddingRight: '16px'
-                    }}>
-                      {q.title}
-                    </span>
+        <div style={{ width: '100%', height: '1px', background: 'var(--border-subtle)', marginBottom: '24px' }}></div>
 
-                    {/* Badge */}
-                    <span style={{
-                      padding: '2px 12px',
-                      borderRadius: '9999px',
-                      fontSize: '0.75rem',
-                      fontWeight: '600',
-                      flexShrink: 0,
-                      backgroundColor: q.difficulty === 'Easy' ? 'rgba(34, 197, 94, 0.2)' : 
-                                       q.difficulty === 'Medium' ? 'rgba(234, 179, 8, 0.2)' : 
-                                       'rgba(239, 68, 68, 0.2)',
-                      color: q.difficulty === 'Easy' ? '#22c55e' : 
-                             q.difficulty === 'Medium' ? '#eab308' : 
-                             '#ef4444'
-                    }}>
-                      {q.difficulty}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
+        <FaDice size={48} style={{ color: 'var(--text-primary)', marginBottom: '16px' }} />
 
-            {/* Add Question Button */}
-            <button style={{
-              background: 'transparent',
-              border: '1px dashed var(--border-subtle)',
-              borderRadius: '8px',
-              padding: '12px',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
+        <h3 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--text-primary)', margin: '0 0 6px 0', textAlign: 'center' }}>
+          Ready to Practice?
+        </h3>
+
+        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', textAlign: 'center', lineHeight: '1.5', margin: '0 0 14px 0' }}>
+          We will randomly pick a question<br />
+          from your list.
+        </p>
+
+        <div style={{ position: 'relative', width: '100%', maxWidth: '280px', marginBottom: '8px' }}>
+          <select 
+            value={selectedListId} 
+            onChange={handleListChange}
+            style={{
               width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
-            }} className="add-question-btn">
-              <i className="fa-regular fa-plus"></i> Add Question
-            </button>
-          </div>
-        ))}
-      </div>
+              height: '40px',
+              padding: '0 12px',
+              appearance: 'none',
+              background: 'var(--bg-app)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: '8px',
+              color: 'var(--text-primary)',
+              fontSize: '14px',
+              cursor: 'pointer',
+              outline: 'none'
+            }}
+          >
+            <option value="">Select a list...</option>
+            {myLists.map(list => (
+              <option key={list._id} value={list._id}>
+                {list.name} ({list.questions.length})
+              </option>
+            ))}
+          </select>
+          <FaChevronDown size={12} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', pointerEvents: 'none' }} />
+        </div>
 
-      {/* Import from LeetCode */}
-      <div style={{ marginTop: '12px' }}>
-        <button style={{
-          background: 'transparent',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: '8px',
-          padding: '10px 24px',
-          color: 'var(--text-secondary)',
-          cursor: 'pointer',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '10px',
-          transition: 'all 0.2s'
-        }} className="import-leetcode-btn">
-          <i className="fa-solid fa-arrow-right-to-bracket"></i> Import from LeetCode
+        {selectedList && selectedList.questions.length === 0 && (
+          <p style={{ color: '#eab308', fontSize: '12px', margin: '4px 0 8px 0' }}>
+            This list has no questions. Add questions to this list first.
+          </p>
+        )}
+
+        <button 
+          onClick={handleStartPractice}
+          disabled={!selectedListId || isStarting || (selectedList && selectedList.questions.length === 0)}
+          className="btn-primary"
+          style={{
+            width: '100%',
+            maxWidth: '280px',
+            height: '40px',
+            marginTop: '8px',
+            fontSize: '14px',
+            fontWeight: '600',
+            borderRadius: '8px',
+            opacity: (!selectedListId || isStarting || (selectedList && selectedList.questions.length === 0)) ? 0.5 : 1
+          }}
+        >
+          {isStarting ? 'Finding question...' : 'Start Practice'}
         </button>
-      </div>
 
+        {startError && (
+          <p style={{ color: '#ef4444', fontSize: '13px', marginTop: '8px' }}>
+            {startError}
+          </p>
+        )}
+
+        {myLists.length === 0 && (
+          <div style={{ textAlign: 'center', marginTop: '16px' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
+              You haven't created any lists yet. Create a list first to start practicing.
+            </p>
+            <Link to="/lists" className="btn-outline" style={{ padding: '8px 16px', fontSize: '13px', textDecoration: 'none' }}>
+              Go to My Lists
+            </Link>
+          </div>
+        )}
+
+        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'center', lineHeight: '1.5', margin: '14px 0 0 0' }}>
+          You can't skip or pick a question.<br />
+          Solve and improve! 💪
+        </p>
+
+      </div>
     </div>
   );
 };
 
-export default MyLists;
+export default Practice;

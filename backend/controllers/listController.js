@@ -269,3 +269,39 @@ export const removeQuestionFromList = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+
+// @desc    Get a random question from a specific list
+// @route   GET /api/lists/:listId/random-question
+export const getRandomQuestionFromList = async (req, res) => {
+  try {
+    const { listId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(listId)) {
+      return res.status(400).json({ success: false, message: 'Invalid list ID format' });
+    }
+
+    // Ensure list belongs to user
+    const list = await List.findOne({ _id: listId, user: req.user.id }).populate('questions');
+
+    if (!list) {
+      return res.status(404).json({ success: false, message: 'List not found' });
+    }
+
+    if (list.questions.length === 0) {
+      return res.status(400).json({ success: false, message: 'This list has no questions to practice' });
+    }
+
+    // Pick a random question from the array
+    const randomIndex = Math.floor(Math.random() * list.questions.length);
+    const randomQuestion = list.questions[randomIndex];
+
+    res.status(200).json({
+      success: true,
+      question: randomQuestion
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};

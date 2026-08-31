@@ -30,7 +30,7 @@ const MyLists = () => {
   if (error) return <div style={{ textAlign: 'center', padding: '40px', color: '#ef4444' }}>{error}</div>;
 
   return (
-    <div className="my-lists-wrapper" style={{ width: '100%', padding: '24px', maxWidth: '1200px', margin: '0 auto', marginTop: '20px' }}>
+    <div className="my-lists-wrapper" style={{ width: '100%', padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
       
       {/* PAGE HEADER */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '24px' }}>

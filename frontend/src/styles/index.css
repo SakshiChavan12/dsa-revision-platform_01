@@ -22,7 +22,7 @@ body {
   background-color: var(--bg-app);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-  padding-top: 64px; /* Space for fixed navbar */
+  
 }
 
 button {
@@ -225,7 +225,7 @@ img, svg, pre, code {
 }
 
 /* =========================================
-   9. DASHBOARD LAYOUT RESPONSIVENESS
+   DASHBOARD LAYOUT RESPONSIVENESS
    ========================================= */
 .dashboard-layout-root {
   display: grid;
@@ -237,12 +237,15 @@ img, svg, pre, code {
 }
 
 .dashboard-main-content {
-  display: flex;
-  flex-direction: column;
   height: 100vh;
   overflow-y: auto;
-  padding: 28px 32px 40px;
+  padding: 24px 28px 40px;
   background: var(--bg-app);
+  /* CRITICAL: Remove all vertical centering */
+  display: block !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  box-sizing: border-box;
 }
 
 @media (max-width: 1024px) {
@@ -250,7 +253,7 @@ img, svg, pre, code {
     grid-template-columns: 200px 1fr !important;
   }
   .dashboard-main-content {
-    padding: 24px 20px 30px !important;
+    padding: 20px 20px 30px !important;
   }
 }
 
@@ -259,7 +262,9 @@ img, svg, pre, code {
     grid-template-columns: 1fr !important;
     grid-template-rows: auto 1fr;
   }
-  .dashboard-layout-root > aside { display: none; }
+  .dashboard-layout-root > aside {
+    display: none; 
+  }
   .dashboard-main-content {
     padding: 16px !important;
     height: 100vh;

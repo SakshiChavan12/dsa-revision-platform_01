@@ -7,7 +7,8 @@ import {
   deleteList,
   addQuestionToList,
   removeQuestionFromList,
-  addMultipleQuestionsToList
+  addMultipleQuestionsToList,
+  getRandomQuestionFromList  // <--- THIS WAS MISSING!
 } from '../controllers/listController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -34,5 +35,9 @@ router.route('/:listId/questions/:questionId')
 // Add MULTIPLE questions to a specific list (Bulk Add - NEW)
 router.route('/:listId/questions')
   .patch(addMultipleQuestionsToList);
+
+// Get a random question from a specific list (NEW)
+router.route('/:listId/random-question')
+  .get(getRandomQuestionFromList);
 
 export default router;

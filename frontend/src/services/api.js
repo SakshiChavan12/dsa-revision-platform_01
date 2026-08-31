@@ -23,4 +23,9 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+export const getRandomQuestionFromList = async (listId) => {
+  const response = await api.get(`/lists/${listId}/random-question`);
+  return response.data;
+};
+
 export default api;
