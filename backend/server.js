@@ -7,6 +7,7 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js'; // <-- NEW
 import questionRoutes from './routes/questionRoutes.js';
 import listRoutes from './routes/listRoutes.js';
+import progressRoutes from './routes/progressRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -18,6 +19,7 @@ app.use(cors());
 app.use('/api/lists', listRoutes); 
 app.use('/api/auth', authRoutes);
 app.use('/api/questions', questionRoutes); // <-- NEW LINE
+app.use('/api/progress', progressRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

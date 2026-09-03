@@ -1,40 +1,38 @@
 // src/pages/PracticeQuestion.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import api from '../services/api'; // <-- Using your existing Axios instance
+import api from '../services/api'; 
 import { FaChevronLeft, FaChevronRight, FaLightbulb } from 'react-icons/fa6';
+import { recordPracticeAttempt } from '../services/api';
+import { getRandomQuestionFromList } from '../services/api'; 
 
 const PracticeQuestion = () => {
   const { questionId } = useParams();
   const navigate = useNavigate();
   
-  // State for question & API
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Editor State
   const [language, setLanguage] = useState('JavaScript (Node.js)');
   const [code, setCode] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [testResults, setTestResults] = useState(null);
 
-  // Tabs & Hints
   const [activeTab, setActiveTab] = useState('description');
-  const [hintsUsed, setHintsUsed] = useState(0); // Starts at 0
+  const [hintsUsed, setHintsUsed] = useState(0); 
   
-  // Fetch question from backend
+  // NEW: Result Popup State
+  const [showResultModal, setShowResultModal] = useState(false);
+
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
         setLoading(true);
         const response = await api.get(`/questions/${questionId}`);
         setQuestion(response.data.question);
-        
-        // Set default code (no solution given, just starter)
         setCode(`function solve() {\n    // Write your code here\n    \n}`);
-        
         setError('');
       } catch (err) {
         setError('Question not found');
@@ -48,13 +46,12 @@ const PracticeQuestion = () => {
     }
   }, [questionId]);
 
-  // Reset hints when question changes
   useEffect(() => {
     setHintsUsed(0);
     setActiveTab('description');
+    setShowResultModal(false); // Reset modal on question change
   }, [questionId]);
 
-  // --- HANDLERS ---
   const handleRunCode = () => {
     setIsRunning(true);
     setTimeout(() => {
@@ -66,14 +63,49 @@ const PracticeQuestion = () => {
     }, 1000);
   };
 
+  // FIXED: The submit function now just opens the modal
   const handleSubmit = () => {
+    if (!question) return;
+    setShowResultModal(true); // Show the "Did you solve it?" popup
+  };
+
+  // FIXED: This function handles the actual submission
+  const submitResult = async (status) => {
+    setShowResultModal(false); // Close the modal
+    if (!question) return;
+  
     setIsSubmitting(true);
-    setTimeout(() => alert('Submitted! (Mock)'), 1000);
-    setIsSubmitting(false);
+  
+    try {
+      const listId = localStorage.getItem('currentPracticeListId'); 
+      
+      await recordPracticeAttempt({
+        questionId: question._id,
+        listId,
+        status
+      });
+      
+      if (listId) {
+        try {
+          const nextQuestionRes = await getRandomQuestionFromList(listId);
+          navigate(`/practice/${nextQuestionRes.question._id}`);
+        } catch (err) {
+          alert('You have completed all questions in this list!');
+          navigate('/practice');
+        }
+      } else {
+        navigate('/practice');
+      }
+      
+    } catch (err) {
+      alert('Failed to record result. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleShowHint = () => {
-    setHintsUsed(prev => Math.min(prev + 1, 3)); // Max 3
+    setHintsUsed(prev => Math.min(prev + 1, 3)); 
   };
 
   const getDifficultyColor = (diff) => {
@@ -82,7 +114,6 @@ const PracticeQuestion = () => {
     return '#ef4444';
   };
 
-  // --- SAFE FALLBACKS ---
   const examples = question?.examples || [];
   const constraints = question?.constraints || [];
   const hints = question?.hints || [];
@@ -166,7 +197,6 @@ const PracticeQuestion = () => {
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Hints used: {hintsUsed} / 3</span>
             </div>
             
-            {/* Show hints */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {hints.slice(0, hintsUsed).map((hint, idx) => (
                 <div key={idx} style={{ padding: '12px', background: 'var(--bg-app)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
@@ -176,7 +206,6 @@ const PracticeQuestion = () => {
               {hints.length === 0 && hintsUsed === 0 && <p style={{ fontSize: '0.85rem' }}>Hints are not available for this question.</p>}
             </div>
 
-            {/* Show Hint Button (max 3) */}
             {hintsUsed < Math.min(hints.length, 3) && (
               <button onClick={handleShowHint} className="btn-primary" style={{ marginTop: '12px', padding: '8px 16px', fontSize: '0.85rem' }}>
                 Show Hint {hintsUsed + 1}
@@ -186,7 +215,7 @@ const PracticeQuestion = () => {
           </div>
         </div>
 
-        {/* RIGHT: CODE EDITOR (UNCHANGED) */}
+        {/* RIGHT: CODE EDITOR */}
         <div className="card-glow" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <select value={language} onChange={(e) => setLanguage(e.target.value)} style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '6px', padding: '6px 12px', color: 'var(--text-primary)' }}>
@@ -206,7 +235,6 @@ const PracticeQuestion = () => {
             <button onClick={handleSubmit} disabled={isSubmitting} className="btn-primary" style={{ flex: 1, padding: '10px' }}>{isSubmitting ? 'Submitting...' : 'Submit'}</button>
           </div>
 
-          {/* Test Results */}
           {testResults && (
             <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
               <h4>Test Results</h4>
@@ -220,6 +248,40 @@ const PracticeQuestion = () => {
           )}
         </div>
       </div>
+
+      {/* RESULT POPUP MODAL (Instead of window.confirm) */}
+      {showResultModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div style={{
+            background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
+            borderRadius: '16px', padding: '32px', textAlign: 'center', maxWidth: '400px', width: '90%'
+          }}>
+            <h3 style={{ color: 'var(--text-primary)', margin: '0 0 8px 0' }}>Did you solve it?</h3>
+            <p style={{ color: 'var(--text-secondary)', margin: '0 0 24px 0' }}>How was your attempt?</p>
+            
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={() => submitResult('Solved')}
+                className="btn-primary"
+                style={{ flex: 1, padding: '10px', background: '#22c55e', border: 'none', color: 'white', borderRadius: '8px', fontWeight: '600' }}
+              >
+                ✓ Solved
+              </button>
+              <button
+                onClick={() => submitResult('Wrong')}
+                className="btn-primary"
+                style={{ flex: 1, padding: '10px', background: '#ef4444', border: 'none', color: 'white', borderRadius: '8px', fontWeight: '600' }}
+              >
+                ✕ Wrong
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

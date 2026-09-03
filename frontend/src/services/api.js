@@ -28,4 +28,16 @@ export const getRandomQuestionFromList = async (listId) => {
   return response.data;
 };
 
+// Record a practice attempt
+export const recordPracticeAttempt = async (attemptData) => {
+  const response = await api.post('/practice/attempt', attemptData);
+  return response.data;
+};
+
+// Fetch user progress
+export const getProgress = async () => {
+  const response = await api.get('/progress');
+  return response.data;
+};
+
 export default api;

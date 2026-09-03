@@ -199,7 +199,6 @@ const Practice = () => {
         {/* ✅ Attribution */}
         <div style={{ marginTop: '16px', fontSize: '10px', color: 'var(--text-secondary)' }}>
           <a href="https://www.flaticon.com/free-icons/dice" title="dice icons" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
-            Dice icons created by Muhamad Ulum - Flaticon
           </a>
         </div>
 
