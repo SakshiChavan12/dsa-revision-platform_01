@@ -19,7 +19,7 @@ app.use(cors());
 app.use('/api/lists', listRoutes); 
 app.use('/api/auth', authRoutes);
 app.use('/api/questions', questionRoutes); // <-- NEW LINE
-app.use('/api/progress', progressRoutes);
+app.use('/api/practice', progressRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

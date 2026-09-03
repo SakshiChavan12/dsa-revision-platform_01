@@ -1,15 +1,22 @@
 // src/pages/PracticeQuestion.jsx
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import api from '../services/api'; 
-import { FaChevronLeft, FaChevronRight, FaLightbulb } from 'react-icons/fa6';
+import { FaChevronLeft, FaLightbulb } from 'react-icons/fa6';
 import { recordPracticeAttempt } from '../services/api';
 import { getRandomQuestionFromList } from '../services/api'; 
 
 const PracticeQuestion = () => {
   const { questionId } = useParams();
   const navigate = useNavigate();
-  
+  const location = useLocation();
+
+  // 1. Get listId from state, OR fallback to localStorage (for page refreshes)
+  const listId = location.state?.listId || localStorage.getItem('currentPracticeListId'); 
+  const listName = location.state?.listName || localStorage.getItem('currentPracticeListName') || '';
+  const totalQuestions = location.state?.totalQuestions || parseInt(localStorage.getItem('currentPracticeTotalQuestions')) || 0;
+  const attemptedQuestionIds = location.state?.attemptedQuestionIds || [];
+
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -19,13 +26,12 @@ const PracticeQuestion = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [testResults, setTestResults] = useState(null);
+  const [isEvaluated, setIsEvaluated] = useState(false);
 
   const [activeTab, setActiveTab] = useState('description');
   const [hintsUsed, setHintsUsed] = useState(0); 
-  
-  // NEW: Result Popup State
-  const [showResultModal, setShowResultModal] = useState(false);
 
+  // 2. FETCH QUESTION
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
@@ -34,6 +40,8 @@ const PracticeQuestion = () => {
         setQuestion(response.data.question);
         setCode(`function solve() {\n    // Write your code here\n    \n}`);
         setError('');
+        setIsEvaluated(false);
+        setHintsUsed(0);
       } catch (err) {
         setError('Question not found');
       } finally {
@@ -46,12 +54,7 @@ const PracticeQuestion = () => {
     }
   }, [questionId]);
 
-  useEffect(() => {
-    setHintsUsed(0);
-    setActiveTab('description');
-    setShowResultModal(false); // Reset modal on question change
-  }, [questionId]);
-
+  // 3. RUN CODE
   const handleRunCode = () => {
     setIsRunning(true);
     setTimeout(() => {
@@ -63,44 +66,85 @@ const PracticeQuestion = () => {
     }, 1000);
   };
 
-  // FIXED: The submit function now just opens the modal
-  const handleSubmit = () => {
-    if (!question) return;
-    setShowResultModal(true); // Show the "Did you solve it?" popup
-  };
-
-  // FIXED: This function handles the actual submission
-  const submitResult = async (status) => {
-    setShowResultModal(false); // Close the modal
+  // 4. SUBMIT CODE (CRITICAL FIX)
+  const handleSubmit = async () => {
     if (!question) return;
   
     setIsSubmitting(true);
-  
+    
+    // Make sure we have a valid listId (if not, stop)
+    if (!listId) {
+      alert('No list selected. Please go back to Practice and select a list.');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    // Evaluate (simulated via user confirmation)
+    const status = window.confirm('Did you solve this question? Click OK for Solved, Cancel for Wrong.') ? 'Solved' : 'Wrong';
+    
     try {
-      const listId = localStorage.getItem('currentPracticeListId'); 
-      
+      // 5. RECORD THE ATTEMPT
       await recordPracticeAttempt({
         questionId: question._id,
-        listId,
+        listId, // Now guaranteed to be a valid ID
         status
       });
       
-      if (listId) {
-        try {
-          const nextQuestionRes = await getRandomQuestionFromList(listId);
-          navigate(`/practice/${nextQuestionRes.question._id}`);
-        } catch (err) {
-          alert('You have completed all questions in this list!');
-          navigate('/practice');
-        }
-      } else {
-        navigate('/practice');
-      }
+      // 6. Update UI to show result
+      setIsEvaluated(true);
+      setTestResults([{ id: 1, status: status === 'Solved' ? 'Passed' : 'Failed', input: 'Your Answer', expected: 'Accepted', output: status }]);
+      alert(`Result recorded: ${status}!`);
       
     } catch (err) {
       alert('Failed to record result. Please try again.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // 7. NEXT QUESTION (with no repetition)
+  const handleNextQuestion = async () => {
+    if (listId) {
+      const currentAttempted = [...attemptedQuestionIds, question._id.toString()];
+      localStorage.setItem('currentPracticeAttemptedIds', JSON.stringify(currentAttempted));
+      
+      try {
+        const listResponse = await api.get(`/lists/${listId}`);
+        const remainingQuestions = listResponse.data.list.questions.filter(
+          q => !currentAttempted.includes(q._id.toString())
+        );
+
+        if (remainingQuestions.length > 0) {
+          const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+          const nextQuestion = remainingQuestions[randomIndex];
+          
+          // Keep updating localStorage so refresh doesn't break
+          localStorage.setItem('currentPracticeListId', listId);
+          localStorage.setItem('currentPracticeListName', listName);
+          localStorage.setItem('currentPracticeTotalQuestions', totalQuestions);
+          
+          navigate(`/practice/${nextQuestion._id}`, {
+            state: {
+              listId,
+              listName,
+              totalQuestions,
+              attemptedQuestionIds: currentAttempted
+            }
+          });
+        } else {
+          alert(`🎉 Practice Complete! You have completed all ${totalQuestions} questions from ${listName}.`);
+          // Clear session on completion
+          localStorage.removeItem('currentPracticeListId');
+          localStorage.removeItem('currentPracticeListName');
+          localStorage.removeItem('currentPracticeTotalQuestions');
+          localStorage.removeItem('currentPracticeAttemptedIds');
+          navigate('/practice');
+        }
+      } catch (err) {
+        alert('Unable to fetch next question.');
+      }
+    } else {
+      navigate('/practice');
     }
   };
 
@@ -135,7 +179,9 @@ const PracticeQuestion = () => {
         <Link to="/lists" style={{ color: 'var(--accent-purple)', textDecoration: 'none', fontSize: '0.9rem' }}>
           <FaChevronLeft style={{ marginRight: '6px' }} /> Back to My Lists
         </Link>
-        <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Practice Mode</span>
+        <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+          Practice Mode - {listName} ({totalQuestions === 0 ? 1 : attemptedQuestionIds.length + 1}/{totalQuestions})
+        </span>
         <span style={{ color: getDifficultyColor(question.difficulty), fontWeight: '600', fontSize: '0.85rem' }}>{question.difficulty}</span>
       </div>
 
@@ -231,57 +277,23 @@ const PracticeQuestion = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-            <button onClick={handleRunCode} disabled={isRunning} className="btn-outline" style={{ flex: 1, padding: '10px' }}>{isRunning ? 'Running...' : 'Run Code'}</button>
-            <button onClick={handleSubmit} disabled={isSubmitting} className="btn-primary" style={{ flex: 1, padding: '10px' }}>{isSubmitting ? 'Submitting...' : 'Submit'}</button>
+            <button onClick={handleRunCode} disabled={isRunning || isEvaluated} className="btn-outline" style={{ flex: 1, padding: '10px' }}>{isRunning ? 'Running...' : 'Run Code'}</button>
+            <button onClick={handleSubmit} disabled={isSubmitting || isEvaluated} className="btn-primary" style={{ flex: 1, padding: '10px' }}>{isSubmitting ? 'Submitting...' : 'Submit'}</button>
           </div>
 
-          {testResults && (
+          {/* TEST RESULTS & NEXT QUESTION */}
+          {isEvaluated && (
             <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
-              <h4>Test Results</h4>
-              {testResults.map(t => (
-                <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px', borderBottom: '1px solid var(--border-subtle)' }}>
-                  <span>{t.input}</span>
-                  <span style={{ color: t.status === 'Passed' ? '#22c55e' : '#ef4444' }}>{t.status}</span>
-                </div>
-              ))}
+              <div style={{ padding: '12px', borderRadius: '8px', background: testResults?.[0]?.status === 'Passed' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', color: testResults?.[0]?.status === 'Passed' ? '#22c55e' : '#ef4444', fontWeight: '600', marginBottom: '12px' }}>
+                {testResults?.[0]?.status === 'Passed' ? '✓ Correct Answer!' : '✗ Wrong Answer'}
+              </div>
+              <button onClick={handleNextQuestion} className="btn-primary" style={{ width: '100%', padding: '10px' }}>
+                Next Question →
+              </button>
             </div>
           )}
         </div>
       </div>
-
-      {/* RESULT POPUP MODAL (Instead of window.confirm) */}
-      {showResultModal && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-          background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 9999
-        }}>
-          <div style={{
-            background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
-            borderRadius: '16px', padding: '32px', textAlign: 'center', maxWidth: '400px', width: '90%'
-          }}>
-            <h3 style={{ color: 'var(--text-primary)', margin: '0 0 8px 0' }}>Did you solve it?</h3>
-            <p style={{ color: 'var(--text-secondary)', margin: '0 0 24px 0' }}>How was your attempt?</p>
-            
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button
-                onClick={() => submitResult('Solved')}
-                className="btn-primary"
-                style={{ flex: 1, padding: '10px', background: '#22c55e', border: 'none', color: 'white', borderRadius: '8px', fontWeight: '600' }}
-              >
-                ✓ Solved
-              </button>
-              <button
-                onClick={() => submitResult('Wrong')}
-                className="btn-primary"
-                style={{ flex: 1, padding: '10px', background: '#ef4444', border: 'none', color: 'white', borderRadius: '8px', fontWeight: '600' }}
-              >
-                ✕ Wrong
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
