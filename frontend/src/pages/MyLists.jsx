@@ -102,13 +102,6 @@ const MyLists = () => {
         )}
       </div>
 
-      {/* Import from LeetCode (Visual Only for now) */}
-      <div style={{ marginTop: '12px' }}>
-        <button className="import-leetcode-btn" style={{ background: 'transparent', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '10px 24px', color: 'var(--text-secondary)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '10px', transition: 'all 0.2s' }}>
-          <i className="fa-solid fa-arrow-right-to-bracket"></i> Import from LeetCode
-        </button>
-      </div>
-
     </div>
   );
 };

@@ -34,9 +34,50 @@ export const recordPracticeAttempt = async (attemptData) => {
   return response.data;
 };
 
+// export const submitCode = async (data) => {
+//   // Convert 'JavaScript (Node.js)' to 'javascript'
+//   const langMap = {
+//     'JavaScript (Node.js)': 'javascript',
+//     'Python': 'python',
+//     'Java': 'java',
+//     'C++': 'cpp'
+//   };
+  
+//   const payload = { ...data, language: langMap[data.language] || 'javascript' };
+
+//   const response = await api.post('/submissions/submit', payload);
+//   return response.data;
+// };
+
+
+
 // Fetch user progress
 export const getProgress = async () => {
   const response = await api.get('/progress');
+  return response.data;
+};
+
+export const runCode = async (data) => {
+  const langMap = {
+    'JavaScript (Node.js)': 'javascript',
+    'Python': 'python',
+    'Java': 'java',
+    'C++': 'cpp'
+  };
+  
+  const payload = { ...data, language: langMap[data.language] || 'javascript' };
+
+  const response = await api.post('/submissions/run', payload);
+  return response.data;
+};
+
+export const testRunCode = async (data) => {
+  const response = await api.post('/code/test', data);
+  return response.data;
+};
+
+export const submitCode = async (data) => {
+  const response = await api.post('/submissions/submit', data); // We will flesh this out later
   return response.data;
 };
 

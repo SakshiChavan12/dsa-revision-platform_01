@@ -1,15 +1,8 @@
 // src/pages/Progress.jsx
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'; // <-- Added this!
 import { getProgress } from '../services/api';
-import { 
-  FaClipboardList, 
-  FaCheckCircle, 
-  FaHourglassHalf, 
-  FaBullseye, 
-  FaCheck, 
-  FaTimes 
-} from 'react-icons/fa';
+import { FaCheck, FaTimes, FaClipboardList, FaCheckCircle, FaHourglassHalf, FaBullseye } from 'react-icons/fa';
 
 const Progress = () => {
   const [progress, setProgress] = useState(null);
@@ -21,9 +14,9 @@ const Progress = () => {
       try {
         setLoading(true);
         const response = await getProgress();
-        setProgress(response);
+        setProgress(response.data);
       } catch (err) {
-        setError('Unable to load progress data.');
+        setError('Unable to load progress.');
       } finally {
         setLoading(false);
       }
@@ -34,7 +27,7 @@ const Progress = () => {
   if (loading) return <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Loading progress...</div>;
   if (error) return <div style={{ textAlign: 'center', padding: '40px', color: '#ef4444' }}>{error}</div>;
 
-  // Fallback to zeros if data is missing
+  // Fallback to zeros if data is missing (All inside the function!)
   const overview = progress?.overview || { totalQuestions: 0, solved: 0, attempted: 0, accuracy: 0 };
   const today = progress?.today || { total: 0, solved: 0, wrong: 0, pending: 0 };
   const accuracy7Days = progress?.accuracyLast7Days || [];

@@ -3,8 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import api from '../services/api'; 
 import { FaChevronLeft, FaLightbulb } from 'react-icons/fa6';
-import { recordPracticeAttempt } from '../services/api';
-import { getRandomQuestionFromList } from '../services/api'; 
+import { submitCode, testRunCode } from '../services/api';
 
 const PracticeQuestion = () => {
   const { questionId } = useParams();
@@ -54,49 +53,71 @@ const PracticeQuestion = () => {
     }
   }, [questionId]);
 
-  // 3. RUN CODE
-  const handleRunCode = () => {
-    setIsRunning(true);
-    setTimeout(() => {
-      setTestResults([
-        { id: 1, status: 'Passed', input: 'Test Case 1', expected: 'Expected', output: 'Correct' },
-        { id: 2, status: 'Failed', input: 'Test Case 2', expected: 'Expected', output: 'Incorrect' },
-      ]);
-      setIsRunning(false);
-    }, 1000);
+  // LANGUAGE MAP (Important!)
+  const getLanguageCode = () => {
+    if (language === 'Python') return 'python';
+    if (language === 'Java') return 'java';
+    return 'javascript'; // Default to javascript
   };
 
-  // 4. SUBMIT CODE (CRITICAL FIX)
+  // 3. RUN CODE (Corrected!)
+  const handleRunCode = async () => {
+    if (!question) return;
+
+    setIsRunning(true);
+    setError('');
+    setTestResults(null); // Clear old results
+
+    try {
+      // FIX: Send 'sourceCode' not 'code', and do NOT send 'questionId'
+      const response = await testRunCode({
+        sourceCode: code,
+        language: getLanguageCode(),
+        stdin: '' 
+      });
+
+      // Show the result in a panel
+      setTestResults({
+        status: response.status,
+        output: response.stdout,
+        error: response.stderr
+      });
+
+    } catch (err) {
+      setError('Failed to run code. Please try again.');
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
+  // 4. SUBMIT CODE (Calls backend)
   const handleSubmit = async () => {
     if (!question) return;
-  
+
     setIsSubmitting(true);
-    
-    // Make sure we have a valid listId (if not, stop)
-    if (!listId) {
-      alert('No list selected. Please go back to Practice and select a list.');
-      setIsSubmitting(false);
-      return;
-    }
-    
-    // Evaluate (simulated via user confirmation)
-    const status = window.confirm('Did you solve this question? Click OK for Solved, Cancel for Wrong.') ? 'Solved' : 'Wrong';
-    
+    setError('');
+
     try {
-      // 5. RECORD THE ATTEMPT
-      await recordPracticeAttempt({
+      const listId = localStorage.getItem('currentPracticeListId');
+      const response = await submitCode({
         questionId: question._id,
-        listId, // Now guaranteed to be a valid ID
-        status
+        listId,
+        sourceCode: code, // FIX: Send sourceCode, not code
+        language: getLanguageCode() 
       });
+
+      const result = response.submission;
       
-      // 6. Update UI to show result
-      setIsEvaluated(true);
-      setTestResults([{ id: 1, status: status === 'Solved' ? 'Passed' : 'Failed', input: 'Your Answer', expected: 'Accepted', output: status }]);
-      alert(`Result recorded: ${status}!`);
-      
+      // Instead of alert(), set the results directly to the modal:
+      setTestResults({
+        status: result.status,
+        passed: result.passedTests,
+        total: result.totalTests,
+        firstFailure: result.firstFailure || null
+      });
+
     } catch (err) {
-      alert('Failed to record result. Please try again.');
+      setError('Submission failed. Please check syntax and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -118,7 +139,6 @@ const PracticeQuestion = () => {
           const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
           const nextQuestion = remainingQuestions[randomIndex];
           
-          // Keep updating localStorage so refresh doesn't break
           localStorage.setItem('currentPracticeListId', listId);
           localStorage.setItem('currentPracticeListName', listName);
           localStorage.setItem('currentPracticeTotalQuestions', totalQuestions);
@@ -133,7 +153,6 @@ const PracticeQuestion = () => {
           });
         } else {
           alert(`🎉 Practice Complete! You have completed all ${totalQuestions} questions from ${listName}.`);
-          // Clear session on completion
           localStorage.removeItem('currentPracticeListId');
           localStorage.removeItem('currentPracticeListName');
           localStorage.removeItem('currentPracticeTotalQuestions');
@@ -282,14 +301,14 @@ const PracticeQuestion = () => {
           </div>
 
           {/* TEST RESULTS & NEXT QUESTION */}
-          {isEvaluated && (
-            <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
-              <div style={{ padding: '12px', borderRadius: '8px', background: testResults?.[0]?.status === 'Passed' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', color: testResults?.[0]?.status === 'Passed' ? '#22c55e' : '#ef4444', fontWeight: '600', marginBottom: '12px' }}>
-                {testResults?.[0]?.status === 'Passed' ? '✓ Correct Answer!' : '✗ Wrong Answer'}
-              </div>
-              <button onClick={handleNextQuestion} className="btn-primary" style={{ width: '100%', padding: '10px' }}>
-                Next Question →
-              </button>
+          {testResults && (
+            <div style={{ marginTop: '16px', padding: '16px', background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px' }}>
+              <h4 style={{ color: testResults.status === 'Accepted' ? '#22c55e' : '#ef4444', margin: '0 0 8px 0' }}>
+                {testResults.status === 'Accepted' ? '✓ Test Passed' : '✗ Failed'}
+              </h4>
+              <pre style={{ color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', margin: 0 }}>
+                {testResults.output || testResults.error}
+              </pre>
             </div>
           )}
         </div>
