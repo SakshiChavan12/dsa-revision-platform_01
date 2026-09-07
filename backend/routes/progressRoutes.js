@@ -4,7 +4,7 @@ import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Both routes require authentication
+// Protect all routes
 router.use(protect);
 
 // Record a practice attempt
