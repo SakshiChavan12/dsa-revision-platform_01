@@ -6,7 +6,15 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/two-sum/",
-    "tags": ["Array", "Hash Map"]
+    "tags": ["Array", "Hash Map"],
+    "functionName": "twoSum",
+    "inputParser": "arrayTarget",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "2 7 11 15\n9", "expectedOutput": "[0,1]", "isHidden": false },
+      { "input": "3 2 4\n6", "expectedOutput": "[1,2]", "isHidden": true },
+      { "input": "3 3\n6", "expectedOutput": "[0,1]", "isHidden": true }
+    ]
   },
   {
     "title": "Best Time to Buy and Sell Stock",
@@ -15,7 +23,14 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
-    "tags": ["Array", "Dynamic Programming"]
+    "tags": ["Array", "Dynamic Programming"],
+    "functionName": "maxProfit",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "7 1 5 3 6 4", "expectedOutput": "5", "isHidden": false },
+      { "input": "7 6 4 3 1", "expectedOutput": "0", "isHidden": true }
+    ]
   },
   {
     "title": "Move Zeroes",
@@ -24,7 +39,14 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/move-zeroes/",
-    "tags": ["Array", "Two Pointers"]
+    "tags": ["Array", "Two Pointers"],
+    "functionName": "moveZeroes",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "0 1 0 3 12", "expectedOutput": "[1,3,12,0,0]", "isHidden": false },
+      { "input": "0", "expectedOutput": "[0]", "isHidden": true }
+    ]
   },
   {
     "title": "Contains Duplicate",
@@ -33,7 +55,14 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/contains-duplicate/",
-    "tags": ["Array", "Hash Map"]
+    "tags": ["Array", "Hash Map"],
+    "functionName": "containsDuplicate",
+    "inputParser": "array",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "1 2 3 1", "expectedOutput": "true", "isHidden": false },
+      { "input": "1 2 3 4", "expectedOutput": "false", "isHidden": true }
+    ]
   },
   {
     "title": "Maximum Subarray",
@@ -42,7 +71,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/maximum-subarray/",
-    "tags": ["Array", "Dynamic Programming"]
+    "tags": ["Array", "Dynamic Programming"],
+    "functionName": "maxSubArray",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "-2 1 -3 4 -1 2 1 -5 4", "expectedOutput": "6", "isHidden": false },
+      { "input": "1", "expectedOutput": "1", "isHidden": true }
+    ]
   },
   {
     "title": "Product of Array Except Self",
@@ -51,7 +87,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/product-of-array-except-self/",
-    "tags": ["Array", "Prefix Sum"]
+    "tags": ["Array", "Prefix Sum"],
+    "functionName": "productExceptSelf",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1 2 3 4", "expectedOutput": "[24,12,8,6]", "isHidden": false },
+      { "input": "-1 1 0 -3 3", "expectedOutput": "[0,0,9,0,0]", "isHidden": true }
+    ]
   },
   {
     "title": "Find Minimum in Rotated Sorted Array",
@@ -60,7 +103,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
-    "tags": ["Array", "Binary Search"]
+    "tags": ["Array", "Binary Search"],
+    "functionName": "findMin",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "3 4 5 1 2", "expectedOutput": "1", "isHidden": false },
+      { "input": "4 5 6 7 0 1 2", "expectedOutput": "0", "isHidden": true }
+    ]
   },
   {
     "title": "3Sum",
@@ -69,7 +119,15 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/3sum/",
-    "tags": ["Array", "Two Pointers", "Sorting"]
+    "tags": ["Array", "Two Pointers", "Sorting"],
+    "functionName": "threeSum",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "-1 0 1 2 -1 -4", "expectedOutput": "[[-1,-1,2],[-1,0,1]]", "isHidden": false },
+      { "input": "0 1 1", "expectedOutput": "[]", "isHidden": true },
+      { "input": "0 0 0 0", "expectedOutput": "[[0,0,0]]", "isHidden": true }
+    ]
   },
   {
     "title": "Container With Most Water",
@@ -78,7 +136,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/container-with-most-water/",
-    "tags": ["Array", "Two Pointers", "Greedy"]
+    "tags": ["Array", "Two Pointers", "Greedy"],
+    "functionName": "maxArea",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "1 8 6 2 5 4 8 3 7", "expectedOutput": "49", "isHidden": false },
+      { "input": "1 1", "expectedOutput": "1", "isHidden": true }
+    ]
   },
   {
     "title": "Trapping Rain Water",
@@ -87,7 +152,14 @@
     "difficulty": "Hard",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/trapping-rain-water/",
-    "tags": ["Array", "Two Pointers", "Stack"]
+    "tags": ["Array", "Two Pointers", "Stack"],
+    "functionName": "trap",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "0 1 0 2 1 0 1 3 2 1 2 1", "expectedOutput": "6", "isHidden": false },
+      { "input": "4 2 0 3 2 5", "expectedOutput": "9", "isHidden": true }
+    ]
   },
   {
     "title": "Longest Substring Without Repeating Characters",
@@ -96,7 +168,15 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
-    "tags": ["String", "Sliding Window", "Hash Map"]
+    "tags": ["String", "Sliding Window", "Hash Map"],
+    "functionName": "lengthOfLongestSubstring",
+    "inputParser": "string",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "abcabcbb", "expectedOutput": "3", "isHidden": false },
+      { "input": "bbbbb", "expectedOutput": "1", "isHidden": true },
+      { "input": "pwwkew", "expectedOutput": "3", "isHidden": true }
+    ]
   },
   {
     "title": "Longest Palindromic Substring",
@@ -105,7 +185,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/longest-palindromic-substring/",
-    "tags": ["String", "Dynamic Programming"]
+    "tags": ["String", "Dynamic Programming"],
+    "functionName": "longestPalindrome",
+    "inputParser": "string",
+    "outputFormatter": "string",
+    "testCases": [
+      { "input": "babad", "expectedOutput": "bab", "isHidden": false },
+      { "input": "cbbd", "expectedOutput": "bb", "isHidden": true }
+    ]
   },
   {
     "title": "Valid Anagram",
@@ -114,7 +201,14 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/valid-anagram/",
-    "tags": ["String", "Hash Map", "Sorting"]
+    "tags": ["String", "Hash Map", "Sorting"],
+    "functionName": "isAnagram",
+    "inputParser": "twoStrings",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "anagram\nnagaram", "expectedOutput": "true", "isHidden": false },
+      { "input": "rat\ncar", "expectedOutput": "false", "isHidden": true }
+    ]
   },
   {
     "title": "Group Anagrams",
@@ -123,7 +217,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/group-anagrams/",
-    "tags": ["String", "Hash Map", "Sorting"]
+    "tags": ["String", "Hash Map", "Sorting"],
+    "functionName": "groupAnagrams",
+    "inputParser": "stringArray",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "eat tea tan ate nat bat", "expectedOutput": "[[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]", "isHidden": false },
+      { "input": "", "expectedOutput": "[\"\"]", "isHidden": true }
+    ]
   },
   {
     "title": "Valid Parentheses",
@@ -132,7 +233,15 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/valid-parentheses/",
-    "tags": ["String", "Stack"]
+    "tags": ["String", "Stack"],
+    "functionName": "isValid",
+    "inputParser": "string",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "()", "expectedOutput": "true", "isHidden": false },
+      { "input": "()[]{}", "expectedOutput": "true", "isHidden": false },
+      { "input": "(]", "expectedOutput": "false", "isHidden": true }
+    ]
   },
   {
     "title": "Top K Frequent Elements",
@@ -141,7 +250,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/top-k-frequent-elements/",
-    "tags": ["Hash Map", "Array", "Bucket Sort"]
+    "tags": ["Hash Map", "Array", "Bucket Sort"],
+    "functionName": "topKFrequent",
+    "inputParser": "arrayK",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1 1 1 2 2 3\n2", "expectedOutput": "[1,2]", "isHidden": false },
+      { "input": "1\n1", "expectedOutput": "[1]", "isHidden": true }
+    ]
   },
   {
     "title": "Design Hash Map",
@@ -150,7 +266,11 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/design-hashmap/",
-    "tags": ["Hash Map", "Design"]
+    "tags": ["Hash Map", "Design"],
+    "functionName": "MyHashMap",
+    "inputParser": "string",
+    "outputFormatter": "string",
+    "testCases": []
   },
   {
     "title": "Insert Delete GetRandom O(1)",
@@ -159,7 +279,11 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/insert-delete-getrandom-o1/",
-    "tags": ["Hash Map", "Array", "Randomized"]
+    "tags": ["Hash Map", "Array", "Randomized"],
+    "functionName": "RandomizedSet",
+    "inputParser": "string",
+    "outputFormatter": "string",
+    "testCases": []
   },
   {
     "title": "Find All Duplicates in an Array",
@@ -168,7 +292,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/find-all-duplicates-in-an-array/",
-    "tags": ["Hash Map", "Array"]
+    "tags": ["Hash Map", "Array"],
+    "functionName": "findDuplicates",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "4 3 2 7 8 2 3 1", "expectedOutput": "[2,3]", "isHidden": false },
+      { "input": "1 1 2", "expectedOutput": "[1]", "isHidden": true }
+    ]
   },
   {
     "title": "Longest Consecutive Sequence",
@@ -177,7 +308,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/longest-consecutive-sequence/",
-    "tags": ["Hash Map", "Array"]
+    "tags": ["Hash Map", "Array"],
+    "functionName": "longestConsecutive",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "100 4 200 1 3 2", "expectedOutput": "4", "isHidden": false },
+      { "input": "0 3 7 2 5 8 4 6 0 1", "expectedOutput": "9", "isHidden": true }
+    ]
   },
   {
     "title": "Reverse Linked List",
@@ -186,7 +324,14 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/reverse-linked-list/",
-    "tags": ["Linked List", "Recursion"]
+    "tags": ["Linked List", "Recursion"],
+    "functionName": "reverseList",
+    "inputParser": "linkedList",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[1,2,3,4,5]", "expectedOutput": "[5,4,3,2,1]", "isHidden": false },
+      { "input": "[1,2]", "expectedOutput": "[2,1]", "isHidden": true }
+    ]
   },
   {
     "title": "Merge Two Sorted Lists",
@@ -195,7 +340,14 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/merge-two-sorted-lists/",
-    "tags": ["Linked List", "Recursion"]
+    "tags": ["Linked List", "Recursion"],
+    "functionName": "mergeTwoLists",
+    "inputParser": "twoLinkedLists",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[1,2,4]\n[1,3,4]", "expectedOutput": "[1,1,2,3,4,4]", "isHidden": false },
+      { "input": "[]\n[]", "expectedOutput": "[]", "isHidden": true }
+    ]
   },
   {
     "title": "Linked List Cycle",
@@ -204,7 +356,14 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/linked-list-cycle/",
-    "tags": ["Linked List", "Two Pointers", "Hash Map"]
+    "tags": ["Linked List", "Two Pointers", "Hash Map"],
+    "functionName": "hasCycle",
+    "inputParser": "linkedList",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "[3,2,0,-4]\n1", "expectedOutput": "true", "isHidden": false },
+      { "input": "[1,2]\n0", "expectedOutput": "true", "isHidden": true }
+    ]
   },
   {
     "title": "Reorder List",
@@ -213,7 +372,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/reorder-list/",
-    "tags": ["Linked List", "Two Pointers", "Stack"]
+    "tags": ["Linked List", "Two Pointers", "Stack"],
+    "functionName": "reorderList",
+    "inputParser": "linkedList",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[1,2,3,4]", "expectedOutput": "[1,4,2,3]", "isHidden": false },
+      { "input": "[1,2,3,4,5]", "expectedOutput": "[1,5,2,4,3]", "isHidden": true }
+    ]
   },
   {
     "title": "Remove Nth Node From End of List",
@@ -222,7 +388,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
-    "tags": ["Linked List", "Two Pointers"]
+    "tags": ["Linked List", "Two Pointers"],
+    "functionName": "removeNthFromEnd",
+    "inputParser": "linkedListN",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[1,2,3,4,5]\n2", "expectedOutput": "[1,2,3,5]", "isHidden": false },
+      { "input": "[1]\n1", "expectedOutput": "[]", "isHidden": true }
+    ]
   },
   {
     "title": "Min Stack",
@@ -231,7 +404,11 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/min-stack/",
-    "tags": ["Stack", "Design"]
+    "tags": ["Stack", "Design"],
+    "functionName": "MinStack",
+    "inputParser": "string",
+    "outputFormatter": "string",
+    "testCases": []
   },
   {
     "title": "Evaluate Reverse Polish Notation",
@@ -240,7 +417,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/evaluate-reverse-polish-notation/",
-    "tags": ["Stack", "Math"]
+    "tags": ["Stack", "Math"],
+    "functionName": "evalRPN",
+    "inputParser": "stringArray",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "2 1 + 3 *", "expectedOutput": "9", "isHidden": false },
+      { "input": "4 13 5 / +", "expectedOutput": "6", "isHidden": true }
+    ]
   },
   {
     "title": "Daily Temperatures",
@@ -249,7 +433,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/daily-temperatures/",
-    "tags": ["Stack", "Array", "Monotonic Stack"]
+    "tags": ["Stack", "Array", "Monotonic Stack"],
+    "functionName": "dailyTemperatures",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "73 74 75 71 69 72 76 73", "expectedOutput": "[1,1,4,2,1,1,0,0]", "isHidden": false },
+      { "input": "30 40 50 60", "expectedOutput": "[1,1,1,0]", "isHidden": true }
+    ]
   },
   {
     "title": "Largest Rectangle in Histogram",
@@ -258,7 +449,14 @@
     "difficulty": "Hard",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
-    "tags": ["Stack", "Array", "Monotonic Stack"]
+    "tags": ["Stack", "Array", "Monotonic Stack"],
+    "functionName": "largestRectangleArea",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "2 1 5 6 2 3", "expectedOutput": "10", "isHidden": false },
+      { "input": "2 4", "expectedOutput": "4", "isHidden": true }
+    ]
   },
   {
     "title": "Implement Queue using Stacks",
@@ -267,7 +465,11 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/implement-queue-using-stacks/",
-    "tags": ["Queue", "Stack", "Design"]
+    "tags": ["Queue", "Stack", "Design"],
+    "functionName": "MyQueue",
+    "inputParser": "string",
+    "outputFormatter": "string",
+    "testCases": []
   },
   {
     "title": "Design Circular Queue",
@@ -276,7 +478,11 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/design-circular-queue/",
-    "tags": ["Queue", "Design", "Array"]
+    "tags": ["Queue", "Design", "Array"],
+    "functionName": "MyCircularQueue",
+    "inputParser": "string",
+    "outputFormatter": "string",
+    "testCases": []
   },
   {
     "title": "Sliding Window Maximum",
@@ -285,7 +491,14 @@
     "difficulty": "Hard",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/sliding-window-maximum/",
-    "tags": ["Queue", "Sliding Window", "Monotonic Queue"]
+    "tags": ["Queue", "Sliding Window", "Monotonic Queue"],
+    "functionName": "maxSlidingWindow",
+    "inputParser": "arrayK",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1 3 -1 -3 5 3 6 7\n3", "expectedOutput": "[3,3,5,5,6,7]", "isHidden": false },
+      { "input": "1\n1", "expectedOutput": "[1]", "isHidden": true }
+    ]
   },
   {
     "title": "Binary Search",
@@ -294,7 +507,14 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/binary-search/",
-    "tags": ["Binary Search", "Array"]
+    "tags": ["Binary Search", "Array"],
+    "functionName": "search",
+    "inputParser": "arrayTarget",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "-1 0 3 5 9 12\n9", "expectedOutput": "4", "isHidden": false },
+      { "input": "-1 0 3 5 9 12\n2", "expectedOutput": "-1", "isHidden": true }
+    ]
   },
   {
     "title": "Search a 2D Matrix",
@@ -303,7 +523,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/search-a-2d-matrix/",
-    "tags": ["Binary Search", "Matrix"]
+    "tags": ["Binary Search", "Matrix"],
+    "functionName": "searchMatrix",
+    "inputParser": "matrixTarget",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "1 3 5 7\n10 11 16 20\n23 30 34 60\n3", "expectedOutput": "true", "isHidden": false },
+      { "input": "1 3 5 7\n10 11 16 20\n23 30 34 60\n13", "expectedOutput": "false", "isHidden": true }
+    ]
   },
   {
     "title": "Koko Eating Bananas",
@@ -312,7 +539,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/koko-eating-bananas/",
-    "tags": ["Binary Search"]
+    "tags": ["Binary Search"],
+    "functionName": "minEatingSpeed",
+    "inputParser": "arrayH",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "3 6 7 11\n8", "expectedOutput": "4", "isHidden": false },
+      { "input": "30 11 23 4 20\n5", "expectedOutput": "30", "isHidden": true }
+    ]
   },
   {
     "title": "Search in Rotated Sorted Array",
@@ -321,7 +555,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
-    "tags": ["Binary Search", "Array"]
+    "tags": ["Binary Search", "Array"],
+    "functionName": "search",
+    "inputParser": "arrayTarget",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "4 5 6 7 0 1 2\n0", "expectedOutput": "4", "isHidden": false },
+      { "input": "4 5 6 7 0 1 2\n3", "expectedOutput": "-1", "isHidden": true }
+    ]
   },
   {
     "title": "Median of Two Sorted Arrays",
@@ -330,7 +571,14 @@
     "difficulty": "Hard",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
-    "tags": ["Binary Search", "Divide and Conquer"]
+    "tags": ["Binary Search", "Divide and Conquer"],
+    "functionName": "findMedianSortedArrays",
+    "inputParser": "twoArrays",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "1 3\n2", "expectedOutput": "2.0", "isHidden": false },
+      { "input": "1 2\n3 4", "expectedOutput": "2.5", "isHidden": true }
+    ]
   },
   {
     "title": "Sort an Array",
@@ -339,7 +587,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/sort-an-array/",
-    "tags": ["Sorting", "Divide and Conquer"]
+    "tags": ["Sorting", "Divide and Conquer"],
+    "functionName": "sortArray",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "5 2 3 1", "expectedOutput": "[1,2,3,5]", "isHidden": false },
+      { "input": "5 1 1 2 0 0", "expectedOutput": "[0,0,1,1,2,5]", "isHidden": true }
+    ]
   },
   {
     "title": "Merge Intervals",
@@ -348,7 +603,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/merge-intervals/",
-    "tags": ["Sorting", "Array"]
+    "tags": ["Sorting", "Array"],
+    "functionName": "merge",
+    "inputParser": "intervalArray",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[[1,3],[2,6],[8,10],[15,18]]", "expectedOutput": "[[1,6],[8,10],[15,18]]", "isHidden": false },
+      { "input": "[[1,4],[4,5]]", "expectedOutput": "[[1,5]]", "isHidden": true }
+    ]
   },
   {
     "title": "Insert Interval",
@@ -357,7 +619,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/insert-interval/",
-    "tags": ["Sorting", "Array"]
+    "tags": ["Sorting", "Array"],
+    "functionName": "insert",
+    "inputParser": "intervalArrayPlus",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[[1,3],[6,9]]\n[2,5]", "expectedOutput": "[[1,5],[6,9]]", "isHidden": false },
+      { "input": "[[1,2],[3,5],[6,7],[8,10],[12,16]]\n[4,8]", "expectedOutput": "[[1,2],[3,10],[12,16]]", "isHidden": true }
+    ]
   },
   {
     "title": "Climbing Stairs",
@@ -366,7 +635,14 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/climbing-stairs/",
-    "tags": ["Recursion", "Dynamic Programming", "Memoization"]
+    "tags": ["Recursion", "Dynamic Programming", "Memoization"],
+    "functionName": "climbStairs",
+    "inputParser": "number",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "2", "expectedOutput": "2", "isHidden": false },
+      { "input": "3", "expectedOutput": "3", "isHidden": true }
+    ]
   },
   {
     "title": "Power of Two",
@@ -375,7 +651,15 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/power-of-two/",
-    "tags": ["Recursion", "Bit Manipulation"]
+    "tags": ["Recursion", "Bit Manipulation"],
+    "functionName": "isPowerOfTwo",
+    "inputParser": "number",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "1", "expectedOutput": "true", "isHidden": false },
+      { "input": "16", "expectedOutput": "true", "isHidden": false },
+      { "input": "3", "expectedOutput": "false", "isHidden": true }
+    ]
   },
   {
     "title": "Permutations",
@@ -384,7 +668,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/permutations/",
-    "tags": ["Recursion", "Backtracking"]
+    "tags": ["Recursion", "Backtracking"],
+    "functionName": "permute",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1 2 3", "expectedOutput": "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]", "isHidden": false },
+      { "input": "0 1", "expectedOutput": "[[0,1],[1,0]]", "isHidden": true }
+    ]
   },
   {
     "title": "Maximum Depth of Binary Tree",
@@ -393,7 +684,14 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
-    "tags": ["Tree", "DFS", "Recursion"]
+    "tags": ["Tree", "DFS", "Recursion"],
+    "functionName": "maxDepth",
+    "inputParser": "tree",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "[3,9,20,null,null,15,7]", "expectedOutput": "3", "isHidden": false },
+      { "input": "[1,null,2]", "expectedOutput": "2", "isHidden": true }
+    ]
   },
   {
     "title": "Invert Binary Tree",
@@ -402,7 +700,14 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/invert-binary-tree/",
-    "tags": ["Tree", "DFS", "Recursion"]
+    "tags": ["Tree", "DFS", "Recursion"],
+    "functionName": "invertTree",
+    "inputParser": "tree",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[4,2,7,1,3,6,9]", "expectedOutput": "[4,7,2,9,6,3,1]", "isHidden": false },
+      { "input": "[2,1,3]", "expectedOutput": "[2,3,1]", "isHidden": true }
+    ]
   },
   {
     "title": "Diameter of Binary Tree",
@@ -411,7 +716,14 @@
     "difficulty": "Easy",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/diameter-of-binary-tree/",
-    "tags": ["Tree", "DFS", "Recursion"]
+    "tags": ["Tree", "DFS", "Recursion"],
+    "functionName": "diameterOfBinaryTree",
+    "inputParser": "tree",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "[1,2,3,4,5]", "expectedOutput": "3", "isHidden": false },
+      { "input": "[1,2]", "expectedOutput": "1", "isHidden": true }
+    ]
   },
   {
     "title": "Validate Binary Search Tree",
@@ -420,7 +732,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/validate-binary-search-tree/",
-    "tags": ["Tree", "DFS", "BST"]
+    "tags": ["Tree", "DFS", "BST"],
+    "functionName": "isValidBST",
+    "inputParser": "tree",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "[2,1,3]", "expectedOutput": "true", "isHidden": false },
+      { "input": "[5,1,4,null,null,3,6]", "expectedOutput": "false", "isHidden": true }
+    ]
   },
   {
     "title": "Lowest Common Ancestor of a Binary Search Tree",
@@ -429,7 +748,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
-    "tags": ["Tree", "BST", "DFS"]
+    "tags": ["Tree", "BST", "DFS"],
+    "functionName": "lowestCommonAncestor",
+    "inputParser": "tree",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "[6,2,8,0,4,7,9,null,null,3,5]\n2\n8", "expectedOutput": "6", "isHidden": false },
+      { "input": "[6,2,8,0,4,7,9,null,null,3,5]\n2\n4", "expectedOutput": "2", "isHidden": true }
+    ]
   },
   {
     "title": "Binary Tree Level Order Traversal",
@@ -438,7 +764,14 @@
     "difficulty": "Medium",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/binary-tree-level-order-traversal/",
-    "tags": ["Tree", "BFS", "Queue"]
+    "tags": ["Tree", "BFS", "Queue"],
+    "functionName": "levelOrder",
+    "inputParser": "tree",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[3,9,20,null,null,15,7]", "expectedOutput": "[[3],[9,20],[15,7]]", "isHidden": false },
+      { "input": "[1]", "expectedOutput": "[[1]]", "isHidden": true }
+    ]
   },
   {
     "title": "Serialize and Deserialize Binary Tree",
@@ -447,6 +780,10 @@
     "difficulty": "Hard",
     "platform": "LeetCode",
     "url": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
-    "tags": ["Tree", "BFS", "DFS", "Design"]
+    "tags": ["Tree", "BFS", "DFS", "Design"],
+    "functionName": "Codec",
+    "inputParser": "string",
+    "outputFormatter": "string",
+    "testCases": []
   }
 ]

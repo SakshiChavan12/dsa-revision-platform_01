@@ -1,13 +1,11 @@
-// backend/controllers/submissionController.js
 import Submission from '../models/Submission.js';
 import Question from '../models/Question.js';
-import { createSubmission, getSubmissionResult, processJudge0Result, LANGUAGE_IDS } from '../services/executionService.js';
+import { createSubmission, getSubmissionResult, processJudge0Result, generateFinalCode, LANGUAGE_IDS } from '../services/executionService.js';
 
-// @desc    Run code against PUBLIC test cases
-// @route   POST /api/code/run
 export const runCode = async (req, res) => {
   try {
     const { questionId, language, code } = req.body;
+    console.log("RUN RECEIVED:", req.body); // <-- Debug!
 
     if (!questionId || !language || !code) {
       return res.status(400).json({ success: false, message: 'Missing required fields' });
@@ -24,18 +22,21 @@ export const runCode = async (req, res) => {
       return res.status(400).json({ success: false, message: 'This question does not have public test cases configured yet.' });
     }
 
+    const functionName = question.functionName || 'solve';
+    const inputParser = question.inputParser || 'standard';
+    const outputFormatter = question.outputFormatter || 'newline';
+
     const results = [];
     let passed = 0;
 
     for (let i = 0; i < publicTests.length; i++) {
       const test = publicTests[i];
-      
-      // Send to Judge0
-      const token = await createSubmission(code, languageId, test.input);
+      const finalCode = generateFinalCode(code, language.toLowerCase(), functionName, inputParser, outputFormatter);
+      const token = await createSubmission(finalCode, languageId, test.input);
       const judge0Result = await getSubmissionResult(token);
       const result = processJudge0Result(judge0Result);
-      
-      const passedTest = result.isCorrect;
+
+      const passedTest = result.isCorrect && (result.stdout.trim() === test.expectedOutput.trim());
       if (passedTest) passed++;
 
       results.push({
@@ -43,7 +44,7 @@ export const runCode = async (req, res) => {
         passed: passedTest,
         input: test.input,
         expectedOutput: test.expectedOutput,
-        actualOutput: result.stdout || result.compileError || result.stderr,
+        actualOutput: result.stdout,
         status: result.status
       });
     }
@@ -57,19 +58,14 @@ export const runCode = async (req, res) => {
     });
   } catch (error) {
     console.error('Run Code Error:', error.message);
-    res.status(500).json({ success: false, message: 'Code execution failed. Please try again.' });
+    res.status(500).json({ success: false, message: error.message || 'Code execution failed. Please try again.' });
   }
 };
 
-// @desc    Submit code against ALL test cases (including hidden)
-// @route   POST /api/code/submit
 export const submitCode = async (req, res) => {
   try {
-    const { questionId, listId, language, code } = req.body;
-
-    if (!questionId || !language || !code) {
-      return res.status(400).json({ success: false, message: 'Missing required fields' });
-    }
+    const { questionId, listId, language, sourceCode } = req.body; // <-- Changed to sourceCode!
+    console.log("SUBMIT RECEIVED:", req.body);
 
     const question = await Question.findById(questionId);
     if (!question) return res.status(404).json({ success: false, message: 'Question not found' });
@@ -82,17 +78,23 @@ export const submitCode = async (req, res) => {
       return res.status(400).json({ success: false, message: 'This question does not have test cases configured yet.' });
     }
 
+    // Get the correct functionName from the database
+    const functionName = question.functionName || 'solve';
+    const inputParser = question.inputParser || 'standard';
+    const outputFormatter = question.outputFormatter || 'newline';
+
     let passed = 0;
     const total = allTests.length;
     let firstFailure = null;
 
     for (const test of allTests) {
-      // Send to Judge0
-      const token = await createSubmission(code, languageId, test.input);
+      // Generate the final code using the CORRECT functionName from database
+      const finalCode = generateFinalCode(sourceCode, language.toLowerCase(), functionName, inputParser, outputFormatter);
+      const token = await createSubmission(finalCode, languageId, test.input);
       const judge0Result = await getSubmissionResult(token);
       const result = processJudge0Result(judge0Result);
-      
-      const passedTest = result.isCorrect;
+
+      const passedTest = result.isCorrect && (result.stdout.trim() === test.expectedOutput.trim());
       if (passedTest) {
         passed++;
       } else if (!firstFailure) {
@@ -111,8 +113,9 @@ export const submitCode = async (req, res) => {
       user: req.user.id,
       question: questionId,
       list: listId || null,
+      sourceCode: sourceCode, // <-- Changed to sourceCode!
       language,
-      code,
+      code: sourceCode, // <-- Also set code to sourceCode to avoid validation errors!
       status,
       passedTests: passed,
       totalTests: total,
@@ -134,6 +137,6 @@ export const submitCode = async (req, res) => {
     });
   } catch (error) {
     console.error('Submit Code Error:', error.message);
-    res.status(500).json({ success: false, message: 'Code execution failed. Please try again.' });
+    res.status(500).json({ success: false, message: error.message || 'Code execution failed. Please try again.' });
   }
 };

@@ -91,41 +91,42 @@ const PracticeQuestion = () => {
   };
 
   // 4. SUBMIT CODE (Calls backend)
-  const handleSubmit = async () => {
-    if (!question) return;
+ const handleSubmit = async () => {
+  if (!question) return;
 
-    setIsSubmitting(true);
-    setError('');
+  setIsSubmitting(true);
+  setError('');
 
-    try {
-      const listId = localStorage.getItem('currentPracticeListId');
-      const response = await submitCode({
-        questionId: question._id,
-        listId,
-        sourceCode: code, // FIX: Send sourceCode, not code
-        language: getLanguageCode() 
-      });
+  try {
+    const listId = localStorage.getItem('currentPracticeListId');
+    const response = await submitCode({
+      questionId: question._id,
+      listId,
+      sourceCode: code, // <-- Uses the `code` state variable
+      language: getLanguageCode()
+    });
 
-      const result = response.submission;
-      
-      // Instead of alert(), set the results directly to the modal:
-      setTestResults({
-        status: result.status,
-        passed: result.passedTests,
-        total: result.totalTests,
-        firstFailure: result.firstFailure || null
-      });
+    const result = response.submission;
 
-    } catch (err) {
-      setError('Submission failed. Please check syntax and try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    setTestResults({
+      status: result.status,
+      passed: result.passedTests,
+      total: result.totalTests,
+      firstFailure: result.firstFailure || null
+    });
 
-  // 7. NEXT QUESTION (with no repetition)
+  } catch (err) {
+    const errorMessage = err.response?.data?.message || 'Submission failed. Please check syntax and try again.';
+    setError(errorMessage);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+  // 5. NEXT QUESTION (with no repetition)
   const handleNextQuestion = async () => {
-    if (listId) {
+    // Only proceed if there is a valid listId and we have a question
+    if (listId && question) {
       const currentAttempted = [...attemptedQuestionIds, question._id.toString()];
       localStorage.setItem('currentPracticeAttemptedIds', JSON.stringify(currentAttempted));
       
@@ -162,8 +163,6 @@ const PracticeQuestion = () => {
       } catch (err) {
         alert('Unable to fetch next question.');
       }
-    } else {
-      navigate('/practice');
     }
   };
 

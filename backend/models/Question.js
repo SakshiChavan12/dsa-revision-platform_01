@@ -17,14 +17,13 @@ const testCaseSchema = new mongoose.Schema({
 // ... add these to your main questionSchema:
 const questionSchema = new mongoose.Schema({
   // ... existing fields ...
-  examples: [exampleSchema], // Already exists
-  testCases: [testCaseSchema], // NEW
-  starterCode: {
-    javascript: { type: String, default: '' },
-    java: { type: String, default: '' },
-    python: { type: String, default: '' },
-    cpp: { type: String, default: '' }
-  }
+  
+  // NEW: Execution metadata
+  functionName: { type: String, default: 'solve' }, // The function the user writes
+  inputParser: { type: String, default: 'standard' }, // 'standard', 'array', 'tree', 'linkedList'
+  outputFormatter: { type: String, default: 'newline' }, // 'newline', 'space', 'array'
+  
+  testCases: [testCaseSchema]
 });
 
 
