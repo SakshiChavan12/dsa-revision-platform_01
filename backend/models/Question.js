@@ -1,11 +1,10 @@
 import mongoose from 'mongoose';
 
-// ... existing code ...
-
+// ─── SUB-SCHEMAS ───
 const exampleSchema = new mongoose.Schema({
   input: { type: String, required: true },
   output: { type: String, required: true },
-  explanation: { type: String }
+  explanation: { type: String, default: '' }
 });
 
 const testCaseSchema = new mongoose.Schema({
@@ -14,18 +13,76 @@ const testCaseSchema = new mongoose.Schema({
   isHidden: { type: Boolean, default: false }
 });
 
-// ... add these to your main questionSchema:
-const questionSchema = new mongoose.Schema({
-  // ... existing fields ...
-  
-  // NEW: Execution metadata
-  functionName: { type: String, default: 'solve' }, // The function the user writes
-  inputParser: { type: String, default: 'standard' }, // 'standard', 'array', 'tree', 'linkedList'
-  outputFormatter: { type: String, default: 'newline' }, // 'newline', 'space', 'array'
-  
-  testCases: [testCaseSchema]
-});
+// ─── VALID ENUMS ───
+const VALID_INPUT_PARSERS = [
+  'array',
+  'arrayTarget',
+  'arrayK',
+  'string',
+  'twoStrings',
+  'stringArray',
+  'number',
+  'twoArrays',
+  'matrixTarget',
+  // Not yet supported, but allowed to exist in DB:
+  'linkedList',
+  'twoLinkedLists',
+  'linkedListN',
+  'tree',
+  'intervalArray',
+  'intervalArrayPlus'
+];
 
+const VALID_OUTPUT_FORMATTERS = [
+  'array',
+  'number',
+  'boolean',
+  'string'
+];
+
+// ─── MAIN SCHEMA ───
+const questionSchema = new mongoose.Schema({
+  // Existing fields (preserve ALL of them!)
+  title: { type: String, required: true, trim: true },
+  description: { type: String, required: true },
+  topic: { type: String, required: true, trim: true },
+  difficulty: {
+    type: String,
+    required: true,
+    enum: ['Easy', 'Medium', 'Hard']
+  },
+  platform: { type: String, default: 'LeetCode' },
+  url: { type: String, default: '' },
+  tags: { type: [String], default: [] },
+  examples: [exampleSchema],
+  constraints: { type: [String], default: [] },
+  hints: { type: [String], default: [] },
+
+  // Execution contract (validated!)
+  functionName: {
+    type: String,
+    required: [true, 'functionName is required for execution'],
+    trim: true
+  },
+  inputParser: {
+    type: String,
+    required: [true, 'inputParser is required for execution'],
+    enum: {
+      values: VALID_INPUT_PARSERS,
+      message: '"{VALUE}" is not a valid inputParser.'
+    }
+  },
+  outputFormatter: {
+    type: String,
+    required: [true, 'outputFormatter is required for execution'],
+    enum: {
+      values: VALID_OUTPUT_FORMATTERS,
+      message: '"{VALUE}" is not a valid outputFormatter.'
+    }
+  },
+
+  testCases: { type: [testCaseSchema], default: [] }
+}, { timestamps: true });
 
 const Question = mongoose.model('Question', questionSchema);
 export default Question;

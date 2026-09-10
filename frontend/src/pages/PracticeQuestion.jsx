@@ -91,7 +91,7 @@ const PracticeQuestion = () => {
   };
 
   // 4. SUBMIT CODE (Calls backend)
- const handleSubmit = async () => {
+const handleSubmit = async () => {
   if (!question) return;
 
   setIsSubmitting(true);
@@ -101,18 +101,20 @@ const PracticeQuestion = () => {
     const listId = localStorage.getItem('currentPracticeListId');
     const response = await submitCode({
       questionId: question._id,
-      listId,
-      sourceCode: code, // <-- Uses the `code` state variable
+      listId: listId, // <-- Pass the ACTUAL listId!
+      sourceCode: code,
       language: getLanguageCode()
     });
 
     const result = response.submission;
 
+    // Show the FULL LeetCode-style result:
     setTestResults({
-      status: result.status,
+      status: result.status, // "Accepted" or "Wrong Answer"
       passed: result.passedTests,
       total: result.totalTests,
-      firstFailure: result.firstFailure || null
+      firstFailure: result.firstFailure || null,
+      isCorrect: result.isCorrect
     });
 
   } catch (err) {
@@ -300,16 +302,56 @@ const PracticeQuestion = () => {
           </div>
 
           {/* TEST RESULTS & NEXT QUESTION */}
-          {testResults && (
-            <div style={{ marginTop: '16px', padding: '16px', background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px' }}>
-              <h4 style={{ color: testResults.status === 'Accepted' ? '#22c55e' : '#ef4444', margin: '0 0 8px 0' }}>
-                {testResults.status === 'Accepted' ? '✓ Test Passed' : '✗ Failed'}
-              </h4>
-              <pre style={{ color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', margin: 0 }}>
-                {testResults.output || testResults.error}
-              </pre>
+          {/* RESULT MODAL (LeetCode Style) */}
+{testResults && (
+  <div style={{
+    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+    background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
+  }}>
+    <div style={{
+      background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
+      borderRadius: '16px', padding: '32px', maxWidth: '500px', width: '90%',
+      color: 'var(--text-primary)'
+    }}>
+      <h2 style={{ margin: 0, color: testResults.isCorrect ? '#22c55e' : '#ef4444' }}>
+        {testResults.isCorrect ? '✓ Accepted' : '✗ ' + testResults.status}
+      </h2>
+      
+      {testResults.isCorrect ? (
+        <>
+          <p>All test cases passed</p>
+          <p>{testResults.passed} / {testResults.total} Test Cases Passed</p>
+        </>
+      ) : (
+        <>
+          <p>{testResults.passed} / {testResults.total} Test Cases Passed</p>
+          {testResults.firstFailure && (
+            <div style={{ marginTop: '16px', padding: '16px', background: 'var(--bg-app)', borderRadius: '8px' }}>
+              <strong>Test Case {testResults.firstFailure.testCase}</strong>
+              <div><strong>Expected:</strong> {testResults.firstFailure.expectedOutput}</div>
+              <div><strong>Output:</strong> {testResults.firstFailure.actualOutput}</div>
             </div>
           )}
+        </>
+      )}
+
+      <button
+        onClick={() => {
+          if (testResults.isCorrect) {
+            setTestResults(null);
+            handleNextQuestion();
+          } else {
+            setTestResults(null);
+          }
+        }}
+        className="btn-primary"
+        style={{ marginTop: '24px', width: '100%', padding: '12px' }}
+      >
+        {testResults.isCorrect ? 'Next Question →' : 'Try Again'}
+      </button>
+    </div>
+  </div>
+)}
         </div>
       </div>
     </div>

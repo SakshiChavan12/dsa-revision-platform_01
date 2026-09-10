@@ -1,142 +1,285 @@
+// backend/controllers/submissionController.js
 import Submission from '../models/Submission.js';
 import Question from '../models/Question.js';
-import { createSubmission, getSubmissionResult, processJudge0Result, generateFinalCode, LANGUAGE_IDS } from '../services/executionService.js';
+import PracticeAttempt from '../models/PracticeAttempt.js';
 
+import { executeCode, mapJudge0StatusToAppStatus } from '../services/executionService.js';
+import { buildJavaScriptDriver } from '../services/drivers/javascriptDriver.js';
+import { compareOutput } from '../services/outputComparator.js';
+
+// ─────────────────────────────────────────────
+// Helper: Run one test case and return its result
+// ─────────────────────────────────────────────
+async function runTest({ userCode, language, functionName, inputParser, outputFormatter, testCase }) {
+  // Build executable source
+  const sourceCode = buildJavaScriptDriver({
+    userCode,
+    functionName,
+    inputParser,
+    outputFormatter
+  });
+
+  // Execute
+  const result = await executeCode({
+    sourceCode,
+    language,
+    stdin: testCase.input
+  });
+
+  const appStatus = mapJudge0StatusToAppStatus(result.statusId);
+  const passed = appStatus === 'Accepted' && compareOutput(result.stdout, testCase.expectedOutput);
+
+  return {
+    passed,
+    appStatus,
+    stdout: result.stdout,
+    stderr: result.stderr,
+    compileOutput: result.compileOutput,
+    executionTime: result.executionTime,
+    memory: result.memory
+  };
+}
+
+// ─────────────────────────────────────────────
+// RUN: only public test cases
+// ─────────────────────────────────────────────
 export const runCode = async (req, res) => {
   try {
-    const { questionId, language, code } = req.body;
-    console.log("RUN RECEIVED:", req.body); // <-- Debug!
+    const { questionId, language = 'javascript', sourceCode } = req.body;
 
-    if (!questionId || !language || !code) {
-      return res.status(400).json({ success: false, message: 'Missing required fields' });
-    }
-
-    const question = await Question.findById(questionId);
-    if (!question) return res.status(404).json({ success: false, message: 'Question not found' });
-
-    const languageId = LANGUAGE_IDS[language.toLowerCase()];
-    if (!languageId) return res.status(400).json({ success: false, message: 'Language not supported' });
-
-    const publicTests = question.testCases.filter(tc => !tc.isHidden);
-    if (publicTests.length === 0) {
-      return res.status(400).json({ success: false, message: 'This question does not have public test cases configured yet.' });
-    }
-
-    const functionName = question.functionName || 'solve';
-    const inputParser = question.inputParser || 'standard';
-    const outputFormatter = question.outputFormatter || 'newline';
-
-    const results = [];
-    let passed = 0;
-
-    for (let i = 0; i < publicTests.length; i++) {
-      const test = publicTests[i];
-      const finalCode = generateFinalCode(code, language.toLowerCase(), functionName, inputParser, outputFormatter);
-      const token = await createSubmission(finalCode, languageId, test.input);
-      const judge0Result = await getSubmissionResult(token);
-      const result = processJudge0Result(judge0Result);
-
-      const passedTest = result.isCorrect && (result.stdout.trim() === test.expectedOutput.trim());
-      if (passedTest) passed++;
-
-      results.push({
-        testCase: i + 1,
-        passed: passedTest,
-        input: test.input,
-        expectedOutput: test.expectedOutput,
-        actualOutput: result.stdout,
-        status: result.status
+    // 1. Validate request
+    if (!questionId || !sourceCode || sourceCode.trim().length < 5) {
+      return res.status(400).json({
+        success: false,
+        message: 'questionId and sourceCode (min 5 chars) are required.'
       });
     }
 
-    res.status(200).json({
+    // 2. Load question
+    const question = await Question.findById(questionId);
+    if (!question) {
+      return res.status(404).json({ success: false, message: 'Question not found.' });
+    }
+
+    // 3. Validate execution spec
+    if (!question.functionName || !question.inputParser || !question.outputFormatter) {
+      return res.status(422).json({
+        success: false,
+        status: 'Unsupported',
+        message: 'This question does not yet have an executable test specification.'
+      });
+    }
+
+    // 4. Filter public tests only
+    const publicTests = question.testCases.filter(tc => !tc.isHidden);
+    if (publicTests.length === 0) {
+      return res.status(422).json({
+        success: false,
+        status: 'Unsupported',
+        message: 'This question does not yet have public test cases.'
+      });
+    }
+
+    // 5. Execute each public test
+    const testResults = [];
+    let passedCount = 0;
+
+    for (let i = 0; i < publicTests.length; i++) {
+      const testCase = publicTests[i];
+
+      let outcome;
+      try {
+        outcome = await runTest({
+          userCode: sourceCode,
+          language,
+          functionName: question.functionName,
+          inputParser: question.inputParser,
+          outputFormatter: question.outputFormatter,
+          testCase
+        });
+      } catch (execErr) {
+        // Driver unsupported, Judge0 unavailable, etc.
+        return res.status(422).json({
+          success: false,
+          status: 'Unsupported',
+          message: execErr.message
+        });
+      }
+
+      if (outcome.passed) passedCount++;
+
+      testResults.push({
+        testCase: i + 1,
+        passed: outcome.passed,
+        input: testCase.input,
+        expectedOutput: testCase.expectedOutput,
+        actualOutput: outcome.stdout || outcome.compileOutput || outcome.stderr || '',
+        status: outcome.appStatus
+      });
+    }
+
+    const overallStatus = passedCount === publicTests.length ? 'Accepted' : 'Wrong Answer';
+
+    return res.status(200).json({
       success: true,
-      status: passed === publicTests.length ? 'Accepted' : 'Wrong Answer',
-      passed,
+      status: overallStatus,
+      passed: passedCount,
       total: publicTests.length,
-      results
+      testResults
     });
+
   } catch (error) {
     console.error('Run Code Error:', error.message);
-    res.status(500).json({ success: false, message: error.message || 'Code execution failed. Please try again.' });
+    return res.status(500).json({ success: false, message: 'Code execution failed.' });
   }
 };
 
+// ─────────────────────────────────────────────
+// SUBMIT: all test cases + save submission + record attempt
+// ─────────────────────────────────────────────
 export const submitCode = async (req, res) => {
   try {
-    const { questionId, listId, language, sourceCode } = req.body; // <-- Changed to sourceCode!
-    console.log("SUBMIT RECEIVED:", req.body);
+    const { questionId, listId, language = 'javascript', sourceCode } = req.body;
 
-    const question = await Question.findById(questionId);
-    if (!question) return res.status(404).json({ success: false, message: 'Question not found' });
-
-    const languageId = LANGUAGE_IDS[language.toLowerCase()];
-    if (!languageId) return res.status(400).json({ success: false, message: 'Language not supported' });
-
-    const allTests = question.testCases;
-    if (allTests.length === 0) {
-      return res.status(400).json({ success: false, message: 'This question does not have test cases configured yet.' });
+    // 1. Validate request
+    if (!questionId || !sourceCode || sourceCode.trim().length < 5) {
+      return res.status(400).json({
+        success: false,
+        message: 'questionId and sourceCode (min 5 chars) are required.'
+      });
     }
 
-    // Get the correct functionName from the database
-    const functionName = question.functionName || 'solve';
-    const inputParser = question.inputParser || 'standard';
-    const outputFormatter = question.outputFormatter || 'newline';
+    // 2. Load question
+    const question = await Question.findById(questionId);
+    if (!question) {
+      return res.status(404).json({ success: false, message: 'Question not found.' });
+    }
 
-    let passed = 0;
-    const total = allTests.length;
+    // 3. Validate execution spec
+    if (!question.functionName || !question.inputParser || !question.outputFormatter) {
+      return res.status(422).json({
+        success: false,
+        status: 'Unsupported',
+        message: 'This question does not yet have an executable test specification.'
+      });
+    }
+
+    // 4. All test cases
+    const allTests = question.testCases;
+    if (allTests.length === 0) {
+      return res.status(422).json({
+        success: false,
+        status: 'Unsupported',
+        message: 'This question does not yet have test cases.'
+      });
+    }
+
+    // 5. Execute all tests
+    let passedCount = 0;
     let firstFailure = null;
+    let totalTime = 0;
+    let maxMemory = 0;
 
-    for (const test of allTests) {
-      // Generate the final code using the CORRECT functionName from database
-      const finalCode = generateFinalCode(sourceCode, language.toLowerCase(), functionName, inputParser, outputFormatter);
-      const token = await createSubmission(finalCode, languageId, test.input);
-      const judge0Result = await getSubmissionResult(token);
-      const result = processJudge0Result(judge0Result);
+    for (let i = 0; i < allTests.length; i++) {
+      const testCase = allTests[i];
 
-      const passedTest = result.isCorrect && (result.stdout.trim() === test.expectedOutput.trim());
-      if (passedTest) {
-        passed++;
+      let outcome;
+      try {
+        outcome = await runTest({
+          userCode: sourceCode,
+          language,
+          functionName: question.functionName,
+          inputParser: question.inputParser,
+          outputFormatter: question.outputFormatter,
+          testCase
+        });
+      } catch (execErr) {
+        // Save as Unsupported submission
+        const unsupportedSubmission = await Submission.create({
+          user: req.user.id,
+          question: questionId,
+          list: listId || null,
+          sourceCode,
+          language,
+          status: 'Unsupported',
+          isCorrect: false,
+          passedTests: 0,
+          totalTests: allTests.length,
+          error: execErr.message
+        });
+
+        return res.status(422).json({
+          success: false,
+          status: 'Unsupported',
+          message: execErr.message
+        });
+      }
+
+      totalTime += outcome.executionTime;
+      maxMemory = Math.max(maxMemory, outcome.memory);
+
+      if (outcome.passed) {
+        passedCount++;
       } else if (!firstFailure) {
         firstFailure = {
-          testCase: allTests.indexOf(test) + 1,
-          expectedOutput: test.expectedOutput,
-          actualOutput: result.stdout || result.compileError || result.stderr
+          testCase: i + 1,
+          // only include input/output for non-hidden tests
+          ...(testCase.isHidden
+            ? { hidden: true }
+            : {
+                input: testCase.input,
+                expectedOutput: testCase.expectedOutput,
+                actualOutput: outcome.stdout || outcome.compileOutput || outcome.stderr || ''
+              })
         };
       }
     }
 
-    const status = passed === total ? 'Accepted' : 'Wrong Answer';
+    const isCorrect = passedCount === allTests.length;
+    const status = isCorrect ? 'Accepted' : 'Wrong Answer';
 
-    // Save Submission
+    // 6. Save Submission
     const submission = await Submission.create({
       user: req.user.id,
       question: questionId,
       list: listId || null,
-      sourceCode: sourceCode, // <-- Changed to sourceCode!
+      sourceCode,
       language,
-      code: sourceCode, // <-- Also set code to sourceCode to avoid validation errors!
       status,
-      passedTests: passed,
-      totalTests: total,
-      runtime: 0,
-      memory: 0,
-      error: firstFailure ? firstFailure.actualOutput : null
+      isCorrect,
+      passedTests: passedCount,
+      totalTests: allTests.length,
+      executionTime: totalTime,
+      memory: maxMemory,
+      error: firstFailure ? (firstFailure.actualOutput || 'Wrong Answer') : null
     });
 
-    res.status(200).json({
+    // 7. Record PracticeAttempt (only after submit)
+    if (listId) {
+      await PracticeAttempt.create({
+        user: req.user.id,
+        question: questionId,
+        list: listId,
+        status: isCorrect ? 'Solved' : 'Wrong'
+      });
+    }
+
+    return res.status(200).json({
       success: true,
       submission: {
         id: submission._id,
         status,
-        isCorrect: status === 'Accepted',
-        passedTests: passed,
-        totalTests: total,
+        isCorrect,
+        passedTests: passedCount,
+        totalTests: allTests.length,
+        executionTime: totalTime,
+        memory: maxMemory,
         firstFailure
       }
     });
+
   } catch (error) {
     console.error('Submit Code Error:', error.message);
-    res.status(500).json({ success: false, message: error.message || 'Code execution failed. Please try again.' });
+    return res.status(500).json({ success: false, message: 'Code execution failed.' });
   }
 };
