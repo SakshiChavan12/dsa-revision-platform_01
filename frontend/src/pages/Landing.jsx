@@ -19,15 +19,14 @@ const Landing = () => {
           </h1>
           
           <p style={{ fontSize: '1.125rem', color: 'var(--text-secondary)', maxWidth: '540px', lineHeight: 1.6, margin: 0 }}>
-            Curate your own problem set or choose from popular collections like Blind 75 and Grind 169. We randomly pick a question from your selected list so you never waste time deciding what to study next.
-          </p>
+Stop wondering what to solve next. Build your own DSA revision lists, practice random questions from your chosen set, and focus on what truly needs revision.          </p>
           
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '8px' }}>
             <Link to="/lists" className="btn-primary">
               Create My First List <span style={{ fontSize: '1.25rem' }}>→</span>
             </Link>
             <Link to="/lists" className="btn-outline">
-              Import from LeetCode
+              Explore Questions
             </Link>
           </div>
         </div>
