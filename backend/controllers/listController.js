@@ -273,6 +273,8 @@ export const removeQuestionFromList = async (req, res) => {
 
 // @desc    Get a random question from a specific list
 // @route   GET /api/lists/:listId/random-question
+// @desc    Get a random question from a specific list (only executable ones)
+// @route   GET /api/lists/:listId/random-question
 export const getRandomQuestionFromList = async (req, res) => {
   try {
     const { listId } = req.params;
@@ -281,18 +283,48 @@ export const getRandomQuestionFromList = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid list ID format' });
     }
 
-    // Ensure list belongs to user
-    const list = await List.findOne({ _id: listId, user: req.user.id }).populate('questions');
+    // ─── Only return questions that the driver can actually execute ───
+    const SUPPORTED_PARSERS = [
+      'array',
+      'arrayTarget',
+      'arrayK',
+      'string',
+      'twoStrings',
+      'stringArray',
+      'number',
+      'twoArrays',
+      'matrixTarget',
+      'linkedList',
+      'linkedListN',
+      'twoLinkedLists',
+      'tree',
+      'treeTwoNodes',
+      'intervalArray',
+      'intervalArrayPlus'
+    ];
+
+    const list = await List.findOne({ _id: listId, user: req.user.id })
+      .populate({
+        path: 'questions',
+        match: {
+          functionName: { $exists: true, $ne: '' },
+          inputParser: { $in: SUPPORTED_PARSERS },
+          'testCases.0': { $exists: true } // at least one test case
+        }
+      });
 
     if (!list) {
       return res.status(404).json({ success: false, message: 'List not found' });
     }
 
-    if (list.questions.length === 0) {
-      return res.status(400).json({ success: false, message: 'This list has no questions to practice' });
+    if (!list.questions || list.questions.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'This list has no executable questions. Try another list.'
+      });
     }
 
-    // Pick a random question from the array
+    // Pick a random question
     const randomIndex = Math.floor(Math.random() * list.questions.length);
     const randomQuestion = list.questions[randomIndex];
 
@@ -301,7 +333,7 @@ export const getRandomQuestionFromList = async (req, res) => {
       question: randomQuestion
     });
   } catch (error) {
-    console.error(error);
+    console.error('getRandomQuestionFromList error:', error.message);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };

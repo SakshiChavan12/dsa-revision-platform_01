@@ -316,62 +316,195 @@ const PracticeQuestion = () => {
 
           {/* RESULT MODAL */}
           {testResults && (
-            <div style={{
-              position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-              background: 'rgba(0,0,0,0.8)', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', zIndex: 9999
-            }}>
+  <div style={{
+    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+    background: 'rgba(0,0,0,0.85)', display: 'flex',
+    alignItems: 'center', justifyContent: 'center', zIndex: 9999,
+    padding: '20px'
+  }}>
+    <div style={{
+      background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
+      borderRadius: '16px', padding: '32px',
+      maxWidth: '720px', width: '100%', maxHeight: '85vh', overflowY: 'auto',
+      color: 'var(--text-primary)'
+    }}>
+      {/* HEADER */}
+      <h2 style={{
+        margin: 0,
+        color: testResults.isCorrect ? '#22c55e' : '#ef4444',
+        fontSize: '1.75rem'
+      }}>
+        {testResults.isCorrect ? '✓ Accepted' : '✗ ' + testResults.status}
+      </h2>
+
+      <p style={{ marginTop: '8px', color: 'var(--text-secondary)' }}>
+        {testResults.passed} / {testResults.total} Test Cases Passed
+      </p>
+
+      {/* PER-TEST RESULTS LIST (only for RUN) */}
+      {testResults.testResults && testResults.testResults.length > 0 && (
+        <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {testResults.testResults.map((t, idx) => (
+            <div
+              key={idx}
+              style={{
+                padding: '16px',
+                borderRadius: '10px',
+                background: 'var(--bg-app)',
+                border: `1px solid ${t.passed ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'}`
+              }}
+            >
+              {/* TEST HEADER */}
               <div style={{
-                background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
-                borderRadius: '16px', padding: '32px',
-                maxWidth: '500px', width: '90%',
-                color: 'var(--text-primary)'
+                display: 'flex', justifyContent: 'space-between',
+                alignItems: 'center', marginBottom: '12px'
               }}>
-                <h2 style={{
-                  margin: 0,
-                  color: testResults.isCorrect ? '#22c55e' : '#ef4444'
+                <strong style={{ color: 'var(--text-primary)' }}>
+                  Test Case {t.testCase}
+                </strong>
+                <span style={{
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  color: t.passed ? '#22c55e' : '#ef4444',
+                  padding: '2px 10px',
+                  borderRadius: '999px',
+                  background: t.passed ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'
                 }}>
-                  {testResults.isCorrect ? '✓ Accepted' : '✗ ' + testResults.status}
-                </h2>
-
-                <p style={{ marginTop: '16px' }}>
-                  {testResults.passed} / {testResults.total} Test Cases Passed
-                </p>
-
-                {testResults.firstFailure && !testResults.isCorrect && (
-                  <div style={{
-                    marginTop: '16px', padding: '16px',
-                    background: 'var(--bg-app)', borderRadius: '8px',
-                    fontSize: '0.85rem'
-                  }}>
-                    <strong>Failed Test Case {testResults.firstFailure.testCase}</strong>
-                    {testResults.firstFailure.expectedOutput && (
-                      <div><strong>Expected:</strong> {testResults.firstFailure.expectedOutput}</div>
-                    )}
-                    {testResults.firstFailure.actualOutput && (
-                      <div><strong>Your Output:</strong> {testResults.firstFailure.actualOutput}</div>
-                    )}
-                  </div>
-                )}
-
-                <button
-                  onClick={() => {
-                    setTestResults(null);
-                    // Only advance to next question if this was a SUBMIT and it was correct
-                    if (testResults.mode === 'submit' && testResults.isCorrect) {
-                      handleNextQuestion();
-                    }
-                  }}
-                  className="btn-primary"
-                  style={{ marginTop: '24px', width: '100%', padding: '12px' }}
-                >
-                  {testResults.mode === 'submit' && testResults.isCorrect
-                    ? 'Next Question →'
-                    : 'Close'}
-                </button>
+                  {t.passed ? '✓ Passed' : '✗ Failed'}
+                </span>
               </div>
+
+              {/* INPUT */}
+              {t.input !== undefined && (
+                <div style={{ marginBottom: '8px' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Input
+                  </span>
+                  <pre style={{
+                    margin: '4px 0 0 0',
+                    padding: '8px 12px',
+                    background: 'rgba(0,0,0,0.3)',
+                    borderRadius: '6px',
+                    fontSize: '0.85rem',
+                    fontFamily: 'monospace',
+                    color: 'var(--text-primary)',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word'
+                  }}>
+                    {t.input}
+                  </pre>
+                </div>
+              )}
+
+              {/* EXPECTED */}
+              {t.expectedOutput !== undefined && (
+                <div style={{ marginBottom: '8px' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Expected Output
+                  </span>
+                  <pre style={{
+                    margin: '4px 0 0 0',
+                    padding: '8px 12px',
+                    background: 'rgba(34,197,94,0.05)',
+                    borderRadius: '6px',
+                    fontSize: '0.85rem',
+                    fontFamily: 'monospace',
+                    color: '#86efac',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word'
+                  }}>
+                    {t.expectedOutput}
+                  </pre>
+                </div>
+              )}
+
+              {/* ACTUAL */}
+              {t.actualOutput !== undefined && (
+                <div>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Your Output
+                  </span>
+                  <pre style={{
+                    margin: '4px 0 0 0',
+                    padding: '8px 12px',
+                    background: t.passed ? 'rgba(34,197,94,0.05)' : 'rgba(239,68,68,0.05)',
+                    borderRadius: '6px',
+                    fontSize: '0.85rem',
+                    fontFamily: 'monospace',
+                    color: t.passed ? '#86efac' : '#fca5a5',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word'
+                  }}>
+                    {t.actualOutput || '(empty)'}
+                  </pre>
+                </div>
+              )}
+
+              {/* STATUS (for compile errors) */}
+              {t.status && t.status !== 'Accepted' && !t.passed && (
+                <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#ef4444' }}>
+                  Status: {t.status}
+                </div>
+              )}
             </div>
+          ))}
+        </div>
+      )}
+
+      {/* FIRST FAILURE (for SUBMIT) */}
+      {testResults.mode === 'submit' && testResults.firstFailure && !testResults.isCorrect && (
+        <div style={{
+          marginTop: '24px', padding: '16px',
+          background: 'var(--bg-app)', borderRadius: '10px',
+          border: '1px solid rgba(239,68,68,0.3)',
+          fontSize: '0.85rem'
+        }}>
+          <strong style={{ color: '#ef4444' }}>
+            Failed Test Case {testResults.firstFailure.testCase}
+            {testResults.firstFailure.hidden && ' (Hidden)'}
+          </strong>
+
+          {!testResults.firstFailure.hidden && (
+            <>
+              {testResults.firstFailure.expectedOutput && (
+                <div style={{ marginTop: '8px' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Expected: </span>
+                  <span style={{ fontFamily: 'monospace', color: '#86efac' }}>
+                    {testResults.firstFailure.expectedOutput}
+                  </span>
+                </div>
+              )}
+              {testResults.firstFailure.actualOutput && (
+                <div style={{ marginTop: '4px' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Your Output: </span>
+                  <span style={{ fontFamily: 'monospace', color: '#fca5a5' }}>
+                    {testResults.firstFailure.actualOutput}
+                  </span>
+                </div>
+              )}
+            </>
           )}
+        </div>
+      )}
+
+      {/* CLOSE BUTTON */}
+      <button
+        onClick={() => {
+          setTestResults(null);
+          if (testResults.mode === 'submit' && testResults.isCorrect) {
+            handleNextQuestion();
+          }
+        }}
+        className="btn-primary"
+        style={{ marginTop: '24px', width: '100%', padding: '14px', fontSize: '1rem' }}
+      >
+        {testResults.mode === 'submit' && testResults.isCorrect
+          ? 'Next Question →'
+          : 'Close'}
+      </button>
+    </div>
+  </div>
+)}
         </div>
       </div>
     </div>

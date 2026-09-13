@@ -1,0 +1,500 @@
+[
+  {
+    "title": "Two Sum",
+    "functionName": "twoSum",
+    "inputParser": "arrayTarget",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "2 7 11 15\n9", "expectedOutput": "[0,1]", "isHidden": false },
+      { "input": "3 2 4\n6", "expectedOutput": "[1,2]", "isHidden": true },
+      { "input": "3 3\n6", "expectedOutput": "[0,1]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Best Time to Buy and Sell Stock",
+    "functionName": "maxProfit",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "7 1 5 3 6 4", "expectedOutput": "5", "isHidden": false },
+      { "input": "7 6 4 3 1", "expectedOutput": "0", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Move Zeroes",
+    "functionName": "moveZeroes",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "0 1 0 3 12", "expectedOutput": "[1,3,12,0,0]", "isHidden": false },
+      { "input": "0", "expectedOutput": "[0]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Contains Duplicate",
+    "functionName": "containsDuplicate",
+    "inputParser": "array",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "1 2 3 1", "expectedOutput": "true", "isHidden": false },
+      { "input": "1 2 3 4", "expectedOutput": "false", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Maximum Subarray",
+    "functionName": "maxSubArray",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "-2 1 -3 4 -1 2 1 -5 4", "expectedOutput": "6", "isHidden": false },
+      { "input": "1", "expectedOutput": "1", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Product of Array Except Self",
+    "functionName": "productExceptSelf",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1 2 3 4", "expectedOutput": "[24,12,8,6]", "isHidden": false },
+      { "input": "-1 1 0 -3 3", "expectedOutput": "[0,0,9,0,0]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Find Minimum in Rotated Sorted Array",
+    "functionName": "findMin",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "3 4 5 1 2", "expectedOutput": "1", "isHidden": false },
+      { "input": "4 5 6 7 0 1 2", "expectedOutput": "0", "isHidden": true }
+    ]
+  },
+  {
+    "title": "3Sum",
+    "functionName": "threeSum",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "-1 0 1 2 -1 -4", "expectedOutput": "[[-1,-1,2],[-1,0,1]]", "isHidden": false },
+      { "input": "0 1 1", "expectedOutput": "[]", "isHidden": true },
+      { "input": "0 0 0 0", "expectedOutput": "[[0,0,0]]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Container With Most Water",
+    "functionName": "maxArea",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "1 8 6 2 5 4 8 3 7", "expectedOutput": "49", "isHidden": false },
+      { "input": "1 1", "expectedOutput": "1", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Trapping Rain Water",
+    "functionName": "trap",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "0 1 0 2 1 0 1 3 2 1 2 1", "expectedOutput": "6", "isHidden": false },
+      { "input": "4 2 0 3 2 5", "expectedOutput": "9", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Longest Substring Without Repeating Characters",
+    "functionName": "lengthOfLongestSubstring",
+    "inputParser": "string",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "abcabcbb", "expectedOutput": "3", "isHidden": false },
+      { "input": "bbbbb", "expectedOutput": "1", "isHidden": true },
+      { "input": "pwwkew", "expectedOutput": "3", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Longest Palindromic Substring",
+    "functionName": "longestPalindrome",
+    "inputParser": "string",
+    "outputFormatter": "string",
+    "testCases": [
+      { "input": "babad", "expectedOutput": "bab", "isHidden": false },
+      { "input": "cbbd", "expectedOutput": "bb", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Valid Anagram",
+    "functionName": "isAnagram",
+    "inputParser": "twoStrings",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "anagram\nnagaram", "expectedOutput": "true", "isHidden": false },
+      { "input": "rat\ncar", "expectedOutput": "false", "isHidden": true }
+    ]
+  },
+ {
+  "title": "Group Anagrams",
+  "functionName": "groupAnagrams",
+  "inputParser": "stringArray",
+  "outputFormatter": "array",
+  "testCases": [
+    { "input": "a", "expectedOutput": "[[\"a\"]]", "isHidden": false }
+  ]
+},
+  {
+    "title": "Valid Parentheses",
+    "functionName": "isValid",
+    "inputParser": "string",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "()", "expectedOutput": "true", "isHidden": false },
+      { "input": "()[]{}", "expectedOutput": "true", "isHidden": false },
+      { "input": "(]", "expectedOutput": "false", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Top K Frequent Elements",
+    "functionName": "topKFrequent",
+    "inputParser": "arrayK",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1 1 1 2 2 3\n2", "expectedOutput": "[1,2]", "isHidden": false },
+      { "input": "1\n1", "expectedOutput": "[1]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Find All Duplicates in an Array",
+    "functionName": "findDuplicates",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "4 3 2 7 8 2 3 1", "expectedOutput": "[2,3]", "isHidden": false },
+      { "input": "1 1 2", "expectedOutput": "[1]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Longest Consecutive Sequence",
+    "functionName": "longestConsecutive",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "100 4 200 1 3 2", "expectedOutput": "4", "isHidden": false },
+      { "input": "0 3 7 2 5 8 4 6 0 1", "expectedOutput": "9", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Reverse Linked List",
+    "functionName": "reverseList",
+    "inputParser": "linkedList",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[1,2,3,4,5]", "expectedOutput": "[5,4,3,2,1]", "isHidden": false },
+      { "input": "[1,2]", "expectedOutput": "[2,1]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Merge Two Sorted Lists",
+    "functionName": "mergeTwoLists",
+    "inputParser": "twoLinkedLists",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[1,2,4]\n[1,3,4]", "expectedOutput": "[1,1,2,3,4,4]", "isHidden": false },
+      { "input": "[]\n[]", "expectedOutput": "[]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Linked List Cycle",
+    "functionName": "hasCycle",
+    "inputParser": "linkedList",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "[3,2,0,-4]", "expectedOutput": "false", "isHidden": false },
+      { "input": "[1,2]", "expectedOutput": "false", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Reorder List",
+    "functionName": "reorderList",
+    "inputParser": "linkedList",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[1,2,3,4]", "expectedOutput": "[1,4,2,3]", "isHidden": false },
+      { "input": "[1,2,3,4,5]", "expectedOutput": "[1,5,2,4,3]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Remove Nth Node From End of List",
+    "functionName": "removeNthFromEnd",
+    "inputParser": "linkedListN",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[1,2,3,4,5]\n2", "expectedOutput": "[1,2,3,5]", "isHidden": false },
+      { "input": "[1]\n1", "expectedOutput": "[]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Evaluate Reverse Polish Notation",
+    "functionName": "evalRPN",
+    "inputParser": "stringArray",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "2 1 + 3 *", "expectedOutput": "9", "isHidden": false },
+      { "input": "4 13 5 / +", "expectedOutput": "6", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Daily Temperatures",
+    "functionName": "dailyTemperatures",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "73 74 75 71 69 72 76 73", "expectedOutput": "[1,1,4,2,1,1,0,0]", "isHidden": false },
+      { "input": "30 40 50 60", "expectedOutput": "[1,1,1,0]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Largest Rectangle in Histogram",
+    "functionName": "largestRectangleArea",
+    "inputParser": "array",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "2 1 5 6 2 3", "expectedOutput": "10", "isHidden": false },
+      { "input": "2 4", "expectedOutput": "4", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Sliding Window Maximum",
+    "functionName": "maxSlidingWindow",
+    "inputParser": "arrayK",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1 3 -1 -3 5 3 6 7\n3", "expectedOutput": "[3,3,5,5,6,7]", "isHidden": false },
+      { "input": "1\n1", "expectedOutput": "[1]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Binary Search",
+    "functionName": "search",
+    "inputParser": "arrayTarget",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "-1 0 3 5 9 12\n9", "expectedOutput": "4", "isHidden": false },
+      { "input": "-1 0 3 5 9 12\n2", "expectedOutput": "-1", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Search a 2D Matrix",
+    "functionName": "searchMatrix",
+    "inputParser": "matrixTarget",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "1 3 5 7\n10 11 16 20\n23 30 34 60\n3", "expectedOutput": "true", "isHidden": false },
+      { "input": "1 3 5 7\n10 11 16 20\n23 30 34 60\n13", "expectedOutput": "false", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Koko Eating Bananas",
+    "functionName": "minEatingSpeed",
+    "inputParser": "arrayTarget",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "3 6 7 11\n8", "expectedOutput": "4", "isHidden": false },
+      { "input": "30 11 23 4 20\n5", "expectedOutput": "30", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Search in Rotated Sorted Array",
+    "functionName": "search",
+    "inputParser": "arrayTarget",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "4 5 6 7 0 1 2\n0", "expectedOutput": "4", "isHidden": false },
+      { "input": "4 5 6 7 0 1 2\n3", "expectedOutput": "-1", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Median of Two Sorted Arrays",
+    "functionName": "findMedianSortedArrays",
+    "inputParser": "twoArrays",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "1 3\n2", "expectedOutput": "2", "isHidden": false },
+      { "input": "1 2\n3 4", "expectedOutput": "2.5", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Sort an Array",
+    "functionName": "sortArray",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "5 2 3 1", "expectedOutput": "[1,2,3,5]", "isHidden": false },
+      { "input": "5 1 1 2 0 0", "expectedOutput": "[0,0,1,1,2,5]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Merge Intervals",
+    "functionName": "merge",
+    "inputParser": "intervalArray",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[[1,3],[2,6],[8,10],[15,18]]", "expectedOutput": "[[1,6],[8,10],[15,18]]", "isHidden": false },
+      { "input": "[[1,4],[4,5]]", "expectedOutput": "[[1,5]]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Insert Interval",
+    "functionName": "insert",
+    "inputParser": "intervalArrayPlus",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[[1,3],[6,9]]\n[2,5]", "expectedOutput": "[[1,5],[6,9]]", "isHidden": false },
+      { "input": "[[1,2],[3,5],[6,7],[8,10],[12,16]]\n[4,8]", "expectedOutput": "[[1,2],[3,10],[12,16]]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Climbing Stairs",
+    "functionName": "climbStairs",
+    "inputParser": "number",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "2", "expectedOutput": "2", "isHidden": false },
+      { "input": "3", "expectedOutput": "3", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Power of Two",
+    "functionName": "isPowerOfTwo",
+    "inputParser": "number",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "1", "expectedOutput": "true", "isHidden": false },
+      { "input": "16", "expectedOutput": "true", "isHidden": false },
+      { "input": "3", "expectedOutput": "false", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Permutations",
+    "functionName": "permute",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1 2 3", "expectedOutput": "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]", "isHidden": false },
+      { "input": "0 1", "expectedOutput": "[[0,1],[1,0]]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Maximum Depth of Binary Tree",
+    "functionName": "maxDepth",
+    "inputParser": "tree",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "[3,9,20,null,null,15,7]", "expectedOutput": "3", "isHidden": false },
+      { "input": "[1,null,2]", "expectedOutput": "2", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Invert Binary Tree",
+    "functionName": "invertTree",
+    "inputParser": "tree",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[4,2,7,1,3,6,9]", "expectedOutput": "[4,7,2,9,6,3,1]", "isHidden": false },
+      { "input": "[2,1,3]", "expectedOutput": "[2,3,1]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Diameter of Binary Tree",
+    "functionName": "diameterOfBinaryTree",
+    "inputParser": "tree",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "[1,2,3,4,5]", "expectedOutput": "3", "isHidden": false },
+      { "input": "[1,2]", "expectedOutput": "1", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Validate Binary Search Tree",
+    "functionName": "isValidBST",
+    "inputParser": "tree",
+    "outputFormatter": "boolean",
+    "testCases": [
+      { "input": "[2,1,3]", "expectedOutput": "true", "isHidden": false },
+      { "input": "[5,1,4,null,null,3,6]", "expectedOutput": "false", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Lowest Common Ancestor of a Binary Search Tree",
+    "functionName": "lowestCommonAncestor",
+    "inputParser": "treeTwoNodes",
+    "outputFormatter": "number",
+    "testCases": [
+      { "input": "[6,2,8,0,4,7,9,null,null,3,5]\n2\n8", "expectedOutput": "6", "isHidden": false },
+      { "input": "[6,2,8,0,4,7,9,null,null,3,5]\n2\n4", "expectedOutput": "2", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Binary Tree Level Order Traversal",
+    "functionName": "levelOrder",
+    "inputParser": "tree",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[3,9,20,null,null,15,7]", "expectedOutput": "[[3],[9,20],[15,7]]", "isHidden": false },
+      { "input": "[1]", "expectedOutput": "[[1]]", "isHidden": true }
+    ]
+  },
+  {
+    "title": "Serialize and Deserialize Binary Tree",
+    "functionName": "Codec",
+    "inputParser": "tree",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "[1,2,3,null,null,4,5]", "expectedOutput": "[1,2,3,null,null,4,5]", "isHidden": false }
+    ]
+  },
+  {
+    "title": "Design Hash Map",
+    "functionName": "MyHashMap",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1", "expectedOutput": "[1]", "isHidden": false }
+    ]
+  },
+  {
+    "title": "Insert Delete GetRandom O(1)",
+    "functionName": "RandomizedSet",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1", "expectedOutput": "[1]", "isHidden": false }
+    ]
+  },
+  {
+    "title": "Min Stack",
+    "functionName": "MinStack",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1", "expectedOutput": "[1]", "isHidden": false }
+    ]
+  },
+  {
+    "title": "Implement Queue using Stacks",
+    "functionName": "MyQueue",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1", "expectedOutput": "[1]", "isHidden": false }
+    ]
+  },
+  {
+    "title": "Design Circular Queue",
+    "functionName": "MyCircularQueue",
+    "inputParser": "array",
+    "outputFormatter": "array",
+    "testCases": [
+      { "input": "1", "expectedOutput": "[1]", "isHidden": false }
+    ]
+  }
+]

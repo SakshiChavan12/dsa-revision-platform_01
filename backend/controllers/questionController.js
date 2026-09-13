@@ -81,13 +81,18 @@ export const updateQuestion = async (req, res) => {
       message: 'Question updated successfully',
       question
     });
-  } catch (error) {
-    console.error(error);
-    if (error.kind === 'ObjectId') {
-      return res.status(404).json({ success: false, message: 'Question not found' });
-    }
-    res.status(500).json({ success: false, message: 'Server Error' });
+ } catch (error) {
+  console.error('=== UPDATE QUESTION ERROR ===');
+  console.error('Message:', error.message);
+  console.error('Name:', error.name);
+  if (error.errors) {
+    Object.keys(error.errors).forEach(key => {
+      console.error(`  - ${key}:`, error.errors[key].message);
+    });
   }
+  console.error('=============================');
+  res.status(500).json({ success: false, message: error.message || 'Server error' });
+}
 };
 
 // @desc    Delete a question

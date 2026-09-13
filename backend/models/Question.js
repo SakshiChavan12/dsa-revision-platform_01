@@ -15,6 +15,7 @@ const testCaseSchema = new mongoose.Schema({
 
 // ─── VALID ENUMS ───
 const VALID_INPUT_PARSERS = [
+  // Core
   'array',
   'arrayTarget',
   'arrayK',
@@ -24,11 +25,17 @@ const VALID_INPUT_PARSERS = [
   'number',
   'twoArrays',
   'matrixTarget',
-  // Not yet supported, but allowed to exist in DB:
+
+  // Linked Lists
   'linkedList',
   'twoLinkedLists',
   'linkedListN',
+
+  // Trees
   'tree',
+  'treeTwoNodes',       // ← NEW: for LCA-type problems
+
+  // Intervals
   'intervalArray',
   'intervalArrayPlus'
 ];

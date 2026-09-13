@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "import:questions": "node scripts/importQuestions.js",
-    "update:questions": "node scripts/updateQuestions.js"
+    "update:questions": "node scripts/updateQuestions.js",
+    "update:all-questions": "node scripts/updateAllQuestions.js"
   },
   "keywords": [],
   "author": "",
