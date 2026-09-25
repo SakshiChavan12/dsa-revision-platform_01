@@ -62,4 +62,27 @@ export const submitCode = async (data) => {
   return response.data;
 };
 
+
+// frontend/src/services/api.js
+
+// Response interceptor: auto-logout on 401
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid
+      const onLoginPage = window.location.pathname === '/login';
+      const onRegisterPage = window.location.pathname === '/signup';
+
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+
+      if (!onLoginPage && !onRegisterPage) {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

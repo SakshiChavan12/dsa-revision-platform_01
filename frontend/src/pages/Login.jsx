@@ -1,9 +1,8 @@
-
-
-
-import { useState } from 'react';
+// frontend/src/pages/Login.jsx
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../services/auth'; // <-- Import login function
+import { login } from '../services/auth';
+import { isValidEmail } from '../utils/validation';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,17 +11,27 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
+    if (!isValidEmail(email)) {
+      return setError('Please enter a valid email address.');
+    }
+    if (!password) {
+      return setError('Please enter your password.');
+    }
+
+    setLoading(true);
     try {
-      // CALL THE BACKEND API HERE
-      await login({ email, password });
-      
-      // If successful, navigate to dashboard
-      navigate('/dashboard');
+      await login({ email: email.trim().toLowerCase(), password });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password.');
     } finally {
@@ -40,21 +49,48 @@ const Login = () => {
         <h2 style={styles.heading}>Welcome Back</h2>
         <p style={styles.subtitle}>Continue your DSA practice journey.</p>
 
-        {error && <div style={{ color: '#ef4444', marginBottom: '16px', textAlign: 'center' }}>{error}</div>}
+        {error && (
+          <div style={{ color: '#ef4444', marginBottom: '16px', textAlign: 'center', fontSize: '0.9rem' }}>
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.inputGroup}>
             <label style={styles.label}>Email</label>
-            <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={styles.input}
+              required
+              autoComplete="email"
+            />
           </div>
+
           <div style={styles.inputGroup}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <label style={styles.label}>Password</label>
               <span style={styles.forgotLink}>Forgot password?</span>
             </div>
-            <input type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={styles.input}
+              required
+              autoComplete="current-password"
+            />
           </div>
-          <button type="submit" className="btn-primary" style={{ ...styles.submitBtn, opacity: loading ? 0.7 : 1 }} disabled={loading}>
+
+          <button
+            type="submit"
+            className="btn-primary"
+            style={{ ...styles.submitBtn, opacity: loading ? 0.7 : 1 }}
+            disabled={loading}
+          >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>

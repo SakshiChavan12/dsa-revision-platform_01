@@ -4,25 +4,28 @@ import Question from '../models/Question.js';
 import PracticeAttempt from '../models/PracticeAttempt.js';
 
 import { executeCode, mapJudge0StatusToAppStatus } from '../services/executionService.js';
-import { buildJavaScriptDriver } from '../services/drivers/javascriptDriver.js';
 import { compareOutput } from '../services/outputComparator.js';
+import { getDriverForLanguage } from '../services/languageRegistry.js';
 
 // ─────────────────────────────────────────────
-// Helper: Run one test case and return its result
+// Helper: Run one test case with the correct language driver
 // ─────────────────────────────────────────────
 async function runTest({ userCode, language, functionName, inputParser, outputFormatter, testCase }) {
-  // Build executable source
-  const sourceCode = buildJavaScriptDriver({
+  // 1. Resolve the driver for the requested language
+  const { judge0Id, buildDriver } = getDriverForLanguage(language);
+
+  // 2. Build executable source using that language's driver
+  const sourceCode = buildDriver({
     userCode,
     functionName,
     inputParser,
     outputFormatter
   });
 
-  // Execute
+  // 3. Execute on Judge0
   const result = await executeCode({
     sourceCode,
-    language,
+    languageId: judge0Id,   // ← pass explicit Judge0 ID, not language string
     stdin: testCase.input
   });
 
@@ -98,8 +101,13 @@ export const runCode = async (req, res) => {
           testCase
         });
       } catch (execErr) {
-        // Driver unsupported, Judge0 unavailable, etc.
-        return res.status(422).json({
+        // Language disabled, unsupported parser, Judge0 unavailable, etc.
+        const httpStatus =
+          execErr.code === 'UNSUPPORTED_LANGUAGE' || execErr.code === 'LANGUAGE_NOT_ENABLED'
+            ? 422
+            : 500;
+
+        return res.status(httpStatus).json({
           success: false,
           status: 'Unsupported',
           message: execErr.message
@@ -127,7 +135,6 @@ export const runCode = async (req, res) => {
       total: publicTests.length,
       testResults
     });
-
   } catch (error) {
     console.error('Run Code Error:', error.message);
     return res.status(500).json({ success: false, message: 'Code execution failed.' });
@@ -195,7 +202,7 @@ export const submitCode = async (req, res) => {
         });
       } catch (execErr) {
         // Save as Unsupported submission
-        const unsupportedSubmission = await Submission.create({
+        await Submission.create({
           user: req.user.id,
           question: questionId,
           list: listId || null,
@@ -208,7 +215,12 @@ export const submitCode = async (req, res) => {
           error: execErr.message
         });
 
-        return res.status(422).json({
+        const httpStatus =
+          execErr.code === 'UNSUPPORTED_LANGUAGE' || execErr.code === 'LANGUAGE_NOT_ENABLED'
+            ? 422
+            : 500;
+
+        return res.status(httpStatus).json({
           success: false,
           status: 'Unsupported',
           message: execErr.message
@@ -223,7 +235,6 @@ export const submitCode = async (req, res) => {
       } else if (!firstFailure) {
         firstFailure = {
           testCase: i + 1,
-          // only include input/output for non-hidden tests
           ...(testCase.isHidden
             ? { hidden: true }
             : {
@@ -277,7 +288,6 @@ export const submitCode = async (req, res) => {
         firstFailure
       }
     });
-
   } catch (error) {
     console.error('Submit Code Error:', error.message);
     return res.status(500).json({ success: false, message: 'Code execution failed.' });

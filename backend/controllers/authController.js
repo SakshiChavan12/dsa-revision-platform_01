@@ -7,38 +7,54 @@ const generateToken = (id) => {
 };
 
 // @desc    Register a new user
+import { isValidEmail, validatePassword } from '../middleware/validateAuth.js';
+
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ success: false, message: 'Please fill all fields' });
+    // ─── Validation ───
+    if (!name || name.trim().length < 2) {
+      return res.status(400).json({ success: false, message: 'Name must be at least 2 characters.' });
     }
-
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ success: false, message: 'Email already exists' });
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
     }
-
-    const user = await User.create({ name, email, password });
-
-    if (user) {
-      res.status(201).json({
-        success: true,
-        message: 'User registered successfully',
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email
-        }
+    const pwCheck = validatePassword(password);
+    if (!pwCheck.valid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password does not meet requirements: ' + pwCheck.errors.join(' ')
       });
-    } else {
-      res.status(400).json({ success: false, message: 'Invalid user data' });
     }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // ─── Existing user check ───
+    const userExists = await User.findOne({ email: normalizedEmail });
+    if (userExists) {
+      return res.status(400).json({ success: false, message: 'Email already registered.' });
+    }
+
+    // ─── Create user ───
+    const user = await User.create({
+      name: name.trim(),
+      email: normalizedEmail,
+      password
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'User registered successfully',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
   } catch (error) {
-    // This will print the real crash reason to your terminal!
-    console.error('Registration Error details:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error('Register error:', error.message);
+    res.status(500).json({ success: false, message: 'Server error during registration.' });
   }
 };
 

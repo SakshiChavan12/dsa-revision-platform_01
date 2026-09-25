@@ -1,7 +1,18 @@
-import { Link } from 'react-router-dom';
+// src/pages/Landing.jsx
+import { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaListCheck, FaShuffle, FaCode, FaBrain, FaChartLine, FaBookOpen } from 'react-icons/fa6';
 
 const Landing = () => {
+  const navigate = useNavigate();
+
+  // If already logged in, go straight to dashboard
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [navigate]);
+
   return (
     <div style={{ background: 'var(--bg-app)', minHeight: '100vh', paddingBottom: '60px' }}>
       
@@ -19,13 +30,14 @@ const Landing = () => {
           </h1>
           
           <p style={{ fontSize: '1.125rem', color: 'var(--text-secondary)', maxWidth: '540px', lineHeight: 1.6, margin: 0 }}>
-Stop wondering what to solve next. Build your own DSA revision lists, practice random questions from your chosen set, and focus on what truly needs revision.          </p>
+            Stop wondering what to solve next. Build your own DSA revision lists, practice random questions from your chosen set, and focus on what truly needs revision.
+          </p>
           
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '8px' }}>
             <Link to="/lists" className="btn-primary">
               Create My First List <span style={{ fontSize: '1.25rem' }}>→</span>
             </Link>
-            <Link to="/lists" className="btn-outline">
+            <Link to="/questions" className="btn-outline">
               Explore Questions
             </Link>
           </div>
@@ -199,7 +211,7 @@ Stop wondering what to solve next. Build your own DSA revision lists, practice r
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', justifyContent: 'center', fontSize: '14px' }}>
             <Link to="/lists" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'inherit'}>My Lists</Link>
             <Link to="/practice" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'inherit'}>Practice</Link>
-            <Link to="/stats" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'inherit'}>Stats</Link>
+            <Link to="/progress" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'inherit'}>Progress</Link>
             <Link to="/login" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'inherit'}>Login</Link>
             <Link to="/signup" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'inherit'}>Sign Up</Link>
           </div>
