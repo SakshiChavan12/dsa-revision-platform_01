@@ -7,7 +7,7 @@ import questionRoutes from './routes/questionRoutes.js';
 import listRoutes from './routes/listRoutes.js';
 import progressRoutes from './routes/progressRoutes.js';
 import submissionRoutes from './routes/submissionRoutes.js';
-
+import dashboardRoutes from './routes/dashboardRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -24,7 +24,7 @@ app.use('/api/lists', listRoutes);
 app.use('/api/practice', progressRoutes);
 app.use('/api/submissions', submissionRoutes);
 app.use('/api/progress', progressRoutes);
-
+app.use('/api/dashboard', dashboardRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

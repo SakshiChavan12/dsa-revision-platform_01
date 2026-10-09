@@ -1,4 +1,5 @@
-import { NavLink, useNavigate } from "react-router-dom"; // <-- Added useNavigate
+// frontend/src/components/layout/Sidebar.jsx
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaHome,
   FaList,
@@ -9,15 +10,31 @@ import {
   FaCog,
   FaFire
 } from "react-icons/fa";
-import { logout } from "../../services/auth"; // <-- Import the logout helper we created earlier
+import { logout } from "../../services/auth";
+import { useEffect, useState } from "react";
+import { getDashboard } from "../../services/api";
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const navigate = useNavigate(); // Hook to redirect user
+  const navigate = useNavigate();
+  const [streak, setStreak] = useState(null);
+
+  // Fetch streak from dashboard API
+  useEffect(() => {
+    const fetchStreak = async () => {
+      try {
+        const data = await getDashboard();
+        setStreak(data.streak?.current ?? 0);
+      } catch {
+        setStreak(0);
+      }
+    };
+    fetchStreak();
+  }, []);
 
   // Handle Logout
   const handleLogout = () => {
-    logout(); // 1. Clear localStorage
-    navigate('/login'); // 2. Redirect to login page
+    logout();
+    navigate('/login');
   };
 
   return (
@@ -34,16 +51,10 @@ const Sidebar = ({ isOpen, onClose }) => {
         }}
       >
         <FaCode style={{ color: "var(--accent-purple)" }} />
-
-        <span
-          style={{
-            fontWeight: "bold",
-            color: "var(--text-primary)",
-          }}
-        >
+        <span style={{ fontWeight: "bold", color: "var(--text-primary)" }}>
           DSA Trainer
         </span>
-       </div>
+      </div>
 
       {/* Navigation */}
       <nav
@@ -55,7 +66,6 @@ const Sidebar = ({ isOpen, onClose }) => {
           flex: 1,
         }}
       >
-
         <NavLink
           to="/dashboard"
           style={({ isActive }) => ({
@@ -64,12 +74,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             gap: "12px",
             padding: "10px 12px",
             borderRadius: "8px",
-            background: isActive
-              ? "rgba(124, 77, 255, 0.15)"
-              : "transparent",
-            color: isActive
-              ? "var(--text-primary)"
-              : "var(--text-secondary)",
+            background: isActive ? "rgba(124, 77, 255, 0.15)" : "transparent",
+            color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
             textDecoration: "none",
           })}
         >
@@ -85,12 +91,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             gap: "12px",
             padding: "10px 12px",
             borderRadius: "8px",
-            background: isActive
-              ? "rgba(124, 77, 255, 0.15)"
-              : "transparent",
-            color: isActive
-              ? "var(--text-primary)"
-              : "var(--text-secondary)",
+            background: isActive ? "rgba(124, 77, 255, 0.15)" : "transparent",
+            color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
             textDecoration: "none",
           })}
         >
@@ -106,12 +108,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             gap: "12px",
             padding: "10px 12px",
             borderRadius: "8px",
-            background: isActive
-              ? "rgba(124, 77, 255, 0.15)"
-              : "transparent",
-            color: isActive
-              ? "var(--text-primary)"
-              : "var(--text-secondary)",
+            background: isActive ? "rgba(124, 77, 255, 0.15)" : "transparent",
+            color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
             textDecoration: "none",
           })}
         >
@@ -127,12 +125,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             gap: "12px",
             padding: "10px 12px",
             borderRadius: "8px",
-            background: isActive
-              ? "rgba(124, 77, 255, 0.15)"
-              : "transparent",
-            color: isActive
-              ? "var(--text-primary)"
-              : "var(--text-secondary)",
+            background: isActive ? "rgba(124, 77, 255, 0.15)" : "transparent",
+            color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
             textDecoration: "none",
           })}
         >
@@ -148,12 +142,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             gap: "12px",
             padding: "10px 12px",
             borderRadius: "8px",
-            background: isActive
-              ? "rgba(124, 77, 255, 0.15)"
-              : "transparent",
-            color: isActive
-              ? "var(--text-primary)"
-              : "var(--text-secondary)",
+            background: isActive ? "rgba(124, 77, 255, 0.15)" : "transparent",
+            color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
             textDecoration: "none",
           })}
         >
@@ -164,10 +154,15 @@ const Sidebar = ({ isOpen, onClose }) => {
         <NavLink
           to="/bookmarks"
           style={({ isActive }) => ({
-            display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            padding: '10px 12px',
+            borderRadius: '8px',
             background: isActive ? 'rgba(124, 77, 255, 0.15)' : 'transparent',
             color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
-            textDecoration: 'none', transition: 'all 0.2s'
+            textDecoration: 'none',
+            transition: 'all 0.2s'
           })}
         >
           <FaBookmark /> Bookmarks
@@ -181,12 +176,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             gap: "12px",
             padding: "10px 12px",
             borderRadius: "8px",
-            background: isActive
-              ? "rgba(124, 77, 255, 0.15)"
-              : "transparent",
-            color: isActive
-              ? "var(--text-primary)"
-              : "var(--text-secondary)",
+            background: isActive ? "rgba(124, 77, 255, 0.15)" : "transparent",
+            color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
             textDecoration: "none",
           })}
         >
@@ -202,19 +193,14 @@ const Sidebar = ({ isOpen, onClose }) => {
             gap: "12px",
             padding: "10px 12px",
             borderRadius: "8px",
-            background: isActive
-              ? "rgba(124, 77, 255, 0.15)"
-              : "transparent",
-            color: isActive
-              ? "var(--text-primary)"
-              : "var(--text-secondary)",
+            background: isActive ? "rgba(124, 77, 255, 0.15)" : "transparent",
+            color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
             textDecoration: "none",
           })}
         >
           <FaCog />
           Settings
         </NavLink>
-
       </nav>
 
       {/* Streak & Logout */}
@@ -234,15 +220,9 @@ const Sidebar = ({ isOpen, onClose }) => {
               alignItems: "center",
             }}
           >
-            <span
-              style={{
-                color: "var(--text-secondary)",
-                fontSize: "0.75rem",
-              }}
-            >
+            <span style={{ color: "var(--text-secondary)", fontSize: "0.75rem" }}>
               Current Streak
             </span>
-
             <FaFire style={{ color: "#f97316" }} />
           </div>
 
@@ -253,21 +233,18 @@ const Sidebar = ({ isOpen, onClose }) => {
               fontWeight: "bold",
             }}
           >
-            12 days
+            {streak === null
+              ? '—'
+              : `${streak} day${streak === 1 ? '' : 's'}`}
           </div>
 
-          <span
-            style={{
-              color: "var(--text-secondary)",
-              fontSize: "0.7rem",
-            }}
-          >
+          <span style={{ color: "var(--text-secondary)", fontSize: "0.7rem" }}>
             Keep it up!
           </span>
         </div>
 
-        {/* --- NEW LOGOUT BUTTON --- */}
-        <button 
+        {/* Logout Button */}
+        <button
           onClick={handleLogout}
           style={{
             marginTop: '12px',
@@ -287,7 +264,6 @@ const Sidebar = ({ isOpen, onClose }) => {
         >
           Logout
         </button>
-
       </div>
 
     </aside>
