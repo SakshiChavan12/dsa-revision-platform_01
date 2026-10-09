@@ -355,18 +355,18 @@ Hidden test cases are **never** sent to the frontend.
 - [x] Authentication
 - [x] Question catalogue and filters
 - [x] Revision lists
-- [ ] Random, non-repeating practice sessions
-- [ ] Judge0 integration — Run Code
-- [ ] Judge0 integration — Submit with hidden tests
-- [ ] Submission history
-- [ ] Progress and accuracy tracking
-- [ ] Progressive hints
-- [ ] AI-powered hints (Gemini)
+- [x] Random, non-repeating practice sessions
+- [x] Judge0 integration — Run Code
+- [x] Judge0 integration — Submit with hidden tests
+- [x] Submission history
+- [x] Progress and accuracy tracking
+- [x] Progressive hints
+- [x] AI-powered hints (Gemini)
 - [ ] Weak-topic analysis and targeted revision lists
 - [ ] Bookmarks and notes
 - [ ] Theme settings
 
-> Update the checkboxes to match your current progress.
+> Updated checkboxes to match your current progress.
 
 ---
 
@@ -396,9 +396,7 @@ Distributed under the MIT License. See `LICENSE` for details.
 
 ## 👤 Author
 
-**Your Name**
-GitHub: [@your-username](https://github.com/your-username)
-LinkedIn: [your-profile](https://linkedin.com/in/your-profile)
+Sakshi Chavan
 
 ---
 
