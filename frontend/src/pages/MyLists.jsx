@@ -39,7 +39,7 @@ const MyLists = () => {
             <h1 style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--text-primary)', margin: '0' }}>My Lists</h1>
             <p style={{ color: 'var(--text-secondary)', margin: '8px 0 0 0' }}>Organize your DSA questions into focused practice lists.</p>
           </div>
-          <Link to="/create-list" className="btn-primary" style={{ padding: '10px 24px', whiteSpace: 'nowrap', textDecoration: 'none' }}>
+          <Link to="/questions" className="btn-primary" style={{ padding: '10px 24px', whiteSpace: 'nowrap', textDecoration: 'none' }}>
             <i className="fa-regular fa-plus" style={{ marginRight: '8px' }}></i> Create New List
           </Link>
         </div>
@@ -53,7 +53,7 @@ const MyLists = () => {
             <div style={{ fontSize: '48px', color: 'var(--text-secondary)', marginBottom: '16px' }}><i className="fa-regular fa-folder-open"></i></div>
             <h3 style={{ color: 'var(--text-primary)', margin: '0 0 8px 0' }}>No lists created yet</h3>
             <p style={{ color: 'var(--text-secondary)' }}>Create your first list and start organizing your practice.</p>
-            <Link to="/create-list" className="btn-primary" style={{ marginTop: '24px', display: 'inline-block', padding: '10px 24px', textDecoration: 'none' }}>Create Your First List</Link>
+            <Link to="/questions" className="btn-primary" style={{ marginTop: '24px', display: 'inline-block', padding: '10px 24px', textDecoration: 'none' }}>Create Your First List</Link>
           </div>
         ) : (
           lists.map((list) => (
