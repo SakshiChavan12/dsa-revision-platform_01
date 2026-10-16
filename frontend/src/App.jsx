@@ -1,5 +1,5 @@
 // src/App.jsx
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Navbar from './components/layout/Navbar';
 import MyLists from './pages/MyLists';
@@ -18,68 +18,65 @@ import ListDetails from './pages/ListDetails';
 // Layouts
 import DashboardLayout from './components/layout/DashboardLayout';
 
+// Auth
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
+
+// Reusable public layout (Navbar + top padding)
+const PublicLayout = () => (
+  <div>
+    <Navbar />
+    <div style={{ paddingTop: '64px', minHeight: '100vh' }}>
+      <Outlet />
+    </div>
+  </div>
+);
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        
-        {/* =========================================
-           1. PUBLIC ROUTES (WITH NAVBAR)
-           ========================================= */}
-        <Route 
-          path="/" 
-          element={
-            <div>
-              <Navbar />
-              <div style={{ paddingTop: '64px', minHeight: '100vh' }}>
-                <Landing />
-              </div>
-            </div>
-          } 
-        />
-        
-        <Route 
-          path="/login" 
-          element={
-            <div>
-              <Navbar />
-              <div style={{ paddingTop: '64px', minHeight: '100vh' }}>
-                <Login />
-              </div>
-            </div>
-          } 
-        />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
 
-        <Route 
-          path="/signup" 
-          element={
-            <div>
-              <Navbar />
-              <div style={{ paddingTop: '64px', minHeight: '100vh' }}>
-                <Signup />
-              </div>
-            </div>
-          } 
-        />
+          {/* =========================================
+             1. PUBLIC ROUTES
+             - Accessible only when NOT logged in
+             - Logged-in users get redirected to /dashboard
+             ========================================= */}
+          <Route element={<PublicRoute />}>
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/register" element={<Register />} />
+            </Route>
+          </Route>
 
-        {/* =========================================
-           2. AUTHENTICATED ROUTES (SIDEBAR ONLY)
-           ========================================= */}
-        {/* DashboardLayout contains ONLY the Sidebar + Main Content. NO Navbar here! */}
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/questions" element={<Questions />} />
-          <Route path="/lists" element={<MyLists />} />
-          <Route path="/practice" element={<Practice />} />
-          <Route path="/lists/:id" element={<ListDetails />} />
-          <Route path="/practice/:questionId" element={<PracticeQuestion />} />
-          <Route path="/progress" element={<Progress />} />
-          <Route path="/bookmarks" element={<Bookmarks />} />
-          {/* Add /notes and /settings here if their components exist */}
-        </Route>
+          {/* =========================================
+             2. PROTECTED ROUTES
+             - Require a valid session
+             - Unauthenticated users get redirected to /login
+             ========================================= */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/questions" element={<Questions />} />
+              <Route path="/lists" element={<MyLists />} />
+              <Route path="/practice" element={<Practice />} />
+              <Route path="/lists/:id" element={<ListDetails />} />
+              <Route path="/practice/:questionId" element={<PracticeQuestion />} />
+              <Route path="/progress" element={<Progress />} />
+              <Route path="/bookmarks" element={<Bookmarks />} />
+            </Route>
+          </Route>
 
-      </Routes>
-    </BrowserRouter>
+          {/* Fallback: anything unknown goes to Landing (or Login if you prefer) */}
+          <Route path="*" element={<Landing />} />
+
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

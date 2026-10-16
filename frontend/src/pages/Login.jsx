@@ -1,12 +1,12 @@
-
-
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../services/auth'; // <-- Import login function
+import { login } from '../services/auth';        // <-- Import login function
+import { useAuth } from '../context/AuthContext'; // <-- Import auth context hook
 
 const Login = () => {
   const navigate = useNavigate();
+  const { loginUser } = useAuth();                // <-- Hook must be INSIDE the component
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,11 +18,13 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // CALL THE BACKEND API HERE
-      await login({ email, password });
-      
-      // If successful, navigate to dashboard
-      navigate('/dashboard');
+      // Call backend API
+      const data = await login({ email, password });
+
+      // data should be { token, user } based on auth.js
+      loginUser(data.user);
+
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password.');
     } finally {
@@ -40,21 +42,44 @@ const Login = () => {
         <h2 style={styles.heading}>Welcome Back</h2>
         <p style={styles.subtitle}>Continue your DSA practice journey.</p>
 
-        {error && <div style={{ color: '#ef4444', marginBottom: '16px', textAlign: 'center' }}>{error}</div>}
+        {error && (
+          <div style={{ color: '#ef4444', marginBottom: '16px', textAlign: 'center' }}>
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.inputGroup}>
             <label style={styles.label}>Email</label>
-            <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={styles.input}
+              required
+            />
           </div>
           <div style={styles.inputGroup}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <label style={styles.label}>Password</label>
               <span style={styles.forgotLink}>Forgot password?</span>
             </div>
-            <input type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={styles.input}
+              required
+            />
           </div>
-          <button type="submit" className="btn-primary" style={{ ...styles.submitBtn, opacity: loading ? 0.7 : 1 }} disabled={loading}>
+          <button
+            type="submit"
+            className="btn-primary"
+            style={{ ...styles.submitBtn, opacity: loading ? 0.7 : 1 }}
+            disabled={loading}
+          >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
@@ -66,9 +91,14 @@ const Login = () => {
         </div>
 
         <p style={styles.switchText}>
-          Don't have an account? <Link to="/signup" style={styles.link}>Sign Up</Link>
+          Don't have an account?{' '}
+          <Link to="/signup" style={styles.link}>
+            Sign Up
+          </Link>
         </p>
-        <Link to="/" style={styles.backLink}>← Back to Home</Link>
+        <Link to="/" style={styles.backLink}>
+          ← Back to Home
+        </Link>
       </div>
     </div>
   );
@@ -93,7 +123,7 @@ const styles = {
   dividerText: { fontSize: '12px', color: 'var(--text-secondary, #8FA0B8)' },
   switchText: { fontSize: '14px', color: 'var(--text-secondary, #8FA0B8)', margin: '0 0 16px 0' },
   link: { color: 'var(--accent-purple, #7C4DFF)', textDecoration: 'none', fontWeight: '500' },
-  backLink: { fontSize: '13px', color: 'var(--text-secondary, #8FA0B8)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', transition: 'color 0.2s' }
+  backLink: { fontSize: '13px', color: 'var(--text-secondary, #8FA0B8)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', transition: 'color 0.2s' },
 };
 
 export default Login;

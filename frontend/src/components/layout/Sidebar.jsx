@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom"; // <-- Added useNavigate
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaHome,
   FaList,
@@ -9,15 +9,17 @@ import {
   FaCog,
   FaFire
 } from "react-icons/fa";
-import { logout } from "../../services/auth"; // <-- Import the logout helper we created earlier
+import { useAuth } from "../../context/AuthContext"; // <-- Use context, not the raw helper
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const navigate = useNavigate(); // Hook to redirect user
+  const navigate = useNavigate();
+  const { logoutUser } = useAuth(); // <-- Clears state AND localStorage
 
   // Handle Logout
   const handleLogout = () => {
-    logout(); // 1. Clear localStorage
-    navigate('/login'); // 2. Redirect to login page
+    logoutUser();                      // 1. Clear AuthContext + localStorage
+    if (onClose) onClose();            // 2. Close mobile drawer if open
+    navigate('/', { replace: true }); // 3. Redirect (replace so back doesn't return)
   };
 
   return (
@@ -266,8 +268,8 @@ const Sidebar = ({ isOpen, onClose }) => {
           </span>
         </div>
 
-        {/* --- NEW LOGOUT BUTTON --- */}
-        <button 
+        {/* LOGOUT BUTTON */}
+        <button
           onClick={handleLogout}
           style={{
             marginTop: '12px',
@@ -282,8 +284,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             cursor: 'pointer',
             transition: 'all 0.2s'
           }}
-          onMouseEnter={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.2)'}
-          onMouseLeave={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.1)'}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
         >
           Logout
         </button>
