@@ -1,94 +1,58 @@
 // backend/services/executionService.js
 import axios from 'axios';
 
+// You can change this back to 'https://ce.judge0.com' if you don't have RapidAPI
 const JUDGE0_URL = process.env.JUDGE0_URL || 'https://ce.judge0.com';
 
-export const LANGUAGE_IDS = {
-  javascript: 63,
-  python: 71,
-  java: 62,
-  cpp: 54
+// Submit all test cases at once (CodeArena style)
+export const submitBatch = async (submissions) => {
+  try {
+    const response = await axios.request({
+      method: "POST",
+      url: `${JUDGE0_URL}/submissions/batch`,
+      params: { base64_encoded: "false" },
+      headers: { "Content-Type": "application/json" },
+      data: { submissions },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Judge0 submitBatch error:", error.response?.data || error.message);
+    throw new Error("Judge0 API error during batch submission.");
+  }
 };
 
-/**
- * Execute code on Judge0 and return a normalized result.
- * @param {Object} params
- * @param {string} params.sourceCode
- * @param {string} params.language  - 'javascript' | 'python' | 'java' | 'cpp'
- * @param {string} params.stdin
- * @returns {Promise<{
- *   statusId: number,
- *   status: string,
- *   stdout: string,
- *   stderr: string,
- *   compileOutput: string,
- *   executionTime: number,
- *   memory: number
- * }>}
- */
-export async function executeCode({ sourceCode, language, stdin = '' }) {
-  const languageId = LANGUAGE_IDS[language];
-  if (!languageId) {
-    const err = new Error(`Unsupported language: ${language}`);
-    err.code = 'UNSUPPORTED_LANGUAGE';
-    throw err;
-  }
+// Poll for the results of the batch
+export const submitToken = async (resultToken) => {
+  if (!resultToken || resultToken.length === 0) return [];
+  
+  const waiting = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  // 1. Create the submission
-  let token;
-  try {
-    const submitRes = await axios.post(
-      `${JUDGE0_URL}/submissions`,
-      {
-        source_code: sourceCode,
-        language_id: languageId,
-        stdin
-      },
-      { headers: { 'Content-Type': 'application/json' } }
-    );
-    token = submitRes.data.token;
-  } catch (err) {
-    console.error('Judge0 submit error:', err.message);
-    const error = new Error('Judge0 is currently unreachable.');
-    error.code = 'JUDGE0_UNAVAILABLE';
-    throw error;
-  }
-
-  // 2. Poll for the result
-  for (let i = 0; i < 15; i++) {
-    await new Promise(r => setTimeout(r, 1500));
-
-    let result;
+  for (let attempts = 0; attempts < 15; attempts++) {
     try {
-      const resultRes = await axios.get(`${JUDGE0_URL}/submissions/${token}`);
-      result = resultRes.data;
-    } catch (err) {
-      console.error('Judge0 poll error:', err.message);
-      continue;
-    }
+      const response = await axios.request({
+        method: "GET",
+        url: `${JUDGE0_URL}/submissions/batch`,
+        params: {
+          tokens: resultToken.join(","),
+          base64_encoded: "false",
+          fields: "*",
+        },
+      });
 
-    // Status >= 3 means finished
-    if (result.status && result.status.id >= 3) {
-      return {
-        statusId: result.status.id,
-        status: result.status.description,
-        stdout: result.stdout || '',
-        stderr: result.stderr || '',
-        compileOutput: result.compile_output || '',
-        executionTime: result.time ? parseFloat(result.time) * 1000 : 0,
-        memory: result.memory || 0
-      };
+      // Check if all submissions are finished (status > 2 means done)
+      const done = response.data.submissions.every((r) => r.status_id > 2);
+      if (done) return response.data.submissions;
+
+      await waiting(2000); // Wait 2 seconds before checking again
+    } catch (error) {
+      console.error("Judge0 submitToken error:", error.response?.data || error.message);
+      throw new Error("Judge0 Token error.");
     }
   }
+  throw new Error("Judge0 execution timed out.");
+};
 
-  const err = new Error('Judge0 execution timed out.');
-  err.code = 'JUDGE0_TIMEOUT';
-  throw err;
-}
-
-/**
- * Map Judge0 status ID to our application status.
- */
+// Translate Judge0 status IDs to strings for your frontend
 export function mapJudge0StatusToAppStatus(statusId) {
   const map = {
     3: 'Accepted',

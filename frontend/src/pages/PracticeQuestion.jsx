@@ -29,14 +29,37 @@ const PracticeQuestion = () => {
   const [activeTab, setActiveTab] = useState('description');
   const [hintsUsed, setHintsUsed] = useState(0); 
 
+  // Helper to generate starter code based on language and question metadata
+    // Helper to generate starter code based on language
+  const getStarterCode = (lang, q) => {
+    if (!q) return '';
+    
+    if (lang === 'JavaScript (Node.js)') {
+      return `const fs = require('fs');\n\nconst input = fs.readFileSync(0, 'utf-8').trim();\n\n// Parse input here\n// Example: const nums = input.split('\\n')[0].split(' ').map(Number);\n\n// Write your logic here\n\nconsole.log("your output here");`;
+    }
+    
+    if (lang === 'Python') {
+      return `import sys\n\ninput_data = sys.stdin.read().strip()\n\n# Parse input here\n# Example: nums = list(map(int, input_data.split('\\n')[0].split()))\n\n# Write your logic here\n\nprint("your output here")`;
+    }
+    
+    if (lang === 'Java') {
+      return `import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        StringBuilder input = new StringBuilder();\n        while (scanner.hasNextLine()) {\n            input.append(scanner.nextLine()).append("\\n");\n        }\n        String inputData = input.toString().trim();\n\n        // Parse input here\n        \n        // Write your logic here\n        \n        System.out.println("your output here");\n    }\n}`;
+    }
+    
+    return '';
+  };
+
   // 2. Fetch question
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
         setLoading(true);
         const response = await api.get(`/questions/${questionId}`);
-        setQuestion(response.data.question);
-        setCode(`function ${response.data.question.functionName || 'solve'}(nums) {\n    // Write your code here\n    \n}`);
+        const q = response.data.question;
+        
+        setQuestion(q);
+        setCode(getStarterCode('JavaScript (Node.js)', q)); // Set initial template
+        setLanguage('JavaScript (Node.js)');
         setError('');
         setHintsUsed(0);
         setTestResults(null);
@@ -290,12 +313,20 @@ const PracticeQuestion = () => {
         {/* RIGHT: CODE EDITOR */}
         <div className="card-glow" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <select value={language} onChange={(e) => setLanguage(e.target.value)} style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '6px', padding: '6px 12px', color: 'var(--text-primary)' }}>
+            <select 
+              value={language} 
+              onChange={(e) => {
+                const newLang = e.target.value;
+                setLanguage(newLang);
+                setCode(getStarterCode(newLang, question));
+              }} 
+              style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '6px', padding: '6px 12px', color: 'var(--text-primary)' }}
+            >
               <option>JavaScript (Node.js)</option>
               <option>Python</option>
               <option>Java</option>
             </select>
-            <button className="btn-outline" onClick={() => setCode(`function ${question.functionName || 'solve'}(nums) {\n    // Write your code here\n    \n}`)} style={{ padding: '6px 12px', fontSize: '0.8rem' }}>Reset</button>
+            <button className="btn-outline" onClick={() => setCode(getStarterCode(language, question))} style={{ padding: '6px 12px', fontSize: '0.8rem' }}>Reset</button>
           </div>
           
           <div style={{ background: 'var(--bg-app)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '16px', minHeight: '300px', fontFamily: 'monospace' }}>
@@ -316,195 +347,195 @@ const PracticeQuestion = () => {
 
           {/* RESULT MODAL */}
           {testResults && (
-  <div style={{
-    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-    background: 'rgba(0,0,0,0.85)', display: 'flex',
-    alignItems: 'center', justifyContent: 'center', zIndex: 9999,
-    padding: '20px'
-  }}>
-    <div style={{
-      background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
-      borderRadius: '16px', padding: '32px',
-      maxWidth: '720px', width: '100%', maxHeight: '85vh', overflowY: 'auto',
-      color: 'var(--text-primary)'
-    }}>
-      {/* HEADER */}
-      <h2 style={{
-        margin: 0,
-        color: testResults.isCorrect ? '#22c55e' : '#ef4444',
-        fontSize: '1.75rem'
-      }}>
-        {testResults.isCorrect ? '✓ Accepted' : '✗ ' + testResults.status}
-      </h2>
-
-      <p style={{ marginTop: '8px', color: 'var(--text-secondary)' }}>
-        {testResults.passed} / {testResults.total} Test Cases Passed
-      </p>
-
-      {/* PER-TEST RESULTS LIST (only for RUN) */}
-      {testResults.testResults && testResults.testResults.length > 0 && (
-        <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {testResults.testResults.map((t, idx) => (
-            <div
-              key={idx}
-              style={{
-                padding: '16px',
-                borderRadius: '10px',
-                background: 'var(--bg-app)',
-                border: `1px solid ${t.passed ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'}`
-              }}
-            >
-              {/* TEST HEADER */}
+            <div style={{
+              position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+              background: 'rgba(0,0,0,0.85)', display: 'flex',
+              alignItems: 'center', justifyContent: 'center', zIndex: 9999,
+              padding: '20px'
+            }}>
               <div style={{
-                display: 'flex', justifyContent: 'space-between',
-                alignItems: 'center', marginBottom: '12px'
+                background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
+                borderRadius: '16px', padding: '32px',
+                maxWidth: '720px', width: '100%', maxHeight: '85vh', overflowY: 'auto',
+                color: 'var(--text-primary)'
               }}>
-                <strong style={{ color: 'var(--text-primary)' }}>
-                  Test Case {t.testCase}
-                </strong>
-                <span style={{
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  color: t.passed ? '#22c55e' : '#ef4444',
-                  padding: '2px 10px',
-                  borderRadius: '999px',
-                  background: t.passed ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'
+                {/* HEADER */}
+                <h2 style={{
+                  margin: 0,
+                  color: testResults.isCorrect ? '#22c55e' : '#ef4444',
+                  fontSize: '1.75rem'
                 }}>
-                  {t.passed ? '✓ Passed' : '✗ Failed'}
-                </span>
+                  {testResults.isCorrect ? '✓ Accepted' : '✗ ' + testResults.status}
+                </h2>
+
+                <p style={{ marginTop: '8px', color: 'var(--text-secondary)' }}>
+                  {testResults.passed} / {testResults.total} Test Cases Passed
+                </p>
+
+                {/* PER-TEST RESULTS LIST (only for RUN) */}
+                {testResults.testResults && testResults.testResults.length > 0 && (
+                  <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {testResults.testResults.map((t, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          padding: '16px',
+                          borderRadius: '10px',
+                          background: 'var(--bg-app)',
+                          border: `1px solid ${t.passed ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'}`
+                        }}
+                      >
+                        {/* TEST HEADER */}
+                        <div style={{
+                          display: 'flex', justifyContent: 'space-between',
+                          alignItems: 'center', marginBottom: '12px'
+                        }}>
+                          <strong style={{ color: 'var(--text-primary)' }}>
+                            Test Case {t.testCase}
+                          </strong>
+                          <span style={{
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            color: t.passed ? '#22c55e' : '#ef4444',
+                            padding: '2px 10px',
+                            borderRadius: '999px',
+                            background: t.passed ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'
+                          }}>
+                            {t.passed ? '✓ Passed' : '✗ Failed'}
+                          </span>
+                        </div>
+
+                        {/* INPUT */}
+                        {t.input !== undefined && (
+                          <div style={{ marginBottom: '8px' }}>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                              Input
+                            </span>
+                            <pre style={{
+                              margin: '4px 0 0 0',
+                              padding: '8px 12px',
+                              background: 'rgba(0,0,0,0.3)',
+                              borderRadius: '6px',
+                              fontSize: '0.85rem',
+                              fontFamily: 'monospace',
+                              color: 'var(--text-primary)',
+                              whiteSpace: 'pre-wrap',
+                              wordBreak: 'break-word'
+                            }}>
+                              {t.input}
+                            </pre>
+                          </div>
+                        )}
+
+                        {/* EXPECTED */}
+                        {t.expectedOutput !== undefined && (
+                          <div style={{ marginBottom: '8px' }}>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                              Expected Output
+                            </span>
+                            <pre style={{
+                              margin: '4px 0 0 0',
+                              padding: '8px 12px',
+                              background: 'rgba(34,197,94,0.05)',
+                              borderRadius: '6px',
+                              fontSize: '0.85rem',
+                              fontFamily: 'monospace',
+                              color: '#86efac',
+                              whiteSpace: 'pre-wrap',
+                              wordBreak: 'break-word'
+                            }}>
+                              {t.expectedOutput}
+                            </pre>
+                          </div>
+                        )}
+
+                        {/* ACTUAL */}
+                        {t.actualOutput !== undefined && (
+                          <div>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                              Your Output
+                            </span>
+                            <pre style={{
+                              margin: '4px 0 0 0',
+                              padding: '8px 12px',
+                              background: t.passed ? 'rgba(34,197,94,0.05)' : 'rgba(239,68,68,0.05)',
+                              borderRadius: '6px',
+                              fontSize: '0.85rem',
+                              fontFamily: 'monospace',
+                              color: t.passed ? '#86efac' : '#fca5a5',
+                              whiteSpace: 'pre-wrap',
+                              wordBreak: 'break-word'
+                            }}>
+                              {t.actualOutput || '(empty)'}
+                            </pre>
+                          </div>
+                        )}
+
+                        {/* STATUS (for compile errors) */}
+                        {t.status && t.status !== 'Accepted' && !t.passed && (
+                          <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#ef4444' }}>
+                            Status: {t.status}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* FIRST FAILURE (for SUBMIT) */}
+                {testResults.mode === 'submit' && testResults.firstFailure && !testResults.isCorrect && (
+                  <div style={{
+                    marginTop: '24px', padding: '16px',
+                    background: 'var(--bg-app)', borderRadius: '10px',
+                    border: '1px solid rgba(239,68,68,0.3)',
+                    fontSize: '0.85rem'
+                  }}>
+                    <strong style={{ color: '#ef4444' }}>
+                      Failed Test Case {testResults.firstFailure.testCase}
+                      {testResults.firstFailure.hidden && ' (Hidden)'}
+                    </strong>
+
+                    {!testResults.firstFailure.hidden && (
+                      <>
+                        {testResults.firstFailure.expectedOutput && (
+                          <div style={{ marginTop: '8px' }}>
+                            <span style={{ color: 'var(--text-secondary)' }}>Expected: </span>
+                            <span style={{ fontFamily: 'monospace', color: '#86efac' }}>
+                              {testResults.firstFailure.expectedOutput}
+                            </span>
+                          </div>
+                        )}
+                        {testResults.firstFailure.actualOutput && (
+                          <div style={{ marginTop: '4px' }}>
+                            <span style={{ color: 'var(--text-secondary)' }}>Your Output: </span>
+                            <span style={{ fontFamily: 'monospace', color: '#fca5a5' }}>
+                              {testResults.firstFailure.actualOutput}
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* CLOSE BUTTON */}
+                <button
+                  onClick={() => {
+                    setTestResults(null);
+                    if (testResults.mode === 'submit' && testResults.isCorrect) {
+                      handleNextQuestion();
+                    }
+                  }}
+                  className="btn-primary"
+                  style={{ marginTop: '24px', width: '100%', padding: '14px', fontSize: '1rem' }}
+                >
+                  {testResults.mode === 'submit' && testResults.isCorrect
+                    ? 'Next Question →'
+                    : 'Close'}
+                </button>
               </div>
-
-              {/* INPUT */}
-              {t.input !== undefined && (
-                <div style={{ marginBottom: '8px' }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Input
-                  </span>
-                  <pre style={{
-                    margin: '4px 0 0 0',
-                    padding: '8px 12px',
-                    background: 'rgba(0,0,0,0.3)',
-                    borderRadius: '6px',
-                    fontSize: '0.85rem',
-                    fontFamily: 'monospace',
-                    color: 'var(--text-primary)',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word'
-                  }}>
-                    {t.input}
-                  </pre>
-                </div>
-              )}
-
-              {/* EXPECTED */}
-              {t.expectedOutput !== undefined && (
-                <div style={{ marginBottom: '8px' }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Expected Output
-                  </span>
-                  <pre style={{
-                    margin: '4px 0 0 0',
-                    padding: '8px 12px',
-                    background: 'rgba(34,197,94,0.05)',
-                    borderRadius: '6px',
-                    fontSize: '0.85rem',
-                    fontFamily: 'monospace',
-                    color: '#86efac',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word'
-                  }}>
-                    {t.expectedOutput}
-                  </pre>
-                </div>
-              )}
-
-              {/* ACTUAL */}
-              {t.actualOutput !== undefined && (
-                <div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Your Output
-                  </span>
-                  <pre style={{
-                    margin: '4px 0 0 0',
-                    padding: '8px 12px',
-                    background: t.passed ? 'rgba(34,197,94,0.05)' : 'rgba(239,68,68,0.05)',
-                    borderRadius: '6px',
-                    fontSize: '0.85rem',
-                    fontFamily: 'monospace',
-                    color: t.passed ? '#86efac' : '#fca5a5',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word'
-                  }}>
-                    {t.actualOutput || '(empty)'}
-                  </pre>
-                </div>
-              )}
-
-              {/* STATUS (for compile errors) */}
-              {t.status && t.status !== 'Accepted' && !t.passed && (
-                <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#ef4444' }}>
-                  Status: {t.status}
-                </div>
-              )}
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* FIRST FAILURE (for SUBMIT) */}
-      {testResults.mode === 'submit' && testResults.firstFailure && !testResults.isCorrect && (
-        <div style={{
-          marginTop: '24px', padding: '16px',
-          background: 'var(--bg-app)', borderRadius: '10px',
-          border: '1px solid rgba(239,68,68,0.3)',
-          fontSize: '0.85rem'
-        }}>
-          <strong style={{ color: '#ef4444' }}>
-            Failed Test Case {testResults.firstFailure.testCase}
-            {testResults.firstFailure.hidden && ' (Hidden)'}
-          </strong>
-
-          {!testResults.firstFailure.hidden && (
-            <>
-              {testResults.firstFailure.expectedOutput && (
-                <div style={{ marginTop: '8px' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Expected: </span>
-                  <span style={{ fontFamily: 'monospace', color: '#86efac' }}>
-                    {testResults.firstFailure.expectedOutput}
-                  </span>
-                </div>
-              )}
-              {testResults.firstFailure.actualOutput && (
-                <div style={{ marginTop: '4px' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Your Output: </span>
-                  <span style={{ fontFamily: 'monospace', color: '#fca5a5' }}>
-                    {testResults.firstFailure.actualOutput}
-                  </span>
-                </div>
-              )}
-            </>
           )}
-        </div>
-      )}
-
-      {/* CLOSE BUTTON */}
-      <button
-        onClick={() => {
-          setTestResults(null);
-          if (testResults.mode === 'submit' && testResults.isCorrect) {
-            handleNextQuestion();
-          }
-        }}
-        className="btn-primary"
-        style={{ marginTop: '24px', width: '100%', padding: '14px', fontSize: '1rem' }}
-      >
-        {testResults.mode === 'submit' && testResults.isCorrect
-          ? 'Next Question →'
-          : 'Close'}
-      </button>
-    </div>
-  </div>
-)}
         </div>
       </div>
     </div>
