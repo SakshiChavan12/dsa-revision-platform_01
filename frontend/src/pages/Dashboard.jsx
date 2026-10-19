@@ -1,9 +1,7 @@
 // src/pages/Dashboard.jsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  FaCheckCircle, FaTimesCircle, FaChartLine, FaCode
-} from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaChartLine, FaCode } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
 import api from '../services/api';
 
@@ -24,14 +22,12 @@ const Dashboard = () => {
     else setGreeting('Good Night');
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchDashboard = async () => {
       try {
         const res = await api.get('/progress/dashboard');
         if (res.data.success) {
           setData(res.data.data);
-          
-          // Trigger the sidebar to update its streak
           window.dispatchEvent(new Event('streak-updated'));
         }
       } catch (err) {
@@ -98,13 +94,11 @@ const Dashboard = () => {
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
 
       {/* HEADER */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-        <div>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: '600', color: 'var(--text-primary)', margin: '0 0 4px 0' }}>
-            {greeting}, {user?.name || 'Guest'}. 👋
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Let's continue your DSA journey.</p>
-        </div>
+      <div>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: '600', color: 'var(--text-primary)', margin: '0 0 4px 0' }}>
+          {greeting}, {user?.name || 'Guest'}. 👋
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Let's continue your DSA journey.</p>
       </div>
 
       {/* TOP STATS */}
@@ -130,7 +124,7 @@ const Dashboard = () => {
               {stats.todayCount >= goalTarget ? 'Goal met! 🎉' : `${goalTarget - stats.todayCount} to go! 💪`}
             </span>
           </div>
-          <Link to="/practice" className="btn-primary" style={{ marginTop: '12px', padding: '8px 16px', fontSize: '0.85rem', textAlign: 'center', textDecoration: 'none', display: 'block' }}>
+          <Link to="/practice" className="btn-primary" style={{ marginTop: '16px', padding: '8px 16px', fontSize: '0.85rem', textAlign: 'center', textDecoration: 'none' }}>
             Start Practice
           </Link>
         </div>
@@ -142,7 +136,7 @@ const Dashboard = () => {
             <div style={styles.statNumber}>{stats.totalQuestions}</div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Available to solve</div>
           </div>
-          <div style={{ alignSelf: 'flex-end', color: 'var(--accent-purple)', opacity: 0.3, fontSize: '2.5rem' }}><FaChartLine /></div>
+          <div style={{ alignSelf: 'flex-end', color: 'var(--accent-purple)', opacity: 0.3, fontSize: '2.5rem', marginTop: 'auto' }}><FaChartLine /></div>
         </div>
 
         {/* Solved */}
@@ -164,7 +158,7 @@ const Dashboard = () => {
             <div style={styles.statNumber}>{stats.accuracy}%</div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>All-time attempt rate</div>
           </div>
-          <div style={{ alignSelf: 'flex-end', color: 'var(--success)', opacity: 0.5, fontSize: '1.5rem', marginTop: '8px' }}>
+          <div style={{ alignSelf: 'flex-end', color: 'var(--success)', opacity: 0.5, fontSize: '1.5rem', marginTop: 'auto' }}>
             <svg width="40" height="40" viewBox="0 0 36 36">
               <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--border-subtle)" strokeWidth="4" />
               <path strokeDasharray={`${stats.accuracy}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--success)" strokeWidth="4" />
@@ -174,7 +168,7 @@ const Dashboard = () => {
       </div>
 
       {/* BOTTOM 3-COLUMN SECTION */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '12px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
 
         {/* Continue Practice */}
         <div style={styles.card}>
@@ -184,9 +178,9 @@ const Dashboard = () => {
           </div>
 
           {stats.continuePractice.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '16px 0' }}>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '12px' }}>You haven't practiced any questions yet.</p>
-              <Link to="/practice" className="btn-outline" style={{ padding: '6px 16px', fontSize: '0.8rem', textDecoration: 'none' }}>Start Now</Link>
+            <div style={{ textAlign: 'center', padding: '24px 0' }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '16px' }}>You haven't practiced any questions yet.</p>
+              <Link to="/practice" className="btn-outline" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>Start Now</Link>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -219,7 +213,7 @@ const Dashboard = () => {
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{timeAgo(q.lastPracticed)}</span>
-                    <Link to={`/practice/${q.id}`} state={{ listId: q.listId }} className="btn-primary" style={{ padding: '6px 16px', fontSize: '0.8rem', textDecoration: 'none' }}>
+                    <Link to={`/practice/${q.id}`} state={{ listId: q.listId }} className="btn-outline" style={{ padding: '6px 16px', fontSize: '0.8rem' }}>
                       Continue
                     </Link>
                   </div>
@@ -236,7 +230,9 @@ const Dashboard = () => {
           </div>
 
           {stats.weakTopics.length === 0 ? (
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textAlign: 'center', padding: '16px 0' }}>Not enough data yet. Solve at least 2 questions per topic to see weak areas.</p>
+            <div style={{ textAlign: 'center', padding: '24px 0' }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Not enough data yet. Solve at least 2 questions per topic to see weak areas.</p>
+            </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {stats.weakTopics.map((topic) => (
@@ -261,7 +257,9 @@ const Dashboard = () => {
           </div>
 
           {stats.recentActivity.length === 0 ? (
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textAlign: 'center', padding: '16px 0' }}>No recent activity. Start a practice session!</p>
+            <div style={{ textAlign: 'center', padding: '24px 0' }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No recent activity. Start a practice session!</p>
+            </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {stats.recentActivity.map((act, i) => (
@@ -272,7 +270,7 @@ const Dashboard = () => {
                     gridTemplateColumns: 'auto 1fr auto',
                     alignItems: 'center',
                     gap: '12px',
-                    padding: '10px 0',
+                    padding: '12px 0',
                     borderBottom: i < stats.recentActivity.length - 1 ? '1px solid var(--border-subtle)' : 'none'
                   }}
                 >
