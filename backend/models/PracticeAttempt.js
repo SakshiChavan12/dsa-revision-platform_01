@@ -14,7 +14,7 @@ const practiceAttemptSchema = new mongoose.Schema({
   list: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'List',
-    required: true
+    required: false // <--- CHANGED TO FALSE
   },
   status: {
     type: String,

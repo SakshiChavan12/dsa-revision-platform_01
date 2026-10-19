@@ -1,127 +1,51 @@
-// import { Link, NavLink, useLocation } from 'react-router-dom';
-// import { useTheme } from '../../context/ThemeContext';
-// import { FaCode, FaSun, FaMoon, FaBars } from 'react-icons/fa6';
-// import { useState } from 'react';
-
-// const Navbar = ({ onMenuClick }) => {
-//   const { theme, toggleTheme } = useTheme();
-//   const location = useLocation(); // <-- 1. Get current route
-//   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-//   // 2. Define the array of navigation links
-//   const navLinks = [
-   
-//   ];
-
-//   // 3. Check if we are on a login/signup page to hide the links
-//   const isAuthPage = 
-//     location.pathname === '/login' || 
-//     location.pathname === '/signup';
-
-//   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
-//   return (
-//     <nav className="navbar" style={{
-//       position: 'fixed',
-//       top: 0, left: 0, right: 0, height: '64px',
-//       zIndex: 1000,
-//       background: 'var(--bg-nav)',
-//       borderBottom: '1px solid var(--border-subtle)',
-//       display: 'flex',
-//       alignItems: 'center',
-//       justifyContent: 'space-between',
-//       padding: '0 24px',
-//       transition: 'background 0.3s ease'
-//     }}>
-      
-//       {/* Left: Logo (Always visible) */}
-//       <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', textDecoration: 'none' }}>
-//         <FaCode style={{ color: 'var(--accent-purple)', fontSize: '20px' }} />
-//         <span style={{ fontWeight: 700, fontSize: '18px' }}>DSA Trainer</span>
-//       </Link>
-
-//       {/* Center: Navigation Links (Conditionally rendered) */}
-//       {!isAuthPage && (
-//         <div style={{ display: 'flex', gap: '28px', alignItems: 'center' }} className="desktop-links">
-//           {navLinks.map((link) => (
-//             <NavLink
-//               key={link.name}
-//               to={link.path}
-//               style={({ isActive }) => ({
-//                 color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
-//                 textDecoration: 'none',
-//                 fontWeight: 500,
-//                 position: 'relative',
-//                 paddingBottom: '4px',
-//                 borderBottom: isActive ? `2px solid var(--accent-purple)` : 'none',
-//                 transition: 'color 0.2s'
-//               })}
-//             >
-//               {link.name}
-//             </NavLink>
-//           ))}
-//         </div>
-//       )}
-
-//       {/* Right: Actions (Always visible) */}
-//       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-//         <button
-//           onClick={toggleTheme}
-//           aria-label="Toggle theme"
-//           style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '20px' }}
-//         >
-//           {theme === 'dark' ? <FaSun /> : <FaMoon />}
-//         </button>
-        
-//         <div style={{ display: 'flex', gap: '12px' }} className="auth-buttons">
-//           <Link to="/login" className="btn-outline" style={{ padding: '6px 16px', fontSize: '14px' }}>Login</Link>
-//           <Link to="/signup" className="btn-primary" style={{ padding: '6px 16px', fontSize: '14px' }}>Sign Up</Link>
-//         </div>
-
-//         {/* Mobile Hamburger - remains unchanged */}
-//         <button 
-//           onClick={onMenuClick || toggleMenu} 
-//           aria-label="Open navigation menu" 
-//           style={{ background: 'none', border: 'none', color: 'var(--text-primary)', display: 'none' }} 
-//           className="mobile-burger"
-//         >
-//           <FaBars size={20} />
-//         </button>
-//       </div>
-
-//       {/* Mobile Menu Overlay - remains unchanged */}
-//       {isMenuOpen && (
-//         <div style={{ position: 'absolute', top: '64px', left: 0, right: 0, background: 'var(--bg-nav)', borderBottom: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', padding: '20px', gap: '16px' }} className="mobile-menu">
-//           {!isAuthPage && navLinks.map((link) => (
-//             <NavLink key={link.name} to={link.path} style={({ isActive }) => ({ color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)', textDecoration: 'none' })} onClick={() => setIsMenuOpen(false)}>
-//               {link.name}
-//             </NavLink>
-//           ))}
-//           <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
-//             <Link to="/login" className="btn-outline" style={{ flex: 1, textAlign: 'center' }}>Login</Link>
-//             <Link to="/signup" className="btn-primary" style={{ flex: 1, textAlign: 'center' }}>Sign Up</Link>
-//           </div>
-//         </div>
-//       )}
-//     </nav>
-//   );
-// };
-
-// export default Navbar;
-
-
-
-// frontend/src/components/layout/Navbar.jsx
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { FaUser, FaListUl, FaSignOutAlt } from 'react-icons/fa';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user, logoutUser } = useAuth();
+  
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside or pressing ESC
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const handleLogout = () => {
-    logoutUser();                    // clears context state + localStorage
+    setIsDropdownOpen(false);
+    logoutUser(); // clears context state + localStorage
     navigate('/login', { replace: true });
+  };
+
+  // Generate initials from user's name
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    return parts.length >= 2 
+      ? `${parts[0][0]}${parts[1][0]}`.toUpperCase() 
+      : name.substring(0, 2).toUpperCase();
   };
 
   return (
@@ -147,18 +71,122 @@ const Navbar = () => {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         {isAuthenticated ? (
-          <>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-              {user?.name || user?.email}
-            </span>
+          <div style={{ position: 'relative' }} ref={dropdownRef}>
+            
+            {/* Avatar Trigger Button */}
             <button
-              onClick={handleLogout}
-              className="btn-primary"
-              style={{ padding: '8px 16px', fontSize: '14px', cursor: 'pointer' }}
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '4px',
+                outline: 'none'
+              }}
+              aria-label="Profile menu"
             >
-              Logout
+              <div
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, var(--accent-purple, #7C4DFF), #00bcd4)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontWeight: '600',
+                  fontSize: '0.9rem',
+                  border: isDropdownOpen ? '2px solid var(--text-primary)' : '2px solid transparent',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {getInitials(user?.name)}
+              </div>
             </button>
-          </>
+
+            {/* Dropdown Menu */}
+            {isDropdownOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 12px)',
+                  right: 0,
+                  width: '240px',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: '12px',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+                  overflow: 'hidden',
+                  zIndex: 101,
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
+                {/* User Info Header */}
+                <div
+                  style={{
+                    padding: '16px',
+                    borderBottom: '1px solid var(--border-subtle)',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
+                >
+                  <span style={{ color: 'var(--text-primary)', fontWeight: '600', fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {user?.name}
+                  </span>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {user?.email}
+                  </span>
+                </div>
+
+                {/* Menu Items */}
+                <div style={{ padding: '8px 0' }}>
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsDropdownOpen(false)}
+                    style={styles.menuItem}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-app)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  >
+                    <FaUser style={{ color: 'var(--text-secondary)' }} /> My Profile
+                  </Link>
+                  
+                  <Link
+                    to="/lists"
+                    onClick={() => setIsDropdownOpen(false)}
+                    style={styles.menuItem}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-app)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  >
+                    <FaListUl style={{ color: 'var(--text-secondary)' }} /> My Lists
+                  </Link>
+                </div>
+
+                {/* Logout Section */}
+                <div style={{ borderTop: '1px solid var(--border-subtle)', padding: '8px 0' }}>
+                  <button
+                    onClick={handleLogout}
+                    style={{
+                      ...styles.menuItem,
+                      width: '100%',
+                      background: 'transparent',
+                      border: 'none',
+                      textAlign: 'left',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  >
+                    <FaSignOutAlt style={{ color: '#ef4444' }} /> 
+                    <span style={{ color: '#ef4444' }}>Logout</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         ) : (
           <>
             <Link to="/login" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>
@@ -172,6 +200,23 @@ const Navbar = () => {
       </div>
     </nav>
   );
+};
+
+// Shared styles for dropdown items
+const styles = {
+  menuItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '10px 16px',
+    color: 'var(--text-primary)',
+    textDecoration: 'none',
+    fontSize: '0.9rem',
+    fontWeight: '500',
+    transition: 'background 0.2s',
+    width: '100%',
+    boxSizing: 'border-box'
+  }
 };
 
 export default Navbar;

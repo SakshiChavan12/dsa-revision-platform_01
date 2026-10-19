@@ -134,14 +134,13 @@ export const submitCode = async (req, res) => {
       error: firstFailure ? (firstFailure.actualOutput || 'Wrong Answer') : null
     });
 
-    if (listId) {
-      await PracticeAttempt.create({
-        user: req.user.id,
-        question: questionId,
-        list: listId,
-        status: isCorrect ? 'Solved' : 'Wrong'
-      });
-    }
+    // RECORD EVERY ATTEMPT (Removed the if (listId) check)
+    await PracticeAttempt.create({
+      user: req.user.id,
+      question: questionId,
+      list: listId || null,
+      status: isCorrect ? 'Solved' : 'Wrong'
+    });
 
     return res.status(200).json({
       success: true,

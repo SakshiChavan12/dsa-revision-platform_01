@@ -41,8 +41,6 @@ function App() {
 
           {/* =========================================
              1. PUBLIC ROUTES
-             - Accessible only when NOT logged in
-             - Logged-in users get redirected to /dashboard
              ========================================= */}
           <Route element={<PublicRoute />}>
             <Route element={<PublicLayout />}>
@@ -55,8 +53,6 @@ function App() {
 
           {/* =========================================
              2. PROTECTED ROUTES
-             - Require a valid session
-             - Unauthenticated users get redirected to /login
              ========================================= */}
           <Route element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
@@ -71,7 +67,7 @@ function App() {
             </Route>
           </Route>
 
-          {/* Fallback: anything unknown goes to Landing (or Login if you prefer) */}
+          {/* Fallback */}
           <Route path="*" element={<Landing />} />
 
         </Routes>

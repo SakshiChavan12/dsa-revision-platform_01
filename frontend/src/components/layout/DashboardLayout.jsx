@@ -6,8 +6,6 @@ import Sidebar from './Sidebar';
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // 1. DISPLAY: GRID keeps Sidebar left and Main right
-  // 2. NO FLEX, NO ALIGN-ITEMS, NO JUSTIFY-CONTENT (Removes all centering)
   const styles = {
     container: {
       display: 'grid',
@@ -19,7 +17,7 @@ const DashboardLayout = () => {
     main: {
       height: '100vh',
       overflowY: 'auto',
-      padding: '24px 28px 40px', // Perfect professional top padding
+      padding: '24px 28px 40px',
       background: 'var(--bg-app)',
       boxSizing: 'border-box',
     }
@@ -30,7 +28,6 @@ const DashboardLayout = () => {
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       <main style={styles.main} className="dashboard-main-content">
-        {/* 3. REMOVED margin: '0 auto' - This was centering the content weirdly */}
         <div style={{ width: '100%', maxWidth: '1500px' }}>
           <Outlet />
         </div>

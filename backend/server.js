@@ -8,6 +8,7 @@ import listRoutes from './routes/listRoutes.js';
 import progressRoutes from './routes/progressRoutes.js';
 import submissionRoutes from './routes/submissionRoutes.js';
 
+import bookmarkRoutes from './routes/bookmarkRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -24,7 +25,7 @@ app.use('/api/lists', listRoutes);
 app.use('/api/practice', progressRoutes);
 app.use('/api/submissions', submissionRoutes);
 app.use('/api/progress', progressRoutes);
-
+app.use('/api/bookmarks', bookmarkRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

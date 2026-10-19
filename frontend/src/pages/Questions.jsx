@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { FaSearch, FaChevronDown, FaPlus } from 'react-icons/fa';
+import { FaSearch, FaChevronDown, FaPlus, FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import api from '../services/api';
-import { addQuestionsToList } from '../services/api';
+import { addQuestionsToList, getBookmarks, toggleBookmark } from '../services/api';
 
 const Questions = () => {
   const [questions, setQuestions] = useState([]);
@@ -14,6 +14,9 @@ const Questions = () => {
   const [selectedQuestionIds, setSelectedQuestionIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
+
+  // Bookmark State
+  const [bookmarkedIds, setBookmarkedIds] = useState([]);
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -29,21 +32,48 @@ const Questions = () => {
   const [newListDesc, setNewListDesc] = useState('');
   const [creatingList, setCreatingList] = useState(false);
 
+  // Fetch Questions and User's Bookmarks on Mount
   useEffect(() => {
-    const fetchQuestions = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/questions');
-        setQuestions(response.data.questions);
+        
+        // Fetch Questions
+        const qRes = await api.get('/questions');
+        setQuestions(qRes.data.questions);
+        
+        // Fetch Bookmarks
+        const bRes = await getBookmarks();
+        if (bRes.success) {
+          setBookmarkedIds(bRes.bookmarks.map(q => q._id));
+        }
+        
         setError('');
       } catch (err) {
-        setError('Unable to load questions. Please try again.');
+        setError('Unable to load data. Please try again.');
       } finally {
         setLoading(false);
       }
     };
-    fetchQuestions();
+    fetchData();
   }, []);
+
+  // Handle Bookmark Toggle
+  const handleBookmarkToggle = async (e, questionId) => {
+    e.stopPropagation(); // Prevent row click if you add row navigation later
+    try {
+      const res = await toggleBookmark(questionId);
+      if (res.success) {
+        if (res.bookmarked) {
+          setBookmarkedIds(prev => [...prev, questionId]);
+        } else {
+          setBookmarkedIds(prev => prev.filter(id => id !== questionId));
+        }
+      }
+    } catch (err) {
+      console.error("Failed to toggle bookmark", err);
+    }
+  };
 
   const filteredQuestions = useMemo(() => {
     return questions.filter(q => {
@@ -60,8 +90,10 @@ const Questions = () => {
   const currentData = filteredQuestions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   // --- MODAL HANDLERS ---
-  const openAddToListModal = async () => {
-    if (selectedQuestionIds.length === 0) {
+  const openAddToListModal = async (singleId = null) => {
+    if (singleId) {
+      setSelectedQuestionIds([singleId]);
+    } else if (selectedQuestionIds.length === 0) {
       setNotification('Please select at least one question.');
       return;
     }
@@ -166,7 +198,7 @@ const Questions = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{filteredQuestions.length} questions found</span>
           <button 
-            onClick={openAddToListModal}
+            onClick={() => openAddToListModal(null)}
             disabled={selectedQuestionIds.length === 0}
             className="btn-primary" 
             style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px', opacity: selectedQuestionIds.length === 0 ? 0.5 : 1 }}
@@ -231,12 +263,13 @@ const Questions = () => {
                 <th style={{ padding: '16px', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: '500' }}>Topic</th>
                 <th style={{ padding: '16px', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: '500' }}>Difficulty</th>
                 <th style={{ padding: '16px', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: '500' }}>Platform</th>
-                <th style={{ padding: '16px', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: '500' }}>Action</th>
+                <th style={{ padding: '16px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: '500' }}>Bookmark</th>
               </tr>
             </thead>
             <tbody>
               {currentData.map((q, idx) => {
                 const diffStyle = getDifficultyColor(q.difficulty);
+                const isBookmarked = bookmarkedIds.includes(q._id);
                 return (
                   <tr key={q._id} style={{ borderBottom: '1px solid var(--border-subtle)', transition: 'background 0.2s' }} className="question-row-hover">
                     <td style={{ padding: '14px 16px' }}>
@@ -256,8 +289,30 @@ const Questions = () => {
                       <span style={{ padding: '2px 10px', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: '500', backgroundColor: diffStyle.bg, color: diffStyle.color }}>{q.difficulty}</span>
                     </td>
                     <td style={{ padding: '14px 16px', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{q.platform}</td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <button className="btn-outline" style={{ padding: '4px 12px', fontSize: '0.75rem' }} onClick={() => openAddToListModal(q._id)}>+ Add</button>
+                    
+                    {/* REPLACED ACTION COLUMN WITH BOOKMARK */}
+                    <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                      <button 
+                        onClick={(e) => handleBookmarkToggle(e, q._id)}
+                        title={isBookmarked ? "Remove Bookmark" : "Bookmark question"}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '1.1rem',
+                          color: isBookmarked ? 'var(--accent-purple)' : 'var(--text-secondary)',
+                          transition: 'color 0.2s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '100%',
+                          padding: '4px'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-purple)'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = isBookmarked ? 'var(--accent-purple)' : 'var(--text-secondary)'}
+                      >
+                        {isBookmarked ? <FaBookmark /> : <FaRegBookmark />}
+                      </button>
                     </td>
                   </tr>
                 );

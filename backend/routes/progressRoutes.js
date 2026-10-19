@@ -1,16 +1,20 @@
+// backend/routes/progressRoutes.js
 import express from 'express';
-import { recordPracticeAttempt, getProgress } from '../controllers/progressController.js';
+import { 
+  recordPracticeAttempt, 
+  getProgress, 
+  getDashboardData, 
+  getStreak // <-- Add this here
+} from '../controllers/progressController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Protect all routes
 router.use(protect);
 
-// Record a practice attempt
 router.post('/attempt', recordPracticeAttempt);
-
-// Get user's progress
 router.get('/', getProgress);
+router.get('/dashboard', getDashboardData);
+router.get('/streak', getStreak); // <-- Make sure this is here
 
 export default router;

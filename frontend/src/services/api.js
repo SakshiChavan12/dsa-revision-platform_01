@@ -63,4 +63,16 @@ export const submitCode = async (data) => {
   return response.data;
 };
 
+// ─── BOOKMARKS ───
+export const getBookmarks = async () => {
+  const response = await api.get('/bookmarks');
+  return response.data;
+};
+
+export const toggleBookmark = async (questionId) => {
+  const response = await api.post(`/bookmarks/${questionId}`);
+  return response.data;
+};
+
+
 export default api;
