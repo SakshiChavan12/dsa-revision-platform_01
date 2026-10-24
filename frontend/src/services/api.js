@@ -1,17 +1,19 @@
-// frontend/src/services/api.js
+
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
-   timeout: 30000,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  timeout: 30000,
 });
 
 // ─── AUTH INTERCEPTOR ───
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
@@ -20,7 +22,7 @@ const LANG_MAP = {
   'JavaScript (Node.js)': 'javascript',
   'Python': 'python',
   'Java': 'java',
-  'C++': 'cpp'
+  'C++': 'cpp',
 };
 
 const normalizeLanguage = (lang) => LANG_MAP[lang] || 'javascript';
@@ -73,6 +75,5 @@ export const toggleBookmark = async (questionId) => {
   const response = await api.post(`/bookmarks/${questionId}`);
   return response.data;
 };
-
 
 export default api;
